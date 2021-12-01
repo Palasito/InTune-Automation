@@ -39,14 +39,14 @@ Write-Host "Checking for AzureAD module..."
 
     $AadModule = Get-Module -Name "AzureAD" -ListAvailable
 
-    if ($AadModule -eq $null) {
+    if ($null -eq $AadModule) {
 
         Write-Host "AzureAD PowerShell module not found, looking for AzureADPreview"
         $AadModule = Get-Module -Name "AzureADPreview" -ListAvailable
 
     }
 
-    if ($AadModule -eq $null) {
+    if ($null -eq $AadModule) {
         write-host
         write-host "AzureAD Powershell module not installed..." -f Red
         write-host "Install by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt" -f Yellow
@@ -60,15 +60,15 @@ Write-Host "Checking for AzureAD module..."
 
     if($AadModule.count -gt 1){
 
-        $Latest_Version = ($AadModule | select version | Sort-Object)[-1]
+        $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
 
-        $aadModule = $AadModule | ? { $_.version -eq $Latest_Version.version }
+        $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
 
             # Checking if there are multiple versions of the same module found
 
             if($AadModule.count -gt 1){
 
-            $aadModule = $AadModule | select -Unique
+            $aadModule = $AadModule | Select-Object -Unique
 
             }
 
@@ -176,7 +176,7 @@ Write-Verbose "Resource: $DCP_resource"
 
     try {
 
-        if($JSON -eq "" -or $JSON -eq $null){
+        if($JSON -eq "" -or $null -eq $JSON){
 
         write-host "No JSON specified, please specify valid JSON for the Device Configuration Policy..." -f Red
 
@@ -234,7 +234,7 @@ $JSON
 
     try {
 
-    $TestJSON = ConvertFrom-Json $JSON -ErrorAction Stop
+    ConvertFrom-Json $JSON -ErrorAction Stop
     $validJson = $true
 
     }
@@ -277,7 +277,7 @@ if($global:authToken){
 
             # Defining User Principal Name if not present
 
-            if($User -eq $null -or $User -eq ""){
+            if($null -eq $User -or $User -eq ""){
 
             $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
             Write-Host
@@ -293,7 +293,7 @@ if($global:authToken){
 
 else {
 
-    if($User -eq $null -or $User -eq ""){
+    if($null -eq $User -or $User -eq ""){
 
     $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
     Write-Host
@@ -325,7 +325,7 @@ break
 
 ####################################################
 
-$JSON_Data = gc "$ImportPath"
+$JSON_Data = Get-Content "$ImportPath"
 
 # Excluding entries that are not required - id,createdDateTime,lastModifiedDateTime,version
 $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,supportsScopeTags
