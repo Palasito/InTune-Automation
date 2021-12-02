@@ -149,7 +149,7 @@ $authority = "https://login.microsoftonline.com/$Tenant"
 
 ####################################################
 
-Function Get-DeviceConfigurationPolicy(){
+Function Get-DeviceRestrictionsPolicy(){
 
 <#
 .SYNOPSIS
@@ -157,20 +157,20 @@ This function is used to get device configuration policies from the Graph API RE
 .DESCRIPTION
 The function connects to the Graph API Interface and gets any device configuration policies
 .EXAMPLE
-Get-DeviceConfigurationPolicy
+Get-DeviceRestrictionsPolicy
 Returns any device configuration policies configured in Intune
 .NOTES
-NAME: Get-DeviceConfigurationPolicy
+NAME: Get-DeviceRestrictionsPolicy
 #>
 
 [cmdletbinding()]
 
 $graphApiVersion = "Beta"
-$DCP_resource = "deviceManagement/deviceConfigurations"
+$DRP_resource = "deviceManagement/deviceConfigurations"
     
     try {
     
-    $uri = "https://graph.microsoft.com/$graphApiVersion/$($DCP_resource)"
+    $uri = "https://graph.microsoft.com/$graphApiVersion/$($DRP_resource)"
     (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
     }
@@ -194,6 +194,54 @@ $DCP_resource = "deviceManagement/deviceConfigurations"
 
 ####################################################
 
+Function Get-DeviceRestrictionsPolicyJSON(){
+
+    param(
+        $Policies,
+        $ExportPath
+    )
+
+    $graphApiVersion = "Beta"
+    $DRP_resource = "deviceManagement/deviceConfigurations"
+    
+    try {
+    
+    $uri = "https://graph.microsoft.com/$graphApiVersion/$($DRP_resource)"
+    $JSON = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
+    
+    $JSON1 = ConvertTo-Json $JSON -Depth 5
+
+    $JSON_Convert = $JSON1 | ConvertFrom-Json
+
+    $displayName = $JSON_Convert.displayName
+
+    # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
+    $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+
+    $FileName_JSON = "DR" + "_" + "$DisplayName" + ".json"
+
+    write-host "Export Path:" "$ExportPath"
+
+    $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+    write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
+    }
+    
+    catch {
+
+    $ex = $_.Exception
+    $errorResponse = $ex.Response.GetResponseStream()
+    $reader = New-Object System.IO.StreamReader($errorResponse)
+    $reader.BaseStream.Position = 0
+    $reader.DiscardBufferedData()
+    $responseBody = $reader.ReadToEnd();
+    Write-Host "Response content:`n$responseBody" -f Red
+    Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+    write-host
+    break
+
+    }
+}
+
 Function Get-DeviceSettingsCatalogPolicy(){
 <#Explanation of function to be added#>
 
@@ -206,8 +254,10 @@ $DSC_Resource = "deviceManagement/configurationPolicies"
     
     $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)"
     (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
-    
+
     }
+    
+
     
     catch {
 
@@ -258,48 +308,18 @@ Function Get-DeviceAdministrativeTemplates(){
     
     }
 
-Function Export-JSONData(){
+    Function Get-DeviceAdministrativeTemplatesJSON(){
+        param(
+            $Policies,
+            $ExportPath
+        )
+        $graphApiVersion = "Beta"
+        $DAT_Resource = "deviceManagement/groupPolicyConfigurations"
 
-<#
-.SYNOPSIS
-This function is used to export JSON data returned from Graph
-.DESCRIPTION
-This function is used to export JSON data returned from Graph
-.EXAMPLE
-Export-JSONData -JSON $JSON
-Export the JSON inputted on the function
-.NOTES
-NAME: Export-JSONData
-#>
-
-param (
-
-$JSON,
-$ExportPath
-
-)
-
-    try {
-
-        if($JSON -eq "" -or $null -eq $JSON){
-
-            write-host "No JSON specified, please specify valid JSON..." -f Red
-
-        }
-
-        elseif(!$ExportPath){
-
-            write-host "No export path parameter set, please provide a path to export the file" -f Red
-
-        }
-
-        elseif(!(Test-Path $ExportPath)){
-
-            write-host "$ExportPath doesn't exist, can't export JSON Data" -f Red
-
-        }
-
-        elseif($null -eq $JSON.name){
+        try {
+            $uri = "https://graph.microsoft.com/$graphApiVersion/$($DAT_Resource)"
+            
+            $JSON = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
 
             $JSON1 = ConvertTo-Json $JSON -Depth 5
 
@@ -310,7 +330,7 @@ $ExportPath
             # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
             $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
 
-            $FileName_JSON = "$DisplayName" + "_" + $(get-date -f dd-MM-yyyy-H-mm-ss) + ".json"
+            $FileName_JSON = "AT" + "_" + "$DisplayName" + ".json"
 
             write-host "Export Path:" "$ExportPath"
 
@@ -318,34 +338,76 @@ $ExportPath
             write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
         }
 
-        else{
+        catch {
 
-            $JSON1 = ConvertTo-Json $JSON -Depth 5
+            $ex = $_.Exception
+            $errorResponse = $ex.Response.GetResponseStream()
+            $reader = New-Object System.IO.StreamReader($errorResponse)
+            $reader.BaseStream.Position = 0
+            $reader.DiscardBufferedData()
+            $responseBody = $reader.ReadToEnd();
+            Write-Host "Response content:`n$responseBody" -f Red
+            Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+            write-host
+            break
+        }
+    }
 
-            $JSON_Convert = $JSON1 | ConvertFrom-Json
+    Function Get-DeviceSettingsCatalogPolicyJSON(){
 
-            $displayName = $JSON_Convert.name
+        param(
+            $Policies,
+            $ExportPath
+        )
 
-            # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
-            $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+        $graphApiVersion = "Beta"
+        $DSC_Resource = "deviceManagement/configurationPolicies"
 
-            $FileName_JSON = "$DisplayName" + "_" + $(get-date -f dd-MM-yyyy-H-mm-ss) + ".json"
+        try {
+
+            $Policyid = $Policies.id
+            #$PolicyJSON = $Policy | ConvertTo-Json -depth 5
+            $uri_settings = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)/$($Policyid)/settings"
+            $Settings = (Invoke-RestMethod -Uri $uri_settings -Headers $authToken -Method Get).Value
+
+            $PolicyJSON = [pscustomobject]@{
+                name = $Policies.Name
+                description = $Policies.description
+                platforms = $Policies.platforms
+                technologies = $Policies.technologies
+                settings = $Settings
+            }
+
+            $FinalJSONdisplayName = $Policies.name
+
+            $FinalJSONDisplayName = $FinalJSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+
+            $FileName_FinalJSON = "SC" + "_" + "$FinalJSONDisplayName" + ".json"
 
             write-host "Export Path:" "$ExportPath"
 
-            $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
-            write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
+            $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
+
+            $FinalJSON | Set-Content -LiteralPath "$ExportPath\$FileName_FinalJSON"
+            write-host "JSON created in $ExportPath\$FileName_FinalJSON..." -f cyan
             
         }
 
-    }
-
-    catch {
-
-    $_.Exception
-
-    }
-
+            catch {
+    
+                $ex = $_.Exception
+                $errorResponse = $ex.Response.GetResponseStream()
+                $reader = New-Object System.IO.StreamReader($errorResponse)
+                $reader.BaseStream.Position = 0
+                $reader.DiscardBufferedData()
+                $responseBody = $reader.ReadToEnd();
+                Write-Host "Response content:`n$responseBody" -f Red
+                Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+                write-host
+                break
+            
+                }
+        
 }
 
 ####################################################
@@ -406,53 +468,53 @@ $ExportPath = Read-Host -Prompt "Please specify a path to export the policy data
 
     # If the directory path doesn't exist prompt user to create the directory
     $ExportPath = $ExportPath.replace('"','')
-
+    
     if(!(Test-Path "$ExportPath")){
 
+        Write-Host
+        Write-Host "Path '$ExportPath' doesn't exist, do you want to create this directory? Y or N?" -ForegroundColor Yellow
+    
+        $Confirm = read-host
+    
+            if($Confirm -eq "y" -or $Confirm -eq "Y"){
+    
+            new-item -ItemType Directory -Path "$ExportPath" | Out-Null
+            Write-Host
+    
+            }
+
+    else {
+
+    Write-Host "Creation of directory path was cancelled..." -ForegroundColor Red
     Write-Host
-    Write-Host "Path '$ExportPath' doesn't exist, do you want to create this directory? Y or N?" -ForegroundColor Yellow
-
-    $Confirm = read-host
-
-        if($Confirm -eq "y" -or $Confirm -eq "Y"){
-
-        new-item -ItemType Directory -Path "$ExportPath" | Out-Null
-        Write-Host
-
-        }
-
-        else {
-
-        Write-Host "Creation of directory path was cancelled..." -ForegroundColor Red
-        Write-Host
-        break
-
-        }
+    break
 
     }
+
+}
 
 ####################################################
 
 Write-Host
 
 # Filtering out iOS and Windows Software Update Policies
-$DCPs = Get-DeviceConfigurationPolicy | Where-Object { ($_.'@odata.type' -ne "#microsoft.graph.iosUpdateConfiguration") -and ($_.'@odata.type' -ne "#microsoft.graph.windowsUpdateForBusinessConfiguration") }
-foreach($DCP in $DCPs){
+$DRPs = Get-DeviceRestrictionsPolicy | Where-Object { ($_.'@odata.type' -ne "#microsoft.graph.iosUpdateConfiguration") -and ($_.'@odata.type' -ne "#microsoft.graph.windowsUpdateForBusinessConfiguration") }
+foreach($DRP in $DRPs){
 
-write-host "Device Configuration Policy:"$DCP.displayName -f Yellow
-Export-JSONData -JSON $DCP -ExportPath "$ExportPath"
+write-host "Device Configuration Policy:"$DRP.displayName -f Yellow
+Get-DeviceRestrictionsPolicyJSON -JSON $DRP -ExportPath "$ExportPath"
 Write-Host
 }
 $DSCs = Get-DeviceSettingsCatalogPolicy
 foreach($DSC in $DSCs){
     Write-Host "Device Settings Catalog Policy:"$DSC.name -f Yellow
-    Export-JSONData -JSON $DSC -ExportPath "$ExportPath"
+    Get-DeviceSettingsCatalogPolicyJSON -Policies $DSC -ExportPath "$ExportPath"
     Write-Host
 }
 $DATs = Get-DeviceAdministrativeTemplates
 foreach($DAT in $DATs){
     Write-Host "Device Settings Administrative Templates:"$DAT.DisplayName -f Yellow
-    Export-JSONData -JSON $DAT -ExportPath "$ExportPath"
+    Get-DeviceAdministrativeTemplatesJSON -JSON $DAT -ExportPath "$ExportPath"
     Write-Host
 }
 
