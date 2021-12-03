@@ -149,7 +149,7 @@ $authority = "https://login.microsoftonline.com/$Tenant"
 
 ####################################################
 
-Function Get-DeviceRestrictionsPolicy(){
+Function Get-GeneralDeviceConfigurationPolicy(){
 
 <#
 .SYNOPSIS
@@ -157,20 +157,20 @@ This function is used to get device configuration policies from the Graph API RE
 .DESCRIPTION
 The function connects to the Graph API Interface and gets any device configuration policies
 .EXAMPLE
-Get-DeviceRestrictionsPolicy
+Get-GeneralDeviceConfigurationPolicy
 Returns any device configuration policies configured in Intune
 .NOTES
-NAME: Get-DeviceRestrictionsPolicy
+NAME: Get-GeneralDeviceConfigurationPolicy
 #>
 
 [cmdletbinding()]
 
 $graphApiVersion = "Beta"
-$DRP_resource = "deviceManagement/deviceConfigurations"
+$GDC_resource = "deviceManagement/deviceConfigurations"
     
     try {
     
-    $uri = "https://graph.microsoft.com/$graphApiVersion/$($DRP_resource)"
+    $uri = "https://graph.microsoft.com/$graphApiVersion/$($GDC_resource)"
     (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
     }
@@ -194,22 +194,16 @@ $DRP_resource = "deviceManagement/deviceConfigurations"
 
 ####################################################
 
-Function Get-DeviceRestrictionsPolicyJSON(){
+Function Get-GeneralDeviceConfigurationPolicyJSON(){
 
     param(
         $Policies,
         $ExportPath
     )
-
-    $graphApiVersion = "Beta"
-    $DRP_resource = "deviceManagement/deviceConfigurations"
     
     try {
     
-    $uri = "https://graph.microsoft.com/$graphApiVersion/$($DRP_resource)"
-    $JSON = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
-    
-    $JSON1 = ConvertTo-Json $JSON -Depth 5
+    $JSON1 = ConvertTo-Json $Policies -Depth 5
 
     $JSON_Convert = $JSON1 | ConvertFrom-Json
 
@@ -218,7 +212,7 @@ Function Get-DeviceRestrictionsPolicyJSON(){
     # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
     $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
 
-    $FileName_JSON = "DR" + "_" + "$DisplayName" + ".json"
+    $FileName_JSON = "GDC" + "_" + "$DisplayName" + ".json"
 
     write-host "Export Path:" "$ExportPath"
 
@@ -410,6 +404,77 @@ Function Get-DeviceAdministrativeTemplates(){
         
 }
 
+
+Function Export-JSONData(){
+
+<#
+.SYNOPSIS
+This function is used to export JSON data returned from Graph
+.DESCRIPTION
+This function is used to export JSON data returned from Graph
+.EXAMPLE
+Export-JSONData -JSON $JSON
+Export the JSON inputted on the function
+.NOTES
+NAME: Export-JSONData
+#>
+
+param (
+
+$JSON,
+$ExportPath
+
+)
+
+    try {
+
+        if($JSON -eq "" -or $null -eq $JSON){
+
+            write-host "No JSON specified, please specify valid JSON..." -f Red
+
+        }
+
+        elseif(!$ExportPath){
+
+            write-host "No export path parameter set, please provide a path to export the file" -f Red
+
+        }
+
+        elseif(!(Test-Path $ExportPath)){
+
+            write-host "$ExportPath doesn't exist, can't export JSON Data" -f Red
+
+        }
+
+        else{
+
+            $JSON1 = ConvertTo-Json $JSON -Depth 5
+
+            $JSON_Convert = $JSON1 | ConvertFrom-Json
+
+            $displayName = $JSON_Convert.displayName
+
+            # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
+            $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+
+            $FileName_JSON = "$DisplayName" + "_" + $(get-date -f dd-MM-yyyy-H-mm-ss) + ".json"
+
+            write-host "Export Path:" "$ExportPath"
+
+            $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+            write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
+        }
+
+    }
+
+    catch {
+
+    $_.Exception
+
+    }
+
+}
+
 ####################################################
 
 #region Authentication
@@ -498,11 +563,11 @@ $ExportPath = Read-Host -Prompt "Please specify a path to export the policy data
 Write-Host
 
 # Filtering out iOS and Windows Software Update Policies
-$DRPs = Get-DeviceRestrictionsPolicy | Where-Object { ($_.'@odata.type' -ne "#microsoft.graph.iosUpdateConfiguration") -and ($_.'@odata.type' -ne "#microsoft.graph.windowsUpdateForBusinessConfiguration") }
-foreach($DRP in $DRPs){
+$GDCs = Get-GeneralDeviceConfigurationPolicy | Where-Object { ($_.'@odata.type' -ne "#microsoft.graph.iosUpdateConfiguration") -and ($_.'@odata.type' -ne "#microsoft.graph.windowsUpdateForBusinessConfiguration") }
+foreach($GDC in $GDCs){
 
-write-host "Device Configuration Policy:"$DRP.displayName -f Yellow
-Get-DeviceRestrictionsPolicyJSON -JSON $DRP -ExportPath "$ExportPath"
+write-host "Device Configuration Policy:"$GDC.displayName -f Yellow
+Get-GeneralDeviceConfigurationPolicyJSON -Policies $GDC -ExportPath "$ExportPath"
 Write-Host
 }
 $DSCs = Get-DeviceSettingsCatalogPolicy
