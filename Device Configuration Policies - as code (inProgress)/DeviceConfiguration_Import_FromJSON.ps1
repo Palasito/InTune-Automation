@@ -149,7 +149,7 @@ $authority = "https://login.microsoftonline.com/$Tenant"
 
 ####################################################
 
-Function Add-DeviceConfigurationPolicy(){
+Function Add-DeviceGeneralConfigurationPolicy(){
 
 <#
 .SYNOPSIS
@@ -157,22 +157,22 @@ This function is used to add an device configuration policy using the Graph API 
 .DESCRIPTION
 The function connects to the Graph API Interface and adds a device configuration policy
 .EXAMPLE
-Add-DeviceConfigurationPolicy -JSON $JSON
+Add-DeviceGeneralConfigurationPolicy -JSON $JSON
 Adds a device configuration policy in Intune
 .NOTES
-NAME: Add-DeviceConfigurationPolicy
+NAME: Add-DeviceGeneralConfigurationPolicy
 #>
 
-[cmdletbinding()]
+    [cmdletbinding()]
 
-param
-(
-    $JSON
-)
+    param
+    (
+        $JSON
+    )
 
-$graphApiVersion = "Beta"
-$DCP_resource = "deviceManagement/deviceConfigurations"
-Write-Verbose "Resource: $DCP_resource"
+    $graphApiVersion = "Beta"
+    $GDCP_resource = "deviceManagement/deviceConfigurations"
+    Write-Verbose "Resource: $GDCP_resource"
 
     try {
 
@@ -186,7 +186,7 @@ Write-Verbose "Resource: $DCP_resource"
 
         Test-JSON -JSON $JSON
 
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($DCP_resource)"
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($GDCP_resource)"
         Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
 
         }
@@ -212,6 +212,105 @@ Write-Verbose "Resource: $DCP_resource"
 
 ####################################################
 
+Function Add-DeviceSettingsCatalogConfigurationPolicy(){
+
+
+    [cmdletbinding()]
+
+    param
+    (
+        $JSON
+    )
+
+    $graphApiVersion = "Beta"
+    $DSC_resource = "deviceManagement/configurationPolicies"
+    Write-Verbose "Resource: $DSC_resource"
+
+    try {
+
+        if($JSON -eq "" -or $null -eq $JSON){
+
+        write-host "No JSON specified, please specify valid JSON for the Device Configuration Policy..." -f Red
+
+        }
+
+        else {
+
+        Test-JSON -JSON $JSON
+
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_resource)"
+        Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
+
+        }
+
+    }
+    
+    catch {
+
+    $ex = $_.Exception
+    $errorResponse = $ex.Response.GetResponseStream()
+    $reader = New-Object System.IO.StreamReader($errorResponse)
+    $reader.BaseStream.Position = 0
+    $reader.DiscardBufferedData()
+    $responseBody = $reader.ReadToEnd();
+    Write-Host "Response content:`n$responseBody" -f Red
+    Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+    write-host
+    break
+
+    }
+}
+
+####################################################
+
+Function Add-DeviceAdministrativeTeamplatePolicy(){
+    [cmdletbinding()]
+
+    param
+    (
+        $JSON
+    )
+    
+    $graphApiVersion = "Beta"
+    $AT_resource = "deviceManagement/groupPolicyConfigurations"
+    Write-Verbose "Resource: $AT_resource"
+    
+        try {
+    
+            if($JSON -eq "" -or $null -eq $JSON){
+    
+            write-host "No JSON specified, please specify valid JSON for the Device Configuration Policy..." -f Red
+    
+            }
+    
+            else {
+    
+            Test-JSON -JSON $JSON
+    
+            $uri = "https://graph.microsoft.com/$graphApiVersion/$($AT_resource)"
+            Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
+    
+            }
+    
+        }
+        
+        catch {
+    
+        $ex = $_.Exception
+        $errorResponse = $ex.Response.GetResponseStream()
+        $reader = New-Object System.IO.StreamReader($errorResponse)
+        $reader.BaseStream.Position = 0
+        $reader.DiscardBufferedData()
+        $responseBody = $reader.ReadToEnd();
+        Write-Host "Response content:`n$responseBody" -f Red
+        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+        write-host
+        break
+    
+        }
+}
+
+####################################################
 Function Test-JSON(){
 
 <#
@@ -309,7 +408,7 @@ $global:authToken = Get-AuthToken -User $User
 
 ####################################################
 
-$ImportPath = Read-Host -Prompt "Please specify a path to a JSON file to import data from e.g. C:\IntuneOutput\Policies\policy.json"
+$ImportPath = Read-Host -Prompt "Please specify a path to a JSON file to import data from e.g. C:\IntuneOutput\Policies\"
 
 # Replacing quotes for Test-Path
 $ImportPath = $ImportPath.replace('"','')
@@ -325,19 +424,56 @@ break
 
 ####################################################
 
-$JSON_Data = Get-Content "$ImportPath"
+$AvailableJsonsGDC =  Get-ChildItem $ImportPath -Recurse -Include GDC_*.json
+foreach ($json in $AvailableJsonsGDC){
 
-# Excluding entries that are not required - id,createdDateTime,lastModifiedDateTime,version
-$JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,supportsScopeTags
+    $JSON_Data = Get-Content $json.FullName
 
-$DisplayName = $JSON_Convert.displayName
+    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,supportsScopeTags
 
-$JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
-            
-write-host
-write-host "Device Configuration Policy '$DisplayName' Found..." -ForegroundColor Yellow
-write-host
-$JSON_Output
-write-host
-Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
-Add-DeviceConfigurationPolicy -JSON $JSON_Output
+    $DisplayName = $JSON_Convert.displayName
+
+    $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
+
+    Write-Host
+    write-host "Device Configuration Policy '$DisplayName' Found..." -ForegroundColor Yellow
+    Write-Host
+    Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
+    $null = Add-DeviceGeneralConfigurationPolicy -JSON $JSON_Output
+}
+
+$AvailableJsonsSCP =  Get-ChildItem $ImportPath -Recurse -Include SC_*.json
+foreach ($json in $AvailableJsonsSCP){
+
+    $JSON_Data = Get-Content $json.FullName
+
+    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,supportsScopeTags
+
+    $DisplayName = $JSON_Convert.name
+
+    $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
+
+    Write-Host
+    write-host "Device Configuration Policy '$DisplayName' Found..." -ForegroundColor Yellow
+    Write-Host
+    Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
+    $null = Add-DeviceSettingsCatalogConfigurationPolicy -JSON $JSON_Output
+}
+
+$AvailableJsonsAT =  Get-ChildItem $ImportPath -Recurse -Include AT_*.json
+foreach ($json in $AvailableJsonsAT){
+
+    $JSON_Data = Get-Content $json.FullName
+
+    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,supportsScopeTags
+
+    $DisplayName = $JSON_Convert.displayName
+
+    $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
+
+    Write-Host
+    write-host "Device Configuration Policy '$DisplayName' Found..." -ForegroundColor Yellow
+    Write-Host
+    Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
+    $null = Add-DeviceAdministrativeTeamplatePolicy -JSON $JSON_Output
+}

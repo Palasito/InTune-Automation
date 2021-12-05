@@ -202,38 +202,79 @@ Function Get-GeneralDeviceConfigurationPolicyJSON(){
     )
     
     try {
-    
-    $JSON1 = ConvertTo-Json $Policies -Depth 5
 
-    $JSON_Convert = $JSON1 | ConvertFrom-Json
+        if (($Policies.'@odata.type' -eq '#microsoft.graph.windows10CustomConfiguration') -and ($Policies.omaSettings | Where-Object { $_.isEncrypted -contains $true } )) {
+            
+            $Policyid = $Policies.id
+            $uri_value = "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations/$($Policyid)/getOmaSettingPlainTextValue(secretReferenceValueId='$($Policies.omaSettings.secretReferenceValueId)')"
+            $value = (Invoke-RestMethod -Uri $uri_value -Headers $authToken -Method Get).Value
+            $omaSettings = @()
+            foreach($oma in $Policies.omaSettings){
+                $newSetting = @{}
+                $newSetting.'@odata.type' = $oma.'@odata.type'
+                $newSetting.displayName = $oma.displayName
+                $newSetting.description = $oma.description
+                $newSetting.omaUri = $oma.omaUri
+                $newSetting.value = $value
+                $newSetting.isEncrypted = $false
+                $newSetting.secretReferenceValueId = $null
 
-    $displayName = $JSON_Convert.displayName
+                $omaSettings += $newSetting
+            }
 
-    # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
-    $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+            $PolicyJSON = $Policies
+            $PolicyJSON.omaSettings = @()
+            $PolicyJSON.omaSettings = $omaSettings
 
-    $FileName_JSON = "GDC" + "_" + "$DisplayName" + ".json"
+            $FinalJSONdisplayName = $Policies.DisplayName
 
-    write-host "Export Path:" "$ExportPath"
+            $FinalJSONDisplayName = $FinalJSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
 
-    $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
-    write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
+            $FileName_FinalJSON = "GDC" + "_" + "$FinalJSONDisplayName" + ".json"
+
+            write-host "Export Path:" "$ExportPath"
+
+            $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 100
+
+            $FinalJSON | Set-Content -LiteralPath "$ExportPath\$FileName_FinalJSON"
+            write-host "JSON created in $ExportPath\$FileName_FinalJSON..." -f cyan
+            
+        }
+
+        else{
+
+            $DisplayName = $Policies.DisplayName
+
+            # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
+            $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+
+            $FileName_JSON = "GDC" + "_" + "$DisplayName" + ".json"
+
+            write-host "Export Path:" "$ExportPath"
+
+            $FinalJSON = $Policies | ConvertTo-Json -Depth 100
+
+            $FinalJSON | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+            write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
+        }
+
+
     }
-    
+
     catch {
 
-    $ex = $_.Exception
-    $errorResponse = $ex.Response.GetResponseStream()
-    $reader = New-Object System.IO.StreamReader($errorResponse)
-    $reader.BaseStream.Position = 0
-    $reader.DiscardBufferedData()
-    $responseBody = $reader.ReadToEnd();
-    Write-Host "Response content:`n$responseBody" -f Red
-    Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-    write-host
-    break
-
+        $ex = $_.Exception
+        $errorResponse = $ex.Response.GetResponseStream()
+        $reader = New-Object System.IO.StreamReader($errorResponse)
+        $reader.BaseStream.Position = 0
+        $reader.DiscardBufferedData()
+        $responseBody = $reader.ReadToEnd();
+        Write-Host "Response content:`n$responseBody" -f Red
+        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+        write-host
+        break
     }
+
 }
 
 Function Get-DeviceSettingsCatalogPolicy(){
@@ -307,19 +348,10 @@ Function Get-DeviceAdministrativeTemplates(){
             $Policies,
             $ExportPath
         )
-        $graphApiVersion = "Beta"
-        $DAT_Resource = "deviceManagement/groupPolicyConfigurations"
 
         try {
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($DAT_Resource)"
-            
-            $JSON = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
 
-            $JSON1 = ConvertTo-Json $JSON -Depth 5
-
-            $JSON_Convert = $JSON1 | ConvertFrom-Json
-
-            $displayName = $JSON_Convert.displayName
+            $DisplayName = $Policies.DisplayName
 
             # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
             $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
@@ -328,7 +360,9 @@ Function Get-DeviceAdministrativeTemplates(){
 
             write-host "Export Path:" "$ExportPath"
 
-            $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+            $FinalJSON = $Policies | ConvertTo-Json -Depth 5
+
+            $FinalJSON | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
             write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
         }
 
@@ -508,7 +542,7 @@ foreach($DSC in $DSCs){
 $DATs = Get-DeviceAdministrativeTemplates
 foreach($DAT in $DATs){
     Write-Host "Device Settings Administrative Templates:"$DAT.DisplayName -f Yellow
-    Get-DeviceAdministrativeTemplatesJSON -JSON $DAT -ExportPath "$ExportPath"
+    Get-DeviceAdministrativeTemplatesJSON -Policies $DAT -ExportPath "$ExportPath"
     Write-Host
 }
 
