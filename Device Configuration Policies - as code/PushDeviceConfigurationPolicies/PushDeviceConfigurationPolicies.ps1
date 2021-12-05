@@ -424,7 +424,8 @@ break
 
 ####################################################
 
-$AvailableJsonsGDC =  Get-ChildItem $ImportPath -Recurse -Include GDC_*.json
+Write-Host "Importing Device Configuration Profiles..." -ForegroundColor cyan
+$AvailableJsonsGDC =  Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include GDC_*.json
 foreach ($json in $AvailableJsonsGDC){
 
     $JSON_Data = Get-Content $json.FullName
@@ -435,14 +436,17 @@ foreach ($json in $AvailableJsonsGDC){
 
     $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
-    Write-Host
-    write-host "Device Configuration Policy '$DisplayName' Found..." -ForegroundColor Yellow
-    Write-Host
-    Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
     $null = Add-DeviceGeneralConfigurationPolicy -JSON $JSON_Output
+    [PSCustomObject]@{
+        "Action" = "Import"
+        "Type"   = "Device Configuration Profile"
+        "Name"   = $DisplayName
+        "From"   = "$json"
+    }
 }
 
-$AvailableJsonsSCP =  Get-ChildItem $ImportPath -Recurse -Include SC_*.json
+Write-Host "Importing Settings Catalog Profiles..." -ForegroundColor cyan
+$AvailableJsonsSCP =  Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include SC_*.json
 foreach ($json in $AvailableJsonsSCP){
 
     $JSON_Data = Get-Content $json.FullName
@@ -453,14 +457,17 @@ foreach ($json in $AvailableJsonsSCP){
 
     $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
-    Write-Host
-    write-host "Device Configuration Policy '$DisplayName' Found..." -ForegroundColor Yellow
-    Write-Host
-    Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
     $null = Add-DeviceSettingsCatalogConfigurationPolicy -JSON $JSON_Output
+    [PSCustomObject]@{
+        "Action" = "Import"
+        "Type"   = "Settings Catalog Profile"
+        "Name"   = $DisplayName
+        "From"   = "$json"
+    }
 }
 
-$AvailableJsonsAT =  Get-ChildItem $ImportPath -Recurse -Include AT_*.json
+Write-Host "Importing Administrative Templates..." -ForegroundColor cyan
+$AvailableJsonsAT =  Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include AT_*.json
 foreach ($json in $AvailableJsonsAT){
 
     $JSON_Data = Get-Content $json.FullName
@@ -471,9 +478,11 @@ foreach ($json in $AvailableJsonsAT){
 
     $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
-    Write-Host
-    write-host "Device Configuration Policy '$DisplayName' Found..." -ForegroundColor Yellow
-    Write-Host
-    Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
     $null = Add-DeviceAdministrativeTeamplatePolicy -JSON $JSON_Output
+    [PSCustomObject]@{
+        "Action" = "Import"
+        "Type"   = "Administrative Template"
+        "Name"   = $DisplayName
+        "From"   = "$json"
+    }
 }
