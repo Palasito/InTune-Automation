@@ -298,7 +298,7 @@ $ExportPath
 
         $Properties = ($JSON_Convert | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" }).Name
 
-            $FileName_JSON = "$DisplayName" + "_" + $(get-date -f dd-MM-yyyy-H-mm-ss) + ".json"
+            $FileName_JSON = "$DisplayName" + ".json"
 
             $Object = New-Object System.Object
 
@@ -308,10 +308,14 @@ $ExportPath
 
                 }
 
-            write-host "Export Path:" "$ExportPath"
+            $JSON1 | Set-Content -LiteralPath "$ExportPath\CompliancePolicies\$FileName_JSON"
 
-            $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
-            write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Compliance Policy"
+                "Name"   = $JSON_Convert.displayName
+                "Path"   = "$ExportPath\CompliancePolicies\$FileName_JSON"
+            }
             
         }
 
@@ -412,12 +416,14 @@ Write-Host
 
 ####################################################
 
+if (-not (Test-Path "$ExportPath\CompliancePolicies")) {
+    $null = New-Item -Path "$ExportPath\CompliancePolicies" -ItemType Directory
+}
+
+Write-Host "Exporting Device Compliance Policies..." -ForegroundColor cyan
 $CPs = Get-DeviceCompliancePolicy
 
     foreach($CP in $CPs){
-
-    write-host "Device Compliance Policy:"$CP.displayName -f Yellow
     Export-JSONData -JSON $CP -ExportPath "$ExportPath"
-    Write-Host
 
     }
