@@ -1,3 +1,4 @@
+
 <#
 
 .COPYRIGHT
@@ -148,119 +149,70 @@ function Get-AuthToken {
     
     ####################################################
     
-    Function Get-DeviceEnrollmentConfigurations(){
-        
-    <#
-    .SYNOPSIS
-    This function is used to get Deivce Enrollment Configurations from the Graph API REST interface
-    .DESCRIPTION
-    The function connects to the Graph API Interface and gets Device Enrollment Configurations
-    .EXAMPLE
-    Get-DeviceEnrollmentConfigurations
-    Returns Device Enrollment Configurations configured in Intune
-    .NOTES
-    NAME: Get-DeviceEnrollmentConfigurations
-    #>
-        
-        [cmdletbinding()]
-        
-        $graphApiVersion = "Beta"
-        $Resource = "deviceManagement/deviceEnrollmentConfigurations"
-            
-            try {
-                
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
-            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
-        
-            }
-            
-            catch {
-        
-            $ex = $_.Exception
-            $errorResponse = $ex.Response.GetResponseStream()
-            $reader = New-Object System.IO.StreamReader($errorResponse)
-            $reader.BaseStream.Position = 0
-            $reader.DiscardBufferedData()
-            $responseBody = $reader.ReadToEnd();
-            Write-Host "Response content:`n$responseBody" -f Red
-            Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-            write-host
-            break
-        
-            }
-        
-        }
-    
-    ####################################################
-    
-    Function Get-AADGroup(){
+    Function Get-SoftwareUpdatePolicy(){
     
     <#
     .SYNOPSIS
-    This function is used to get AAD Groups from the Graph API REST interface
+    This function is used to get Software Update policies from the Graph API REST interface
     .DESCRIPTION
-    The function connects to the Graph API Interface and gets any Groups registered with AAD
+    The function connects to the Graph API Interface and gets any Software Update policies
     .EXAMPLE
-    Get-AADGroup
-    Returns all users registered with Azure AD
+    Get-SoftwareUpdatePolicy -Windows10
+    Returns Windows 10 Software Update policies configured in Intune
+    .EXAMPLE
+    Get-SoftwareUpdatePolicy -iOS
+    Returns iOS update policies configured in Intune
     .NOTES
-    NAME: Get-AADGroup
+    NAME: Get-SoftwareUpdatePolicy
     #>
     
     [cmdletbinding()]
     
     param
     (
-        $GroupName,
-        $id,
-        [switch]$Members
+        [switch]$Windows10,
+        [switch]$iOS
     )
     
-    # Defining Variables
-    $graphApiVersion = "v1.0"
-    $Group_resource = "groups"
-        
+    $graphApiVersion = "Beta"
+    
         try {
     
-            if($id){
+            $Count_Params = 0
     
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)?`$filter=id eq '$id'"
-            (Invoke-RestMethod -Uri $uri –Headers $authToken –Method Get).Value
+            if($iOS.IsPresent){ $Count_Params++ }
+            if($Windows10.IsPresent){ $Count_Params++ }
+    
+            if($Count_Params -gt 1){
+    
+            write-host "Multiple parameters set, specify a single parameter -iOS or -Windows10 against the function" -f Red
     
             }
-            
-            elseif($GroupName -eq "" -or $null -eq $GroupName){
-            
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)"
-            (Invoke-RestMethod -Uri $uri –Headers $authToken –Method Get).Value
-            
+    
+            elseif($Count_Params -eq 0){
+    
+            Write-Host "Parameter -iOS or -Windows10 required against the function..." -ForegroundColor Red
+            Write-Host
+            break
+    
             }
     
-            else {
-                
-                if(!$Members){
+            elseif($Windows10){
     
-                $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)?`$filter=displayname eq '$GroupName'"
-                (Invoke-RestMethod -Uri $uri –Headers $authToken –Method Get).Value
-                
-                }
-                
-                elseif($Members){
-                
-                $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)?`$filter=displayname eq '$GroupName'"
-                $Group = (Invoke-RestMethod -Uri $uri –Headers $authToken –Method Get).Value
-                
-                    if($Group){
+            $Resource = "deviceManagement/deviceConfigurations?`$filter=isof('microsoft.graph.windowsUpdateForBusinessConfiguration')&`$expand=groupAssignments"
     
-                    $GID = $Group.id
+            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value
     
-                    $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)/$GID/Members"
-                    (Invoke-RestMethod -Uri $uri –Headers $authToken –Method Get).Value
+            }
     
-                    }
+            elseif($iOS){
     
-                }
-            
+            $Resource = "deviceManagement/deviceConfigurations?`$filter=isof('microsoft.graph.iosUpdateConfiguration')&`$expand=groupAssignments"
+    
+            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
+    
             }
     
         }
@@ -277,6 +229,86 @@ function Get-AuthToken {
         Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
         write-host
         break
+    
+        }
+    
+    }
+    
+    ####################################################
+    
+    Function Export-JSONData(){
+    
+    <#
+    .SYNOPSIS
+    This function is used to export JSON data returned from Graph
+    .DESCRIPTION
+    This function is used to export JSON data returned from Graph
+    .EXAMPLE
+    Export-JSONData -JSON $JSON
+    Export the JSON inputted on the function
+    .NOTES
+    NAME: Export-JSONData
+    #>
+    
+    param (
+    
+    $JSON,
+    $ExportPath
+    
+    )
+    
+        try {
+    
+            if($JSON -eq "" -or $null -eq $JSON){
+    
+            write-host "No JSON specified, please specify valid JSON..." -f Red
+    
+            }
+    
+            elseif(!$ExportPath){
+    
+            write-host "No export path parameter set, please provide a path to export the file" -f Red
+    
+            }
+    
+            elseif(!(Test-Path $ExportPath)){
+    
+            write-host "$ExportPath doesn't exist, can't export JSON Data" -f Red
+    
+            }
+    
+            else {
+    
+            $JSON1 = ConvertTo-Json $JSON
+    
+            $JSON_Convert = $JSON1 | ConvertFrom-Json
+    
+            $displayName = $JSON_Convert.displayName
+    
+            # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
+            $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+    
+            $Properties = ($JSON_Convert | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" }).Name
+    
+                $FileName_JSON = "$DisplayName" + "_" + ".json"
+    
+                $Object = New-Object System.Object
+    
+                    foreach($Property in $Properties){
+    
+                    $Object | Add-Member -MemberType NoteProperty -Name $Property -Value $JSON_Convert.$Property
+    
+                    }
+    
+                $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+                
+            }
+    
+        }
+    
+        catch {
+    
+        $_.Exception
     
         }
     
@@ -336,58 +368,55 @@ function Get-AuthToken {
     
     ####################################################
     
-    $DeviceEnrollmentConfigurations = Get-DeviceEnrollmentConfigurations
+    $ExportPath = Read-Host -Prompt "Please specify a path to export the policy data to e.g. C:\IntuneOutput"
     
-    $AndroidEnterpriseConfig = $DeviceEnrollmentConfigurations | Where-Object { $_.androidForWorkRestriction.platformBlocked -eq $false } | Sort-Object priority
+        # If the directory path doesn't exist prompt user to create the directory
+        $ExportPath = $ExportPath.replace('"','')
     
-    write-host "-------------------------------------------------------------------"
-    Write-Host "Android Work Profile Configuration" -ForegroundColor Cyan
-    write-host "-------------------------------------------------------------------"
-    Write-Host
+        if(!(Test-Path "$ExportPath")){
     
-    if($AndroidEnterpriseConfig){
+        Write-Host
+        Write-Host "Path '$ExportPath' doesn't exist, do you want to create this directory? Y or N?" -ForegroundColor Yellow
     
-        foreach($AndroidConfig in $AndroidEnterpriseConfig){
+        $Confirm = read-host
     
-            $ConfigurationId = $AndroidConfig.id
-            $ConfigurationDN = $AndroidConfig.displayName
-            $ConfigurationP = $AndroidConfig.priority
+            if($Confirm -eq "y" -or $Confirm -eq "Y"){
     
-            Write-Host "Android Work Profile '$ConfigurationDN' with priority $ConfigurationP configured..." -ForegroundColor Yellow
-    
-            if($ConfigurationP -eq 0){
-    
-                Write-Host "Android Work Profile enabled for All Users"
+            new-item -ItemType Directory -Path "$ExportPath" | Out-Null
+            Write-Host
     
             }
     
             else {
     
-                $uri = "https://graph.microsoft.com/beta/deviceManagement/deviceEnrollmentConfigurations/$ConfigurationId/assignments"
-    
-                $Assignments = (Invoke-RestMethod -Method Get -Uri $uri -Headers $authToken).value
-    
-                if($Assignments){
-    
-                    Write-Host "AAD Groups assigned..."
-    
-                    # foreach($Assignment in $Assignments){
-    
-                    #     (Get-AADGroup -id $Assignment.target.groupId).displayName
-    
-                    # }
-    
-                }
-    
-                else {
-    
-                    Write-Host "No Assignments for Platform restriction configured..." -ForegroundColor Red
-    
-                }
+            Write-Host "Creation of directory path was cancelled..." -ForegroundColor Red
+            Write-Host
+            break
     
             }
     
-        Write-Host
+        }
+    
+    ####################################################
+    
+    if (-not (Test-Path "$ExportPath\WindowsUpdatePolicies")) {
+        $null = New-Item -Path "$ExportPath\WindowsUpdatePolicies" -ItemType Directory
+    }
+
+    $WSUPs = Get-SoftwareUpdatePolicy -Windows10
+    
+    if($WSUPs){
+    
+        foreach($WSUP in $WSUPs){
+    
+            Export-JSONData -JSON $WSUP -ExportPath "$ExportPath\WindowsUpdatePolicies"
+
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Windows Update Policy"
+                "Name"   = $WSUP.displayName
+                "Path"   = "WindowsUpdatePolicies\$WSUP"
+            }
     
         }
     
@@ -395,7 +424,41 @@ function Get-AuthToken {
     
     else {
     
-        Write-Host "No Android Work Profile Platform Restriction configured..." -ForegroundColor Red
+        Write-Host "No Software Update Policies for Windows 10 Created..." -ForegroundColor Red
         Write-Host
     
     }
+    
+    ####################################################
+    
+    if (-not (Test-Path "$ExportPath\iOSUpdatePolicies")) {
+        $null = New-Item -Path "$ExportPath\iOSUpdatePolicies" -ItemType Directory
+    }
+
+    $ISUPs = Get-SoftwareUpdatePolicy -iOS
+    
+    if($ISUPs){
+    
+        foreach($ISUP in $ISUPs){
+    
+            Export-JSONData -JSON $ISUP -ExportPath "$ExportPath\iOSUpdatePolicies"
+            
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "iOS Update Policy"
+                "Name"   = $ISUP.displayName
+                "Path"   = "iOSUpdatePolicies\$ISUP"
+            }
+    
+        }
+    
+    }
+    
+    else {
+    
+        Write-Host "No Software Update Policies for iOS Created..." -ForegroundColor Red
+        Write-Host
+    
+    }
+    
+    
