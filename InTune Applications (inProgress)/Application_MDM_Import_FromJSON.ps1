@@ -229,7 +229,7 @@ $JSON
 
     try {
 
-    Test-JSON = ConvertFrom-Json $JSON -ErrorAction Stop
+    ConvertFrom-Json $JSON -ErrorAction Stop
     $validJson = $true
 
     }
@@ -325,7 +325,7 @@ $AvailableJSONS = Get-ChildItem $ImportPath -Recurse -Include *.json
 
 foreach($json in $AvailableJSONS){
 
-    $JSON_Data = Get-Content $json.FullName
+    $JSON_Data = Get-Content $json
 
     $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,"@odata.context",uploadState,packageId,appIdentifier,publishingState,usedLicenseCount,totalLicenseCount,productKey,licenseType,packageIdentityName
     

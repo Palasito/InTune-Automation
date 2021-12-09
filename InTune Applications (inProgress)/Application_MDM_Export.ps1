@@ -395,20 +395,64 @@ $ExportPath = Read-Host -Prompt "Please specify a path to export application dat
 
 ####################################################
 
+if (-not (Test-Path "$ExportPath\ClientApps")) {
+    $null = New-Item -Path "$ExportPath\ClientApps" -ItemType Directory
+}
+elseif (-not (Test-Path "$ExportPath\ClientApps\AndroidApps")) {
+    $null = New-Item -Path "$ExportPath\ClientApps\AndroidApps" -ItemType Directory
+}
+elseif (-not (Test-Path "$ExportPath\ClientApps\iOSApps")) {
+    $null = New-Item -Path "$ExportPath\ClientApps\iOSApps" -ItemType Directory
+}
+elseif (-not (Test-Path "$ExportPath\ClientApps\WindowsApps")) {
+    $null = New-Item -Path "$ExportPath\ClientApps\WindowsApps" -ItemType Directory
+}
+
 $MDMApps = Get-IntuneApplication
 
 if($MDMApps){
 
     foreach($App in $MDMApps){
 
-        $Application = Get-IntuneApplication -AppId $App.id
-        $Type = $Application.'@odata.type'.split(".")[2]
+        if($App.'@odata.type'.Contains("android")) {
+            $Application = Get-IntuneApplication -AppId $App.id
+            $Type = $Application.'@odata.type'.split(".")[2]
+    
+    
+            write-host "MDM Application:"$Application.displayName -f Yellow
+            Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\AndroidApps"
+            Write-Host
+        }
+        
+        elseif ($App.'@odata.type'.Contains("ios")) {
+            $Application = Get-IntuneApplication -AppId $App.id
+            $Type = $Application.'@odata.type'.split(".")[2]
 
 
-        write-host "MDM Application:"$Application.displayName -f Yellow
-        Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath"
-        Write-Host
+            write-host "MDM Application:"$Application.displayName -f Yellow
+            Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\iOSApps"
+            Write-Host
+        }
 
+        elseif ($App.'@odata.type'.Contains("windows") -or $App.'@odata.type'.Contains("microsoftStoreForBusinessApp")) {
+            $Application = Get-IntuneApplication -AppId $App.id
+            $Type = $Application.'@odata.type'.split(".")[2]
+    
+    
+            write-host "MDM Application:"$Application.displayName -f Yellow
+            Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\WindowsApps"
+            Write-Host
+        }
+        else {
+            $Application = Get-IntuneApplication -AppId $App.id
+            $Type = $Application.'@odata.type'.split(".")[2]
+
+
+            write-host "MDM Application:"$Application.displayName -f Yellow
+            Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps"
+            Write-Host
+        }
+        
     }
 
 }
