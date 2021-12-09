@@ -2,16 +2,15 @@
 
 param(
     [parameter()]
-    [String]$ExportPath
+    [String]$Path
 )
 # Connect to Azure AD
-# Connect-AzureAD
+ $null = Connect-AzureAD
 
-if (-not (Test-Path "$ExportPath\ConditionalAccessPolicies")) {
-    $null = New-Item -Path "$ExportPath\ConditionalAccessPolicies" -ItemType Directory
+if (-not (Test-Path "$Path\ConditionalAccessPolicies")) {
+    $null = New-Item -Path "$Path\ConditionalAccessPolicies" -ItemType Directory
 }
-
-
+Write-Host
 Write-Host "Exporting Conditional Access Policies..." -ForegroundColor cyan
 
 $AllPolicies = Get-AzureADMSConditionalAccessPolicy
@@ -22,7 +21,7 @@ foreach ($Policy in $AllPolicies) {
 
     $FinalJSONDisplayName = $JSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
 
-    $PolicyJSON | Out-File $ExportPath\ConditionalAccessPolicies\$($FinalJSONdisplayName).json
+    $PolicyJSON | Out-File $Path\ConditionalAccessPolicies\$($FinalJSONdisplayName).json
 
     [PSCustomObject]@{
         "Action" = "Export"

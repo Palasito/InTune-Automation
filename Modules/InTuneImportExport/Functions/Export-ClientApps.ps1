@@ -1,5 +1,4 @@
-
-<#
+﻿<#
 
 .COPYRIGHT
 Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
@@ -39,7 +38,7 @@ Write-Host "Checking for AzureAD module..."
 
     $AadModule = Get-Module -Name "AzureAD" -ListAvailable
 
-    if ($AadModule.version -lt "2.0.2.140") {
+    if ($null -eq $AadModule) {
 
         Write-Host "AzureAD PowerShell module not found, looking for AzureADPreview"
         $AadModule = Get-Module -Name "AzureADPreview" -ListAvailable
@@ -149,85 +148,60 @@ $authority = "https://login.microsoftonline.com/$Tenant"
 
 ####################################################
 
-Function Get-DeviceCompliancePolicy(){
+Function Get-IntuneApplication(){
 
 <#
 .SYNOPSIS
-This function is used to get device compliance policies from the Graph API REST interface
+This function is used to get applications from the Graph API REST interface
 .DESCRIPTION
-The function connects to the Graph API Interface and gets any device compliance policies
+The function connects to the Graph API Interface and gets any applications added
 .EXAMPLE
-Get-DeviceCompliancePolicy
-Returns any device compliance policies configured in Intune
-.EXAMPLE
-Get-DeviceCompliancePolicy -Android
-Returns any device compliance policies for Android configured in Intune
-.EXAMPLE
-Get-DeviceCompliancePolicy -iOS
-Returns any device compliance policies for iOS configured in Intune
+Get-IntuneApplication
+Returns any applications configured in Intune
 .NOTES
-NAME: Get-DeviceCompliancePolicy
+NAME: Get-IntuneApplication
 #>
 
 [cmdletbinding()]
 
 param
 (
-    [switch]$Android,
-    [switch]$iOS,
-    [switch]$Win10
+    $Name,
+    $AppId
 )
 
 $graphApiVersion = "Beta"
-$Resource = "deviceManagement/deviceCompliancePolicies"
-    
+$Resource = "deviceAppManagement/mobileApps"
+
     try {
 
-        $Count_Params = 0
+        if($Name){
 
-        if($Android.IsPresent){ $Count_Params++ }
-        if($iOS.IsPresent){ $Count_Params++ }
-        if($Win10.IsPresent){ $Count_Params++ }
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayName').contains("$Name") -and (!($_.'@odata.type').Contains("managed")) -and (!($_.'@odata.type').Contains("#microsoft.graph.iosVppApp")) }
 
-        if($Count_Params -gt 1){
-        
-        write-host "Multiple parameters set, specify a single parameter -Android -iOS or -Win10 against the function" -f Red
-        
-        }
-        
-        elseif($Android){
-        
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
-        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'@odata.type').contains("android") }
-        
-        }
-        
-        elseif($iOS){
-        
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
-        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'@odata.type').contains("ios") }
-        
         }
 
-        elseif($Win10){
-        
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
-        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'@odata.type').contains("windows10CompliancePolicy") }
-        
+        elseif($AppId){
+
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)/$AppId"
+        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get)
+
         }
-        
+
         else {
 
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
-        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
+        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { (!($_.'@odata.type').Contains("managed")) -and (!($_.'@odata.type').Contains("#microsoft.graph.iosVppApp")) -and (!($_.'@odata.type').Contains("#microsoft.graph.windowsAppX")) -and (!($_.'@odata.type').Contains("#microsoft.graph.androidForWorkApp")) -and (!($_.'@odata.type').Contains("#microsoft.graph.windowsMobileMSI")) -and (!($_.'@odata.type').Contains("#microsoft.graph.androidLobApp")) -and (!($_.'@odata.type').Contains("#microsoft.graph.iosLobApp")) -and (!($_.'@odata.type').Contains("#microsoft.graph.microsoftStoreForBusinessApp")) }
 
         }
 
     }
-    
+
     catch {
 
     $ex = $_.Exception
+    Write-Host "Request to $Uri failed with HTTP Status $([int]$ex.Response.StatusCode) $($ex.Response.StatusDescription)" -f Red
     $errorResponse = $ex.Response.GetResponseStream()
     $reader = New-Object System.IO.StreamReader($errorResponse)
     $reader.BaseStream.Position = 0
@@ -261,6 +235,7 @@ NAME: Export-JSONData
 param (
 
 $JSON,
+$Type,
 $ExportPath
 
 )
@@ -287,7 +262,7 @@ $ExportPath
 
         else {
 
-        $JSON1 = ConvertTo-Json $JSON -Depth 5
+        $JSON1 = ConvertTo-Json $JSON
 
         $JSON_Convert = $JSON1 | ConvertFrom-Json
 
@@ -298,7 +273,17 @@ $ExportPath
 
         $Properties = ($JSON_Convert | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" }).Name
 
-            $FileName_JSON = "$DisplayName" + ".json"
+            if($Type){
+
+                $FileName_JSON = "$DisplayName" + ".json"
+
+            }
+
+            else {
+
+                $FileName_JSON = "$DisplayName" + "_" + ".json"
+
+            }
 
             $Object = New-Object System.Object
 
@@ -308,14 +293,10 @@ $ExportPath
 
                 }
 
-            $JSON1 | Set-Content -LiteralPath "$ExportPath\CompliancePolicies\$FileName_JSON"
+            write-host "Export Path:" "$ExportPath"
 
-            [PSCustomObject]@{
-                "Action" = "Export"
-                "Type"   = "Compliance Policy"
-                "Name"   = $JSON_Convert.displayName
-                "Path"   = "$ExportPath\CompliancePolicies\$FileName_JSON"
-            }
+            $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+            write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
             
         }
 
@@ -331,14 +312,16 @@ $ExportPath
 
 ####################################################
 
-function Export-CompliancePolicies(){
+function Export-ClientApps(){
 
-    [cmdletbinding()]
+[cmdletbinding()]
     
-    param
-    (
-        $Path
-    )
+param
+(
+    $Path
+)
+
+write-host
 
 # Checking if authToken exists before running authentication
 if($global:authToken){
@@ -417,20 +400,96 @@ $ExportPath = $Path
 
     }
 
-Write-Host
-
 ####################################################
 
-if (-not (Test-Path "$ExportPath\CompliancePolicies")) {
-    $null = New-Item -Path "$ExportPath\CompliancePolicies" -ItemType Directory
+if (-not (Test-Path "$ExportPath\ClientApps")) {
+    $null = New-Item -Path "$ExportPath\ClientApps" -ItemType Directory
 }
 
-Write-Host "Exporting Device Compliance Policies..." -ForegroundColor cyan
-$CPs = Get-DeviceCompliancePolicy
 
-    foreach($CP in $CPs){
-    Export-JSONData -JSON $CP -ExportPath "$ExportPath"
+if (-not (Test-Path "$ExportPath\ClientApps\AndroidApps")) {
+    $null = New-Item -Path "$ExportPath\ClientApps\AndroidApps" -ItemType Directory
+}
 
+
+if (-not (Test-Path "$ExportPath\ClientApps\iOSApps")) {
+    $null = New-Item -Path "$ExportPath\ClientApps\iOSApps" -ItemType Directory
+}
+
+
+if (-not (Test-Path "$ExportPath\ClientApps\WindowsApps")) {
+    $null = New-Item -Path "$ExportPath\ClientApps\WindowsApps" -ItemType Directory
+}
+
+$MDMApps = Get-IntuneApplication
+
+Write-Host "Exporting Client Apps" -ForegroundColor Cyan
+
+if($MDMApps){
+
+    foreach($App in $MDMApps){
+
+        if($App.'@odata.type'.Contains("android")) {
+            $Application = Get-IntuneApplication -AppId $App.id
+            $Type = $Application.'@odata.type'.split(".")[2]
+    
+            Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\AndroidApps"
+
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Client App"
+                "Name"   = $App.displayName
+                "Path"   = "$ExportPath\ClientApps\AndroidApps"
+            }
+        }
+        
+        elseif ($App.'@odata.type'.Contains("ios")) {
+            $Application = Get-IntuneApplication -AppId $App.id
+            $Type = $Application.'@odata.type'.split(".")[2]
+
+            Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\iOSApps"
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Client App"
+                "Name"   = $App.displayName
+                "Path"   = "$ExportPath\ClientApps\iOSApps"
+            }
+        }
+
+        elseif ($App.'@odata.type'.Contains("windows") -or $App.'@odata.type'.Contains("microsoftStoreForBusinessApp")) {
+            $Application = Get-IntuneApplication -AppId $App.id
+            $Type = $Application.'@odata.type'.split(".")[2]
+    
+            Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\WindowsApps"
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Client App"
+                "Name"   = $App.displayName
+                "Path"   = "$ExportPath\ClientApps\WindowsApps"
+            }
+        }
+        else {
+            $Application = Get-IntuneApplication -AppId $App.id
+            $Type = $Application.'@odata.type'.split(".")[2]
+
+            Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps"
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Unknown Client App"
+                "Name"   = $App.displayName
+                "Path"   = "$ExportPath\ClientApps\"
+            }
+        }
+        
     }
+
+}
+
+else {
+
+    Write-Host "No MDM Applications added to the Intune Service..." -ForegroundColor Red
+    Write-Host
+
+}
 
 }

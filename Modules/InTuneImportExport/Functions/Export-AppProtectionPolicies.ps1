@@ -210,18 +210,11 @@ Function Get-ManagedAppPolicy(){
     
             # $Properties = ($JSON_Convert | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" }).Name
     
-                $FileName_JSON = "$DisplayName" + "_" + ".json"
+                $FileName_JSON = "$DisplayName" + ".json"
     
                 # write-host "Export Path:" "$ExportPath"
     
                 $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
-
-                [PSCustomObject]@{
-                    "Action" = "Export"
-                    "Type"   = "App Protection Policy"
-                    "Name"   = $JSON_Convert.displayName
-                    "Path"   = "AppProtectionPolicies\$FileName_JSON"
-                }
                 
             }
     
@@ -266,7 +259,7 @@ Function Get-ManagedAppPolicy(){
     
                 if($null -eq $User -or $User -eq ""){
     
-                $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
+                $global:User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
                 Write-Host
     
                 }
@@ -282,7 +275,7 @@ Function Get-ManagedAppPolicy(){
     
         if($null -eq $User -or $User -eq ""){
     
-        $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
+        $global:User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
         Write-Host
     
         }
@@ -332,7 +325,7 @@ Function Get-ManagedAppPolicy(){
         $null = New-Item -Path "$ExportPath\AppProtectionPolicies" -ItemType Directory
     }
 
-    write-host "Running query against Microsoft Graph for App Protection Policies" -f Yellow
+    write-host "Exporting App Protection Policies" -f Cyan
     
     $ManagedAppPolicies = Get-ManagedAppPolicy | Where-Object { ($_.'@odata.type').contains("ManagedAppProtection") }
     
@@ -351,6 +344,13 @@ Function Get-ManagedAppPolicy(){
                 # $AppProtectionPolicy
     
                 Export-JSONData -JSON $AppProtectionPolicy -ExportPath "$ExportPath\AppProtectionPolicies"
+
+                [PSCustomObject]@{
+                    "Action" = "Export"
+                    "Type"   = "App Protection Policy"
+                    "Name"   = $AppProtectionPolicy.displayName
+                    "Path"   = "$ExportPath\AppProtectionPolicies"
+                }
     
             }
     
@@ -363,6 +363,13 @@ Function Get-ManagedAppPolicy(){
                 # $AppProtectionPolicy
     
                 Export-JSONData -JSON $AppProtectionPolicy -ExportPath "$ExportPath\AppProtectionPolicies"
+
+                [PSCustomObject]@{
+                    "Action" = "Export"
+                    "Type"   = "App Protection Policy"
+                    "Name"   = $AppProtectionPolicy.displayName
+                    "Path"   = "$ExportPath\AppProtectionPolicies"
+                }
     
             }
     

@@ -2,7 +2,7 @@ function Import-Intune(){
     
     Write-Host "Starting InTune Configuration import....."
 
-    $Path = Read-host -Prompt "Specify the root path to import:"
+    $Path = Read-host -Prompt "Specify the root path to import"
 
     if(-not (Test-Path "$Path")){
     Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red

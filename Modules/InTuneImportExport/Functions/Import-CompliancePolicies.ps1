@@ -1,27 +1,4 @@
-
-<#
-
-.COPYRIGHT
-Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-See LICENSE in the project root for license information.
-
-#>
-
-####################################################
-
 function Get-AuthToken {
-
-<#
-.SYNOPSIS
-This function is used to authenticate with the Graph API REST interface
-.DESCRIPTION
-The function authenticate with the Graph API Interface with the tenant name
-.EXAMPLE
-Get-AuthToken
-Authenticates you with the Graph API interface
-.NOTES
-NAME: Get-AuthToken
-#>
 
 [cmdletbinding()]
 
@@ -54,9 +31,6 @@ Write-Host "Checking for AzureAD module..."
         write-host
         exit
     }
-
-# Getting path to ActiveDirectory Assemblies
-# If the module count is greater than 1 find the latest version
 
     if($AadModule.count -gt 1){
 
@@ -151,18 +125,6 @@ $authority = "https://login.microsoftonline.com/$Tenant"
 
 Function Test-JSON(){
 
-<#
-.SYNOPSIS
-This function is used to test if the JSON passed to a REST Post request is valid
-.DESCRIPTION
-The function tests if the JSON passed to the REST Post is valid
-.EXAMPLE
-Test-JSON -JSON $JSON
-Test if the JSON is valid before calling the Graph REST interface
-.NOTES
-NAME: Test-JSON
-#>
-
 param (
 
 $JSON
@@ -195,18 +157,6 @@ $JSON
 ####################################################
 
 Function Add-DeviceCompliancePolicy(){
-
-<#
-.SYNOPSIS
-This function is used to add a device compliance policy using the Graph API REST interface
-.DESCRIPTION
-The function connects to the Graph API Interface and adds a device compliance policy
-.EXAMPLE
-Add-DeviceCompliancePolicy -JSON $JSON
-Adds an iOS device compliance policy in Intune
-.NOTES
-NAME: Add-DeviceCompliancePolicy
-#>
 
 [cmdletbinding()]
 
@@ -256,7 +206,7 @@ $Resource = "deviceManagement/deviceCompliancePolicies"
 
 ####################################################
 
-function Import-ConpliancePolicies(){
+Function Import-CompliancePolicies(){
 
     [cmdletbinding()]
     

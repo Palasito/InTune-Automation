@@ -224,12 +224,7 @@ Function Get-GeneralDeviceConfigurationPolicyJSON(){
             $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 100
 
             $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_FinalJSON"
-            [PSCustomObject]@{
-                "Action" = "Export"
-                "Type"   = "Custom Policy"
-                "Name"   = $Policies.DisplayName
-                "Path"   = "DeviceConfigurationPolicies\$FileName_FinalJSON"
-            }
+
             
         }
 
@@ -246,12 +241,6 @@ Function Get-GeneralDeviceConfigurationPolicyJSON(){
 
             $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_JSON"
             
-            [PSCustomObject]@{
-                "Action" = "Export"
-                "Type"   = "General Device Configuration Policy"
-                "Name"   = $Policies.DisplayName
-                "Path"   = "DeviceConfigurationPolicies\$FileName_JSON"
-            }
         }
 
 
@@ -358,12 +347,6 @@ Function Get-DeviceAdministrativeTemplates(){
 
             $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_JSON"
 
-            [PSCustomObject]@{
-                "Action" = "Export"
-                "Type"   = "Administrative Template"
-                "Name"   = $Policies.DisplayName
-                "Path"   = "DeviceConfigurationPolicies\$FileName_JSON"
-            }
         }
 
         catch {
@@ -415,13 +398,6 @@ Function Get-DeviceAdministrativeTemplates(){
             $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
 
             $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_FinalJSON"
-
-            [PSCustomObject]@{
-                "Action" = "Export"
-                "Type"   = "Settings Catalog Policy"
-                "Name"   = $Policies.name
-                "Path"   = "DeviceConfigurationPolicies\$FileName_FinalJSON"
-            }
             
         }
 
@@ -538,9 +514,18 @@ if (-not (Test-Path "$ExportPath\DeviceConfigurationPolicies")) {
 
 # Filtering out iOS and Windows Software Update Policies
 $GDCs = Get-GeneralDeviceConfigurationPolicy | Where-Object { ($_.'@odata.type' -ne "#microsoft.graph.iosUpdateConfiguration") -and ($_.'@odata.type' -ne "#microsoft.graph.windowsUpdateForBusinessConfiguration") }
-write-host "Exporting Device Congiuration Policies..." -ForegroundColor cyan
+Write-Host
+write-host "Exporting Device Configuration Policies..." -ForegroundColor cyan
 foreach($GDC in $GDCs){
 Get-GeneralDeviceConfigurationPolicyJSON -Policies $GDC -ExportPath "$ExportPath"
+
+    [PSCustomObject]@{
+        "Action" = "Export"
+        "Type"   = "General Device Configuration Policy"  
+        "Name"   = $GDC.DisplayName
+        "Path"   = $ExportPath
+}
+
 }
 
 Write-Host
@@ -549,6 +534,13 @@ $DSCs = Get-DeviceSettingsCatalogPolicy
 write-host "Exporting Device Settings Catalog Policies..." -ForegroundColor cyan
 foreach($DSC in $DSCs){
     Get-DeviceSettingsCatalogPolicyJSON -Policies $DSC -ExportPath "$ExportPath"
+
+    [PSCustomObject]@{
+        "Action" = "Export"
+        "Type"   = "Settings Catalog Policy"
+        "Name"   = $DSC.name
+        "Path"   = $ExportPath
+    }
 }
 
 Write-Host
@@ -557,6 +549,13 @@ $DATs = Get-DeviceAdministrativeTemplates
 write-host "Exporting Device Administrative Template Policies..." -ForegroundColor cyan
 foreach($DAT in $DATs){
     Get-DeviceAdministrativeTemplatesJSON -Policies $DAT -ExportPath "$ExportPath"
+
+    [PSCustomObject]@{
+        "Action" = "Export"
+        "Type"   = "Administrative Template"
+        "Name"   = $DAT.DisplayName
+        "Path"   = $ExportPath
+    }
 }
 
 Write-Host

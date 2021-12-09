@@ -1,12 +1,12 @@
-$Functions  = @(Get-ChildItem -Path -Recurse -Include $PSScriptRoot\Functions\*.ps1 -ErrorAction SilentlyContinue)
+$Functions = @(Get-ChildItem -Path $PSScriptRoot\Functions\*.ps1 -ErrorAction SilentlyContinue)
 
-foreach ($Import in $Functions) {
+foreach ($function in $Functions) {
     try {
-        . $Import.Fullname -ErrorAction Stop
+        . $function.Fullname -ErrorAction Stop
     }
     catch {
         Write-Error -Message "Failed to import function $($Import.Fullname): $_" -ErrorAction Continue
     }
 }
 
-Export-ModuleMember -Function $Function.Basename
+Export-ModuleMember -Function $Functions.Basename

@@ -149,89 +149,69 @@ function Get-AuthToken {
     
     ####################################################
     
-    Function Test-JSON(){
+    Function Get-SoftwareUpdatePolicy(){
     
     <#
     .SYNOPSIS
-    This function is used to test if the JSON passed to a REST Post request is valid
+    This function is used to get Software Update policies from the Graph API REST interface
     .DESCRIPTION
-    The function tests if the JSON passed to the REST Post is valid
+    The function connects to the Graph API Interface and gets any Software Update policies
     .EXAMPLE
-    Test-JSON -JSON $JSON
-    Test if the JSON is valid before calling the Graph REST interface
-    .NOTES
-    NAME: Test-JSON
-    #>
-    
-    param (
-    
-    $JSON
-    
-    )
-    
-        try {
-    
-        ConvertFrom-Json $JSON -ErrorAction Stop
-        $validJson = $true
-    
-        }
-    
-        catch {
-    
-        $validJson = $false
-        $_.Exception
-    
-        }
-    
-        if (!$validJson){
-        
-        Write-Host "Provided JSON isn't in valid JSON format" -f Red
-        break
-    
-        }
-    
-    }
-    
-    ####################################################
-    
-    Function Add-ManagedAppPolicy(){
-    
-    <#
-    .SYNOPSIS
-    This function is used to add an Managed App policy using the Graph API REST interface
-    .DESCRIPTION
-    The function connects to the Graph API Interface and adds a Managed App policy
+    Get-SoftwareUpdatePolicy -Windows10
+    Returns Windows 10 Software Update policies configured in Intune
     .EXAMPLE
-    Add-ManagedAppPolicy -JSON $JSON
-    Adds a Managed App policy in Intune
+    Get-SoftwareUpdatePolicy -iOS
+    Returns iOS update policies configured in Intune
     .NOTES
-    NAME: Add-ManagedAppPolicy
+    NAME: Get-SoftwareUpdatePolicy
     #>
     
     [cmdletbinding()]
     
     param
     (
-        $JSON
+        [switch]$Windows10,
+        [switch]$iOS
     )
     
     $graphApiVersion = "Beta"
-    $Resource = "deviceAppManagement/managedAppPolicies"
     
         try {
     
-            if($JSON -eq "" -or $null -eq $JSON){
+            $Count_Params = 0
     
-            write-host "No JSON specified, please specify valid JSON for a Managed App Policy..." -f Red
+            if($iOS.IsPresent){ $Count_Params++ }
+            if($Windows10.IsPresent){ $Count_Params++ }
+    
+            if($Count_Params -gt 1){
+    
+            write-host "Multiple parameters set, specify a single parameter -iOS or -Windows10 against the function" -f Red
     
             }
     
-            else {
+            elseif($Count_Params -eq 0){
     
-            Test-JSON -JSON $JSON
+            Write-Host "Parameter -iOS or -Windows10 required against the function..." -ForegroundColor Red
+            Write-Host
+            break
+    
+            }
+    
+            elseif($Windows10){
+    
+            $Resource = "deviceManagement/deviceConfigurations?`$filter=isof('microsoft.graph.windowsUpdateForBusinessConfiguration')&`$expand=groupAssignments"
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
-            Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
+            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value
+    
+            }
+    
+            elseif($iOS){
+    
+            $Resource = "deviceManagement/deviceConfigurations?`$filter=isof('microsoft.graph.iosUpdateConfiguration')&`$expand=groupAssignments"
+    
+            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
             }
     
@@ -239,7 +219,6 @@ function Get-AuthToken {
     
         catch {
     
-        Write-Host
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
         $reader = New-Object System.IO.StreamReader($errorResponse)
@@ -257,18 +236,94 @@ function Get-AuthToken {
     
     ####################################################
     
-    function Import-AppProtectionPolicy(){
-
+    Function Export-JSONData(){
+    
+    <#
+    .SYNOPSIS
+    This function is used to export JSON data returned from Graph
+    .DESCRIPTION
+    This function is used to export JSON data returned from Graph
+    .EXAMPLE
+    Export-JSONData -JSON $JSON
+    Export the JSON inputted on the function
+    .NOTES
+    NAME: Export-JSONData
+    #>
+    
+    param (
+    
+    $JSON,
+    $ExportPath
+    
+    )
+    
+        try {
+    
+            if($JSON -eq "" -or $null -eq $JSON){
+    
+            write-host "No JSON specified, please specify valid JSON..." -f Red
+    
+            }
+    
+            elseif(!$ExportPath){
+    
+            write-host "No export path parameter set, please provide a path to export the file" -f Red
+    
+            }
+    
+            elseif(!(Test-Path $ExportPath)){
+    
+            write-host "$ExportPath doesn't exist, can't export JSON Data" -f Red
+    
+            }
+    
+            else {
+    
+            $JSON1 = ConvertTo-Json $JSON
+    
+            $JSON_Convert = $JSON1 | ConvertFrom-Json
+    
+            $displayName = $JSON_Convert.displayName
+    
+            # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
+            $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+    
+            $Properties = ($JSON_Convert | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" }).Name
+    
+                $FileName_JSON = "$DisplayName" + "_" + ".json"
+    
+                $Object = New-Object System.Object
+    
+                    foreach($Property in $Properties){
+    
+                    $Object | Add-Member -MemberType NoteProperty -Name $Property -Value $JSON_Convert.$Property
+    
+                    }
+    
+                $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+                
+            }
+    
+        }
+    
+        catch {
+    
+        $_.Exception
+    
+        }
+    
+    }
+    
+    ####################################################
+    
+function Export-UpdatePolicies(){
+    
     [cmdletbinding()]
     
     param
     (
         $Path
     )
-
-    #region Authentication
-    
-    write-host
     
     # Checking if authToken exists before running authentication
     if($global:authToken){
@@ -318,52 +373,98 @@ function Get-AuthToken {
     
     ####################################################
     
-    $ImportPath = $Path
+    $ExportPath = $Path
     
-    # Replacing quotes for Test-Path
-    $ImportPath = $ImportPath.replace('"','')
+        # If the directory path doesn't exist prompt user to create the directory
+        $ExportPath = $ExportPath.replace('"','')
     
-    if(!(Test-Path "$ImportPath")){
+        if(!(Test-Path "$ExportPath")){
     
-    Write-Host "Import Path for JSON file doesn't exist..." -ForegroundColor Red
-    Write-Host "Script can't continue..." -ForegroundColor Red
-    Write-Host
-    break
+        Write-Host
+        Write-Host "Path '$ExportPath' doesn't exist, do you want to create this directory? Y or N?" -ForegroundColor Yellow
+    
+        $Confirm = read-host
+    
+            if($Confirm -eq "y" -or $Confirm -eq "Y"){
+    
+            new-item -ItemType Directory -Path "$ExportPath" | Out-Null
+            Write-Host
+    
+            }
+    
+            else {
+    
+            Write-Host "Creation of directory path was cancelled..." -ForegroundColor Red
+            Write-Host
+            break
+    
+            }
+    
+        }
+    
+    ####################################################
+    
+    if (-not (Test-Path "$ExportPath\WindowsUpdatePolicies")) {
+        $null = New-Item -Path "$ExportPath\WindowsUpdatePolicies" -ItemType Directory
+    }
+
+    $WSUPs = Get-SoftwareUpdatePolicy -Windows10
+    
+    if($WSUPs){
+    
+        foreach($WSUP in $WSUPs){
+    
+            Export-JSONData -JSON $WSUP -ExportPath "$ExportPath\WindowsUpdatePolicies"
+
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Windows Update Policy"
+                "Name"   = $WSUP.displayName
+                "Path"   = "WindowsUpdatePolicies\$WSUP.displayName"
+            }
+    
+        }
+    
+    }
+    
+    else {
+    
+        Write-Host "No Software Update Policies for Windows 10 Created..." -ForegroundColor Red
+        Write-Host
     
     }
     
     ####################################################
     
-    $JSON_Data =  Get-ChildItem "$ImportPath\AppProtectionPolicies" -Recurse -Include *.json
-    $Count = (Get-ChildItem "$ImportPath\AppProtectionPolicies" -Recurse -Include *.json).Count
-
-    Write-Host "Found" $Count "App Protection Policies" -ForegroundColor Cyan
-    write-host "Importing App Protection Policies" -ForegroundColor Cyan
-    write-host
-
-    foreach($json in $JSON_Data){
-
-        $Json_file = Get-Content $json
-
-        $JSON_Convert = $Json_file | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,"@odata.context",apps@odata.context,deployedAppCount
-
-        $JSON_Apps = $JSON_Convert.apps | Select-Object * -ExcludeProperty id,version
-
-        $JSON_Convert | Add-Member -MemberType NoteProperty -Name 'apps' -Value @($JSON_Apps) -Force
-
-        $DisplayName = $JSON_Convert.displayName
-
-        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
-
-        $null = Add-ManagedAppPolicy -JSON $JSON_Output
-
-        [PSCustomObject]@{
-            "Action" = "Import"
-            "Type"   = "Settings Catalog Profile"
-            "Name"   = $DisplayName
-            "From"   = "$json"
-        }
-
+    if (-not (Test-Path "$ExportPath\iOSUpdatePolicies")) {
+        $null = New-Item -Path "$ExportPath\iOSUpdatePolicies" -ItemType Directory
     }
 
+    $ISUPs = Get-SoftwareUpdatePolicy -iOS
+    
+    if($ISUPs){
+    
+        foreach($ISUP in $ISUPs){
+    
+            Export-JSONData -JSON $ISUP -ExportPath "$ExportPath\iOSUpdatePolicies"
+            
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "iOS Update Policy"
+                "Name"   = $ISUP.displayName
+                "Path"   = "iOSUpdatePolicies\$ISUP.displayName"
+            }
+    
+        }
+    
+    }
+    
+    else {
+    
+        Write-Host "No Software Update Policies for iOS Created..." -ForegroundColor Red
+        Write-Host
+    
+    }
+    
+    
 }
