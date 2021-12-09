@@ -36,6 +36,10 @@ function Import-Intune(){
         Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red
         Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
     }
+    elseif (-not (Test-Path "$Path\NamedLocations")) {
+        Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red
+        Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
+    }
     else{
         Import-ConditionalAccessPolicies -Path $Path
         Import-CompliancePolicies -Path $Path
@@ -43,5 +47,6 @@ function Import-Intune(){
         Import-UpdatePolicies -Path $Path
         Import-ClientApps -Path $Path
         Import-AppProtectionPolicies -Path $Path
+        Import-NamedLocations -Path $Path
     }
 }

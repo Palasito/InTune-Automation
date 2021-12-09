@@ -10,5 +10,5 @@ function Export-Intune(){
     Export-DeviceConfigurationPolicies -Path $Path
     Export-UpdatePolicies -Path $Path
     Export-ConditionalAccessPolicies -Path $Path
-
+    Export-NamedLocations -Path $Path
 }
