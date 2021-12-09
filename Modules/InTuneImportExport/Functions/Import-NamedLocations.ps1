@@ -45,6 +45,6 @@ $Parameters = @{
     IsTrusted       = $true
     IpRanges        = $cidrAddress
 }
-New-AzureADMSNamedLocationPolicy @parameters
+$null = New-AzureADMSNamedLocationPolicy @parameters
 
 }

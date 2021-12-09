@@ -20,7 +20,7 @@ foreach ($Json in $BackupJsons) {
     [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
     [Microsoft.Open.MSGraph.Model.ConditionalAccessGrantControls]$GrantControls = $Policy.GrantControls
     [Microsoft.Open.MSGraph.Model.ConditionalAccessSessionControls]$SessionControls = $Policy.SessionControls
-    
+    $BreakGlass = Get-AzureADUser | where-object {$_.UserPrincipalName -match "admin@"}
     # Create an object for the users. 
     # By going through the members we only add properties that are not null
     $OldUsers = $Policy.Conditions.Users
@@ -31,6 +31,7 @@ foreach ($Json in $BackupJsons) {
             $Users.($member.Name) = ($OldUsers.$($member.Name))
         }
     }
+    $Users.ExcludeUsers = $BreakGlass.ObjectId
     $Conditions.Users = $Users
 
     # Do the same thing for the applications
