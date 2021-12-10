@@ -1,6 +1,0 @@
-DisplayName,Description
-Modern Workplace Users,This group is intended to include all active users in the company
-Modern Workplace Force MFA Group,This group is intended for users that should use MFA authentication regardless of all othe conditions
-MFA Registration Group,This group is intended for users that will be able to register with the MFA service
-SSPR Group,This group is intended for users that are going to be able to reset their own passwords
-Service Accounts,This group is intended for all existing service accounts

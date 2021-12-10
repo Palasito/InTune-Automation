@@ -1,11 +1,17 @@
 ﻿function Export-ConditionalAccessPolicies(){
 
 param(
-    [parameter()]
-    [String]$Path
+    $Path,
+    $AzureADToken
 )
 # Connect to Azure AD
- $null = Connect-AzureAD
+if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens){
+    Write-Host "Getting AzureAD authToken"
+    Connect-AzureAD
+} else {
+    $global:azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
+    
+}
 
 if (-not (Test-Path "$Path\ConditionalAccessPolicies")) {
     $null = New-Item -Path "$Path\ConditionalAccessPolicies" -ItemType Directory

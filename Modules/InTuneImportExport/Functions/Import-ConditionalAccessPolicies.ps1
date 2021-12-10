@@ -1,13 +1,18 @@
 function Import-ConditionalAccessPolicies(){
 
 param(
-    [parameter()]
-    [String]$Path,
-    [parameter()]
-    [string]$Prefix
+    $Path,
+    $Prefix,
+    $AzureADToken
 )
 
-# Connect-AzureAD
+if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens){
+    Write-Host "Getting AzureAD authToken"
+    Connect-AzureAD
+} else {
+    $global:azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
+    
+}
 
 $BackupJsons = Get-ChildItem "$Path\ConditionalAccessPolicies" -Recurse -Include *.json
 Write-Host "Importing Conditional Access Policies..." -ForegroundColor cyan
@@ -20,7 +25,7 @@ foreach ($Json in $BackupJsons) {
     [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
     [Microsoft.Open.MSGraph.Model.ConditionalAccessGrantControls]$GrantControls = $Policy.GrantControls
     [Microsoft.Open.MSGraph.Model.ConditionalAccessSessionControls]$SessionControls = $Policy.SessionControls
-    $BreakGlass = Get-AzureADUser | where-object {$_.UserPrincipalName -match "admin@"}
+    $BreakGlass = Get-AzureADUser | where-object {$_.UserPrincipalName -match "breakuser@"}
     # Create an object for the users. 
     # By going through the members we only add properties that are not null
     $OldUsers = $Policy.Conditions.Users
