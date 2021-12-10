@@ -41,12 +41,18 @@ function Import-Intune(){
         Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
     }
     else{
-        Import-ConditionalAccessPolicies -Path $Path
+
+        Write-Host "For the next set of functions we need to get an auth token to use with Graph API" -ForegroundColor Cyan
         Import-CompliancePolicies -Path $Path
         Import-DeviceConfigurationPolicies -Path $Path
         Import-UpdatePolicies -Path $Path
         Import-ClientApps -Path $Path
         Import-AppProtectionPolicies -Path $Path
+
+        # AzureAD Powershell
+
+        Write-Host "For the next set of functions we need to get an auth token to use with AzureAD Module" -ForegroundColor Cyan
         Import-NamedLocations -Path $Path
+        Import-ConditionalAccessPolicies -Path $Path
     }
 }
