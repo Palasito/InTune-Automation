@@ -1,4 +1,4 @@
-Function Export-NamedPolicies(){
+Function Export-NamedLocations(){
 
     [cmdletbinding()]
 
@@ -19,7 +19,10 @@ Function Export-NamedPolicies(){
         $null = New-Item -Path "$Path\NamedLocations" -ItemType Directory
     }
 
-    $NamedLocations = get-AzureADMSNamedLocationPolicy | Where-Object 'OdataType' -Contains 'countryNamedLocation'
+    $NamedLocations = Get-AzureADMSNamedLocationPolicy | Where-Object 'OdataType' -Match 'countryNamedLocation'
+
+    Write-Host
+    Write-Host "Exporting Named Location Policies..." -ForegroundColor Cyan
 
     foreach($Loc in $NamedLocations){
 
@@ -30,6 +33,13 @@ Function Export-NamedPolicies(){
         $FinalJSONDisplayName = $JSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
 
         $PolicyJSON | Out-File $Path\NamedLocations\$($FinalJSONdisplayName).json
+
+        [PSCustomObject]@{
+            "Action" = "Export"
+            "Type"   = "Named Location Policy"
+            "Name"   = $Loc.DisplayName
+            "Path"   = "NamedLocations\$($FinalJSONdisplayName).json"
+        }
 
     }
 }

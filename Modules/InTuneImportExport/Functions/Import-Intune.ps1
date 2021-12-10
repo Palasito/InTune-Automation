@@ -42,7 +42,10 @@ function Import-Intune(){
     }
     else{
 
-        Write-Host "For the next set of functions we need to get an auth token to use with Graph API" -ForegroundColor Cyan
+        Get-Tokens
+
+        # Graph Api Powershell
+        
         Import-CompliancePolicies -Path $Path
         Import-DeviceConfigurationPolicies -Path $Path
         Import-UpdatePolicies -Path $Path
@@ -54,5 +57,6 @@ function Import-Intune(){
         Write-Host "For the next set of functions we need to get an auth token to use with AzureAD Module" -ForegroundColor Cyan
         Import-NamedLocations -Path $Path
         Import-ConditionalAccessPolicies -Path $Path
+        Add-BreakGlassAccount -tenantforbreak $tenantforbreak
     }
 }

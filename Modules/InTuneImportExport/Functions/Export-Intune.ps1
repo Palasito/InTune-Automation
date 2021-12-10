@@ -4,9 +4,10 @@ function Export-Intune(){
 
     $Path = Read-host -Prompt "Specify the root path to export"
 
+    Get-Tokens
+
     # Graph API Powershell
 
-    Write-Host "For the next set of functions we need to get an auth token to use with the Graph API" -ForegroundColor Cyan
     Export-AppProtectionPolicies -Path $Path
     Export-ClientApps -Path $Path
     Export-CompliancePolicies -Path $Path
@@ -15,7 +16,6 @@ function Export-Intune(){
 
     # AzureAD Powershell
 
-    Write-Host "For the next set of functions we need to get an auth token to use with AzureAD Module" -ForegroundColor Cyan
     Export-ConditionalAccessPolicies -Path $Path
     Export-NamedLocations -Path $Path
 }
