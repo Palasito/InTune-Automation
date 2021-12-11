@@ -403,6 +403,8 @@ function Export-UpdatePolicies(){
         }
     
     ####################################################
+
+    Write-Host "Exporting Device Update Policies" -ForegroundColor Cyan
     
     if (-not (Test-Path "$ExportPath\WindowsUpdatePolicies")) {
         $null = New-Item -Path "$ExportPath\WindowsUpdatePolicies" -ItemType Directory

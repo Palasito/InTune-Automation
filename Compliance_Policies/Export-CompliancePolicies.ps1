@@ -308,7 +308,7 @@ $ExportPath
 
                 }
 
-            $JSON1 | Set-Content -LiteralPath "$ExportPath\CompliancePolicies\$FileName_JSON"
+            $JSON1 | Set-Content -LiteralPath "$ExportPath\DeviceCompliancePolicies\$FileName_JSON"
             
         }
 
@@ -415,14 +415,14 @@ Write-Host
 ####################################################
 
 if (-not (Test-Path "$ExportPath\CompliancePolicies")) {
-    $null = New-Item -Path "$ExportPath\CompliancePolicies" -ItemType Directory
+    $null = New-Item -Path "$ExportPath\DeviceCompliancePolicies" -ItemType Directory
 }
 
 Write-Host "Exporting Device Compliance Policies..." -ForegroundColor cyan
 $CPs = Get-DeviceCompliancePolicy
 
     foreach($CP in $CPs){
-    Export-JSONData -JSON $CP -ExportPath "$ExportPath"
+    Export-JSONData -JSON $CP -ExportPath "$ExportPath\DeviceCompliancePolicies"
 
     [PSCustomObject]@{
         "Action" = "Export"

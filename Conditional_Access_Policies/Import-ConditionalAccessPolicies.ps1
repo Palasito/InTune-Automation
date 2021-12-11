@@ -1,31 +1,20 @@
-<#
-.SYNOPSIS
-    Restore Conditional Access Policies from JSON files
-.DESCRIPTION
-    This script uses JSON files in a folder to create new Conditional Access Policies.
-    The JSON files should be created with Get-AzureADMSConditionalAccessPolicy
-.EXAMPLE
-    .\RestoreCA -BackupPath c:\CAP\ -Prefix "Restore - "
-    Creates new policies where "Restore - " is added to the Display name
-.PARAMETER JSONPath
-    Path to the JSON files. Files will be searched recursively
-.PARAMETER Prefix
-    A prefix that is added to the display name of the policies
-.NOTES
-    Barbara Forbes
-    4bes.nl
-#>
+function Import-ConditionalAccessPolicies(){
 
 param(
-    [parameter()]
-    [String]$JSONPath,
-    [parameter()]
-    [string]$Prefix
+    $Path,
+    $Prefix,
+    $AzureADToken
 )
 
-# Connect-AzureAD
+if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens){
+    Write-Host "Getting AzureAD authToken"
+    Connect-AzureAD
+} else {
+    $azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
+    
+}
 
-$BackupJsons = Get-ChildItem "$JSONPath\ConditionalAccessPolicies" -Recurse -Include *.json
+$BackupJsons = Get-ChildItem "$Path\ConditionalAccessPolicies" -Recurse -Include *.json
 Write-Host "Importing Conditional Access Policies..." -ForegroundColor cyan
 foreach ($Json in $BackupJsons) {
 
@@ -36,7 +25,7 @@ foreach ($Json in $BackupJsons) {
     [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
     [Microsoft.Open.MSGraph.Model.ConditionalAccessGrantControls]$GrantControls = $Policy.GrantControls
     [Microsoft.Open.MSGraph.Model.ConditionalAccessSessionControls]$SessionControls = $Policy.SessionControls
-    
+    $BreakGlass = Get-AzureADUser | where-object {$_.UserPrincipalName -match "breakuser@"}
     # Create an object for the users. 
     # By going through the members we only add properties that are not null
     $OldUsers = $Policy.Conditions.Users
@@ -47,6 +36,7 @@ foreach ($Json in $BackupJsons) {
             $Users.($member.Name) = ($OldUsers.$($member.Name))
         }
     }
+    $Users.ExcludeUsers = $BreakGlass.ObjectId
     $Conditions.Users = $Users
 
     # Do the same thing for the applications
@@ -76,4 +66,5 @@ foreach ($Json in $BackupJsons) {
     }
 
    $null = New-AzureADMSConditionalAccessPolicy @Parameters
+}
 }

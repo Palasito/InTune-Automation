@@ -1,15 +1,22 @@
-﻿param(
-    [parameter()]
-    [String]$ExportPath
+﻿function Export-ConditionalAccessPolicies(){
+
+param(
+    $Path,
+    $AzureADToken
 )
 # Connect to Azure AD
-# Connect-AzureAD
-
-if (-not (Test-Path "$ExportPath\ConditionalAccessPolicies")) {
-    $null = New-Item -Path "$ExportPath\ConditionalAccessPolicies" -ItemType Directory
+if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens){
+    Write-Host "Getting AzureAD authToken"
+    Connect-AzureAD
+} else {
+    $azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
+    
 }
 
-
+if (-not (Test-Path "$Path\ConditionalAccessPolicies")) {
+    $null = New-Item -Path "$Path\ConditionalAccessPolicies" -ItemType Directory
+}
+Write-Host
 Write-Host "Exporting Conditional Access Policies..." -ForegroundColor cyan
 
 $AllPolicies = Get-AzureADMSConditionalAccessPolicy
@@ -20,7 +27,7 @@ foreach ($Policy in $AllPolicies) {
 
     $FinalJSONDisplayName = $JSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
 
-    $PolicyJSON | Out-File $ExportPath\ConditionalAccessPolicies\$($FinalJSONdisplayName).json
+    $PolicyJSON | Out-File $Path\ConditionalAccessPolicies\$($FinalJSONdisplayName).json
 
     [PSCustomObject]@{
         "Action" = "Export"
@@ -28,4 +35,5 @@ foreach ($Policy in $AllPolicies) {
         "Name"   = $Policy.DisplayName
         "Path"   = "ConditionalAccessPolicies\$($FinalJSONdisplayName).json"
     }
+}
 }
