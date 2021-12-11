@@ -1,14 +1,3 @@
-
-<#
-
-.COPYRIGHT
-Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-See LICENSE in the project root for license information.
-
-#>
-
-####################################################
-
 function Get-AuthToken {
 
     <#
@@ -149,85 +138,43 @@ function Get-AuthToken {
     
     ####################################################
     
-    Function Get-SoftwareUpdatePolicy(){
+    Function Test-JSON(){
     
     <#
     .SYNOPSIS
-    This function is used to get Software Update policies from the Graph API REST interface
+    This function is used to test if the JSON passed to a REST Post request is valid
     .DESCRIPTION
-    The function connects to the Graph API Interface and gets any Software Update policies
+    The function tests if the JSON passed to the REST Post is valid
     .EXAMPLE
-    Get-SoftwareUpdatePolicy -Windows10
-    Returns Windows 10 Software Update policies configured in Intune
-    .EXAMPLE
-    Get-SoftwareUpdatePolicy -iOS
-    Returns iOS update policies configured in Intune
+    Test-JSON -JSON $JSON
+    Test if the JSON is valid before calling the Graph REST interface
     .NOTES
-    NAME: Get-SoftwareUpdatePolicy
+    NAME: Test-JSON
     #>
     
-    [cmdletbinding()]
+    param (
     
-    param
-    (
-        [switch]$Windows10,
-        [switch]$iOS
+    $JSON
+    
     )
-    
-    $graphApiVersion = "Beta"
     
         try {
     
-            $Count_Params = 0
-    
-            if($iOS.IsPresent){ $Count_Params++ }
-            if($Windows10.IsPresent){ $Count_Params++ }
-    
-            if($Count_Params -gt 1){
-    
-            write-host "Multiple parameters set, specify a single parameter -iOS or -Windows10 against the function" -f Red
-    
-            }
-    
-            elseif($Count_Params -eq 0){
-    
-            Write-Host "Parameter -iOS or -Windows10 required against the function..." -ForegroundColor Red
-            Write-Host
-            break
-    
-            }
-    
-            elseif($Windows10){
-    
-            $Resource = "deviceManagement/deviceConfigurations?`$filter=isof('microsoft.graph.windowsUpdateForBusinessConfiguration')&`$expand=groupAssignments"
-    
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
-            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value
-    
-            }
-    
-            elseif($iOS){
-    
-            $Resource = "deviceManagement/deviceConfigurations?`$filter=isof('microsoft.graph.iosUpdateConfiguration')&`$expand=groupAssignments"
-    
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
-            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
-    
-            }
+        ConvertFrom-Json $JSON -ErrorAction Stop
+        $validJson = $true
     
         }
     
         catch {
     
-        $ex = $_.Exception
-        $errorResponse = $ex.Response.GetResponseStream()
-        $reader = New-Object System.IO.StreamReader($errorResponse)
-        $reader.BaseStream.Position = 0
-        $reader.DiscardBufferedData()
-        $responseBody = $reader.ReadToEnd();
-        Write-Host "Response content:`n$responseBody" -f Red
-        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-        write-host
+        $validJson = $false
+        $_.Exception
+    
+        }
+    
+        if (!$validJson){
+        
+        Write-Host "Provided JSON isn't in valid JSON format" -f Red
         break
     
         }
@@ -236,76 +183,44 @@ function Get-AuthToken {
     
     ####################################################
     
-    Function Get-AADGroup(){
+    Function Add-ManagedAppPolicy(){
     
     <#
     .SYNOPSIS
-    This function is used to get AAD Groups from the Graph API REST interface
+    This function is used to add an Managed App policy using the Graph API REST interface
     .DESCRIPTION
-    The function connects to the Graph API Interface and gets any Groups registered with AAD
+    The function connects to the Graph API Interface and adds a Managed App policy
     .EXAMPLE
-    Get-AADGroup
-    Returns all users registered with Azure AD
+    Add-ManagedAppPolicy -JSON $JSON
+    Adds a Managed App policy in Intune
     .NOTES
-    NAME: Get-AADGroup
+    NAME: Add-ManagedAppPolicy
     #>
     
     [cmdletbinding()]
     
     param
     (
-        $GroupName,
-        $id,
-        [switch]$Members
+        $JSON
     )
     
-    # Defining Variables
-    $graphApiVersion = "v1.0"
-    $Group_resource = "groups"
+    $graphApiVersion = "Beta"
+    $Resource = "deviceAppManagement/managedAppPolicies"
     
         try {
     
-            if($id){
+            if($JSON -eq "" -or $null -eq $JSON){
     
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)?`$filter=id eq '$id'"
-            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
-    
-            }
-    
-            elseif($GroupName -eq "" -or $null -eq $GroupName){
-    
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)"
-            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
+            write-host "No JSON specified, please specify valid JSON for a Managed App Policy..." -f Red
     
             }
     
             else {
     
-                if(!$Members){
+            Test-JSON -JSON $JSON
     
-                $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)?`$filter=displayname eq '$GroupName'"
-                (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
-    
-                }
-    
-                elseif($Members){
-    
-                $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)?`$filter=displayname eq '$GroupName'"
-                $Group = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
-    
-                    if($Group){
-    
-                    $GID = $Group.id
-    
-                    $Group.displayName
-                    write-host
-    
-                    $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)/$GID/Members"
-                    (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
-    
-                    }
-    
-                }
+            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+            Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
     
             }
     
@@ -313,6 +228,7 @@ function Get-AuthToken {
     
         catch {
     
+        Write-Host
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
         $reader = New-Object System.IO.StreamReader($errorResponse)
@@ -330,6 +246,15 @@ function Get-AuthToken {
     
     ####################################################
     
+    function Import-AppProtectionPolicies(){
+
+    [cmdletbinding()]
+    
+    param
+    (
+        $Path
+    )
+
     #region Authentication
     
     write-host
@@ -382,95 +307,52 @@ function Get-AuthToken {
     
     ####################################################
     
-    $WSUPs = Get-SoftwareUpdatePolicy -Windows10
+    $ImportPath = $Path
     
-    Write-Host "Software updates - Windows 10 Update Rings" -ForegroundColor Cyan
+    # Replacing quotes for Test-Path
+    $ImportPath = $ImportPath.replace('"','')
+    
+    if(!(Test-Path "$ImportPath")){
+    
+    Write-Host "Import Path for JSON file doesn't exist..." -ForegroundColor Red
+    Write-Host "Script can't continue..." -ForegroundColor Red
     Write-Host
+    break
     
-        if($WSUPs){
-    
-            foreach($WSUP in $WSUPs){
-    
-            write-host "Software Update Policy:"$WSUP.displayName -f Yellow
-            $WSUP
-    
-    
-            $TargetGroupIds = $WSUP.groupAssignments.targetGroupId
-    
-            write-host "Getting SoftwareUpdate Policy assignment..." -f Cyan
-    
-                if($TargetGroupIds){
-    
-                    foreach($group in $TargetGroupIds){
-    
-                    (Get-AADGroup -id $group).displayName
-    
-                    }
-    
-                }
-    
-                else {
-    
-                Write-Host "No Software Update Policy Assignments found..." -ForegroundColor Red
-    
-                }
-    
-            }
-    
-        }
-    
-        else {
-    
-        Write-Host
-        Write-Host "No Windows 10 Update Rings defined..." -ForegroundColor Red
-    
-        }
-    
-    write-host
+    }
     
     ####################################################
     
-    $ISUPs = Get-SoftwareUpdatePolicy -iOS
-    
-    Write-Host "Software updates - iOS Update Policies" -ForegroundColor Cyan
-    Write-Host
-    
-        if($ISUPs){
-    
-            foreach($ISUP in $ISUPs){
-    
-            write-host "Software Update Policy:"$ISUP.displayName -f Yellow
-            $ISUP
-    
-            $TargetGroupIds = $ISUP.groupAssignments.targetGroupId
-    
-            write-host "Getting SoftwareUpdate Policy assignment..." -f Cyan
-    
-                if($TargetGroupIds){
-    
-                    foreach($group in $TargetGroupIds){
-    
-                    (Get-AADGroup -id $group).displayName
-    
-                    }
-    
-                }
-    
-                else {
-    
-                Write-Host "No Software Update Policy Assignments found..." -ForegroundColor Red
-    
-                }
-    
-            }
-    
+    $JSON_Data =  Get-ChildItem "$ImportPath\AppProtectionPolicies" -Recurse -Include *.json
+    $Count = (Get-ChildItem "$ImportPath\AppProtectionPolicies" -Recurse -Include *.json).Count
+
+    Write-Host "Found" $Count "App Protection Policies" -ForegroundColor Cyan
+    write-host "Importing App Protection Policies" -ForegroundColor Cyan
+    write-host
+
+    foreach($json in $JSON_Data){
+
+        $Json_file = Get-Content $json
+
+        $JSON_Convert = $Json_file | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,"@odata.context",apps@odata.context,deployedAppCount
+
+        $JSON_Apps = $JSON_Convert.apps | Select-Object * -ExcludeProperty id,version
+
+        $JSON_Convert | Add-Member -MemberType NoteProperty -Name 'apps' -Value @($JSON_Apps) -Force
+
+        $DisplayName = $JSON_Convert.displayName
+
+        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
+
+        $null = Add-ManagedAppPolicy -JSON $JSON_Output
+
+        [PSCustomObject]@{
+            "Action" = "Import"
+            "Type"   = "Settings Catalog Profile"
+            "Name"   = $DisplayName
+            "From"   = "$json"
         }
-    
-        else {
-    
-        Write-Host
-        Write-Host "No iOS Software Update Rings defined..." -ForegroundColor Red
-    
-        }
-    
-    Write-Host
+
+    }
+
+}

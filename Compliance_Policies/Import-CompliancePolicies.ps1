@@ -1,26 +1,4 @@
-<#
-
-.COPYRIGHT
-Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-See LICENSE in the project root for license information.
-
-#>
-
-####################################################
-
 function Get-AuthToken {
-
-<#
-.SYNOPSIS
-This function is used to authenticate with the Graph API REST interface
-.DESCRIPTION
-The function authenticate with the Graph API Interface with the tenant name
-.EXAMPLE
-Get-AuthToken
-Authenticates you with the Graph API interface
-.NOTES
-NAME: Get-AuthToken
-#>
 
 [cmdletbinding()]
 
@@ -53,9 +31,6 @@ Write-Host "Checking for AzureAD module..."
         write-host
         exit
     }
-
-# Getting path to ActiveDirectory Assemblies
-# If the module count is greater than 1 find the latest version
 
     if($AadModule.count -gt 1){
 
@@ -148,82 +123,7 @@ $authority = "https://login.microsoftonline.com/$Tenant"
 
 ####################################################
 
-Function Add-DeviceConfigurationPolicy(){
-
-<#
-.SYNOPSIS
-This function is used to add an device configuration policy using the Graph API REST interface
-.DESCRIPTION
-The function connects to the Graph API Interface and adds a device configuration policy
-.EXAMPLE
-Add-DeviceConfigurationPolicy -JSON $JSON
-Adds a device configuration policy in Intune
-.NOTES
-NAME: Add-DeviceConfigurationPolicy
-#>
-
-[cmdletbinding()]
-
-param
-(
-    $JSON
-)
-
-$graphApiVersion = "Beta"
-$DCP_resource = "deviceManagement/deviceConfigurations"
-Write-Verbose "Resource: $DCP_resource"
-
-    try {
-
-        if($JSON -eq "" -or $null -eq $JSON){
-
-        write-host "No JSON specified, please specify valid JSON for the Android Policy..." -f Red
-
-        }
-
-        else {
-
-        Test-JSON -JSON $JSON
-
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($DCP_resource)"
-        Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
-
-        }
-
-    }
-    
-    catch {
-
-    $ex = $_.Exception
-    $errorResponse = $ex.Response.GetResponseStream()
-    $reader = New-Object System.IO.StreamReader($errorResponse)
-    $reader.BaseStream.Position = 0
-    $reader.DiscardBufferedData()
-    $responseBody = $reader.ReadToEnd();
-    Write-Host "Response content:`n$responseBody" -f Red
-    Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-    write-host
-    break
-
-    }
-
-}
-
-####################################################
-
 Function Test-JSON(){
-
-<#
-.SYNOPSIS
-This function is used to test if the JSON passed to a REST Post request is valid
-.DESCRIPTION
-The function tests if the JSON passed to the REST Post is valid
-.EXAMPLE
-Test-JSON -JSON $JSON
-Test if the JSON is valid before calling the Graph REST interface
-.NOTES
-NAME: Test-AuthHeader
-#>
 
 param (
 
@@ -256,7 +156,57 @@ $JSON
 
 ####################################################
 
-function Import-UpdatePolicies(){
+Function Add-DeviceCompliancePolicy(){
+
+[cmdletbinding()]
+
+param
+(
+    $JSON
+)
+
+$graphApiVersion = "Beta"
+$Resource = "deviceManagement/deviceCompliancePolicies"
+    
+    try {
+
+        if($JSON -eq "" -or $null -eq $JSON){
+
+        write-host "No JSON specified, please specify valid JSON for the Device Compliance Policies..." -f Red
+
+        }
+
+        else {
+
+        Test-JSON -JSON $JSON
+
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+        Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json" 
+
+        }
+
+    }
+    
+    catch {
+
+    $ex = $_.Exception
+    $errorResponse = $ex.Response.GetResponseStream()
+    $reader = New-Object System.IO.StreamReader($errorResponse)
+    $reader.BaseStream.Position = 0
+    $reader.DiscardBufferedData()
+    $responseBody = $reader.ReadToEnd();
+    Write-Host "Response content:`n$responseBody" -f Red
+    Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+    write-host
+    break
+
+    }
+
+}
+
+####################################################
+
+Function Import-CompliancePolicies(){
 
     [cmdletbinding()]
     
@@ -318,7 +268,7 @@ $ImportPath = $Path
 # Replacing quotes for Test-Path
 $ImportPath = $ImportPath.replace('"','')
 
-if(!(Test-Path "$ImportPath")){
+if(!(Test-Path "$ImportPath\DeviceCompliancePolicies")){
 
 Write-Host "Import Path for JSON file doesn't exist..." -ForegroundColor Red
 Write-Host "Script can't continue..." -ForegroundColor Red
@@ -327,46 +277,41 @@ break
 
 }
 
-####################################################
+$AvailableJsons = Get-ChildItem "$ImportPath\DeviceCompliancePolicies" -Recurse -Include *.json
 
-$AvailableJsonsiOS =  Get-ChildItem "$ImportPath\iOSUpdatePolicies" -Recurse -Include *.json
+foreach ($json in $AvailableJsons) {
 
-foreach($json in $AvailableJsonsiOS){
+    $JSON_Data = Get-Content $json.FullName
 
-    $JSON_Data = Get-Content $json
-
-    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,'groupAssignments@odata.context',groupAssignments,supportsScopeTags
+    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version
 
     $DisplayName = $JSON_Convert.displayName
+    
+    $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
 
-    $JSON_Output = $JSON_Convert | ConvertTo-Json
+    $scheduledActionsForRule = '"scheduledActionsForRule":[{"ruleName":"PasswordRequired","scheduledActionConfigurations":[{"actionType":"block","gracePeriodHours":0,"notificationTemplateId":"","notificationMessageCCList":[]}]}]'
+
+    $JSON_Output = $JSON_Output.trimend("}")
+
+    $JSON_Output = $JSON_Output.TrimEnd() + "," + "`r`n"
+
+    $JSON_Output = $JSON_Output + $scheduledActionsForRule + "`r`n" + "}"
 
     write-host
-    write-host "Software Update Policy '$DisplayName' Found..." -ForegroundColor Yellow
-    write-host
-    Write-Host "Adding Software Update Policy '$DisplayName'" -ForegroundColor Yellow
-    $null = Add-DeviceConfigurationPolicy -JSON $JSON_Output
+    write-host "Compliance Policy '$DisplayName' Found..." -ForegroundColor Yellow
+    Write-Host
+    Write-Host "Checking Compliance Policy against existing policies..."
+    $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceCompliancePolicies"
+    $Policycontainer = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayname').contains($DisplayName) }
+    if($null -eq $Policycontainer){
+        write-host
+        write-Host "Adding Compliance Policy '$DisplayName'" -ForegroundColor Yellow
+        $null = Add-DeviceCompliancePolicy -JSON $JSON_Output
+    }    
+    else {
+        Write-Host
+        Write-Host "Policy '$DisplayName' already exists and will not be imported!"
+    }
 
 }
-
-$AvailableJsonsWindows =  Get-ChildItem "$ImportPath\WindowsUpdatePolicies" -Recurse -Include *.json
-
-foreach($json in $AvailableJsonsWindows){
-
-    $JSON_Data = Get-Content $json
-
-    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,'groupAssignments@odata.context',groupAssignments,supportsScopeTags
-
-    $DisplayName = $JSON_Convert.displayName
-
-    $JSON_Output = $JSON_Convert | ConvertTo-Json
-
-    write-host
-    write-host "Software Update Policy '$DisplayName' Found..." -ForegroundColor Yellow
-    write-host
-    Write-Host "Adding Software Update Policy '$DisplayName'" -ForegroundColor Yellow
-    $null = Add-DeviceConfigurationPolicy -JSON $JSON_Output
-
-}
-
 }

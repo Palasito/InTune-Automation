@@ -316,9 +316,14 @@ function Get-AuthToken {
     
     ####################################################
     
-    #region Authentication
+function Export-UpdatePolicies(){
     
-    write-host
+    [cmdletbinding()]
+    
+    param
+    (
+        $Path
+    )
     
     # Checking if authToken exists before running authentication
     if($global:authToken){
@@ -368,7 +373,7 @@ function Get-AuthToken {
     
     ####################################################
     
-    $ExportPath = Read-Host -Prompt "Please specify a path to export the policy data to e.g. C:\IntuneOutput"
+    $ExportPath = $Path
     
         # If the directory path doesn't exist prompt user to create the directory
         $ExportPath = $ExportPath.replace('"','')
@@ -415,7 +420,7 @@ function Get-AuthToken {
                 "Action" = "Export"
                 "Type"   = "Windows Update Policy"
                 "Name"   = $WSUP.displayName
-                "Path"   = "WindowsUpdatePolicies\$WSUP"
+                "Path"   = "WindowsUpdatePolicies\$WSUP.displayName"
             }
     
         }
@@ -447,7 +452,7 @@ function Get-AuthToken {
                 "Action" = "Export"
                 "Type"   = "iOS Update Policy"
                 "Name"   = $ISUP.displayName
-                "Path"   = "iOSUpdatePolicies\$ISUP"
+                "Path"   = "iOSUpdatePolicies\$ISUP.displayName"
             }
     
         }
@@ -462,3 +467,4 @@ function Get-AuthToken {
     }
     
     
+}

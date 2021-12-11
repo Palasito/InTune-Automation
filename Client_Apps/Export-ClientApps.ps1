@@ -312,7 +312,14 @@ $ExportPath
 
 ####################################################
 
-#region Authentication
+function Export-ClientApps(){
+
+[cmdletbinding()]
+    
+param
+(
+    $Path
+)
 
 write-host
 
@@ -364,7 +371,7 @@ $global:authToken = Get-AuthToken -User $User
 
 ####################################################
 
-$ExportPath = Read-Host -Prompt "Please specify a path to export application data to e.g. C:\IntuneOutput"
+$ExportPath = $Path
 
     # If the directory path doesn't exist prompt user to create the directory
     $ExportPath = $ExportPath.replace('"','')
@@ -398,17 +405,25 @@ $ExportPath = Read-Host -Prompt "Please specify a path to export application dat
 if (-not (Test-Path "$ExportPath\ClientApps")) {
     $null = New-Item -Path "$ExportPath\ClientApps" -ItemType Directory
 }
-elseif (-not (Test-Path "$ExportPath\ClientApps\AndroidApps")) {
+
+
+if (-not (Test-Path "$ExportPath\ClientApps\AndroidApps")) {
     $null = New-Item -Path "$ExportPath\ClientApps\AndroidApps" -ItemType Directory
 }
-elseif (-not (Test-Path "$ExportPath\ClientApps\iOSApps")) {
+
+
+if (-not (Test-Path "$ExportPath\ClientApps\iOSApps")) {
     $null = New-Item -Path "$ExportPath\ClientApps\iOSApps" -ItemType Directory
 }
-elseif (-not (Test-Path "$ExportPath\ClientApps\WindowsApps")) {
+
+
+if (-not (Test-Path "$ExportPath\ClientApps\WindowsApps")) {
     $null = New-Item -Path "$ExportPath\ClientApps\WindowsApps" -ItemType Directory
 }
 
 $MDMApps = Get-IntuneApplication
+
+Write-Host "Exporting Client Apps" -ForegroundColor Cyan
 
 if($MDMApps){
 
@@ -418,39 +433,52 @@ if($MDMApps){
             $Application = Get-IntuneApplication -AppId $App.id
             $Type = $Application.'@odata.type'.split(".")[2]
     
-    
-            write-host "MDM Application:"$Application.displayName -f Yellow
             Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\AndroidApps"
-            Write-Host
+
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Client App"
+                "Name"   = $App.displayName
+                "Path"   = "$ExportPath\ClientApps\AndroidApps"
+            }
         }
         
         elseif ($App.'@odata.type'.Contains("ios")) {
             $Application = Get-IntuneApplication -AppId $App.id
             $Type = $Application.'@odata.type'.split(".")[2]
 
-
-            write-host "MDM Application:"$Application.displayName -f Yellow
             Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\iOSApps"
-            Write-Host
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Client App"
+                "Name"   = $App.displayName
+                "Path"   = "$ExportPath\ClientApps\iOSApps"
+            }
         }
 
         elseif ($App.'@odata.type'.Contains("windows") -or $App.'@odata.type'.Contains("microsoftStoreForBusinessApp")) {
             $Application = Get-IntuneApplication -AppId $App.id
             $Type = $Application.'@odata.type'.split(".")[2]
     
-    
-            write-host "MDM Application:"$Application.displayName -f Yellow
             Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\WindowsApps"
-            Write-Host
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Client App"
+                "Name"   = $App.displayName
+                "Path"   = "$ExportPath\ClientApps\WindowsApps"
+            }
         }
         else {
             $Application = Get-IntuneApplication -AppId $App.id
             $Type = $Application.'@odata.type'.split(".")[2]
 
-
-            write-host "MDM Application:"$Application.displayName -f Yellow
             Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps"
-            Write-Host
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Unknown Client App"
+                "Name"   = $App.displayName
+                "Path"   = "$ExportPath\ClientApps\"
+            }
         }
         
     }
@@ -461,5 +489,7 @@ else {
 
     Write-Host "No MDM Applications added to the Intune Service..." -ForegroundColor Red
     Write-Host
+
+}
 
 }

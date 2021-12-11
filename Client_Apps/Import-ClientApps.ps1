@@ -252,9 +252,14 @@ $JSON
 
 ####################################################
 
-#region Authentication
+function Import-ClientApps(){
 
-write-host
+    [cmdletbinding()]
+    
+    param
+    (
+        $Path
+    )
 
 # Checking if authToken exists before running authentication
 if($global:authToken){
@@ -304,12 +309,12 @@ $global:authToken = Get-AuthToken -User $User
 
 ####################################################
 
-$ImportPath = Read-Host -Prompt "Please specify a path to the Json files to import data from e.g. C:\IntuneOutput\Policies\"
+$ImportPath = $Path
 
 # Replacing quotes for Test-Path
 $ImportPath = $ImportPath.replace('"','')
 
-if(!(Test-Path "$ImportPath")){
+if(!(Test-Path "$ImportPath\ClientApps")){
 
 Write-Host "Import Path for JSON files doesn't exist..." -ForegroundColor Red
 Write-Host "Script can't continue..." -ForegroundColor Red
@@ -320,8 +325,7 @@ break
 
 ####################################################
 
-$AvailableJSONS = Get-ChildItem $ImportPath -Recurse -Include *.json
-
+$AvailableJSONS = Get-ChildItem "$ImportPath\ClientApps" -Recurse -Include *.json
 
 foreach($json in $AvailableJSONS){
 
@@ -340,4 +344,5 @@ foreach($json in $AvailableJSONS){
     Write-Host "Creating MDM Application '$DisplayName'" -ForegroundColor Yellow
     $null = Add-MDMApplication -JSON $JSON_Output
 
+}
 }

@@ -356,9 +356,14 @@ $JSON
 
 ####################################################
 
-#region Authentication
+function Import-DeviceConfigurationPolicies(){
 
-write-host
+    [cmdletbinding()]
+    
+    param
+    (
+        $Path
+    )
 
 # Checking if authToken exists before running authentication
 if($global:authToken){
@@ -408,7 +413,7 @@ $global:authToken = Get-AuthToken -User $User
 
 ####################################################
 
-$ImportPath = Read-Host -Prompt "Please specify a path to a JSON file to import data from e.g. C:\IntuneOutput\Policies\"
+$ImportPath = $Path
 
 # Replacing quotes for Test-Path
 $ImportPath = $ImportPath.replace('"','')
@@ -485,4 +490,5 @@ foreach ($json in $AvailableJsonsAT){
         "Name"   = $DisplayName
         "From"   = "$json"
     }
+}
 }
