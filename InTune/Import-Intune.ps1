@@ -1,7 +1,5 @@
 function Import-Intune(){
     
-    Import-Module AzureAD
-
     Write-Host "Starting InTune Configuration import....."
 
     $Path = Read-host -Prompt "Specify the root path to import"
