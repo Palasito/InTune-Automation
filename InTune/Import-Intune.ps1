@@ -27,6 +27,7 @@ function Import-Intune(){
         Write-Host "For the next set of functions we need to get an auth token to use with AzureAD Module" -ForegroundColor Cyan
         Import-NamedLocations -Path $Path
         Add-BreakGlassAccount -tenantforbreak $tenantforbreak
+        Import-AADGroups -Path $Path
         Import-ConditionalAccessPolicies -Path $Path
     }
 }

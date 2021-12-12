@@ -7,41 +7,9 @@ function Import-Intune(){
     $Path = Read-host -Prompt "Specify the root path to import"
 
     if(-not (Test-Path "$Path")){
-    Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red
-    Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
+    Write-Host "Invalid Path specified!!!" -ForegroundColor Red
     }
-    elseif(-not (Test-Path "$Path\AppProtectionPolicies")){
-        Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red
-        Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
-        }
-    elseif (-not (Test-Path "$Path\ClientApps")) {
-        Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red
-        Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
-    }
-    elseif (-not (Test-Path "$Path\DeviceCompliancePolicies")) {
-        Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red
-        Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
-    }
-    elseif (-not (Test-Path "$Path\ConditionalAccessPolicies")) {
-        Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red
-        Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
-    }
-    elseif (-not (Test-Path "$Path\DeviceConfigurationPolicies")) {
-        Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red
-        Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
-    }
-    elseif (-not (Test-Path "$Path\WindowsUpdatePolicies")) {
-        Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red
-        Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
-    }
-    elseif (-not (Test-Path "$Path\iOSUpdatePolicies")) {
-        Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red
-        Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
-    }
-    elseif (-not (Test-Path "$Path\NamedLocations")) {
-        Write-Host "SPECIFIC FOLDER STRUCTURE REQUIRED!!" -ForegroundColor Red
-        Write-Host "For folder structure requirements refer to the readme file!" -ForegroundColor Cyan
-    }
+
     else{
 
         Get-Tokens
@@ -58,7 +26,8 @@ function Import-Intune(){
 
         Write-Host "For the next set of functions we need to get an auth token to use with AzureAD Module" -ForegroundColor Cyan
         Import-NamedLocations -Path $Path
-        Import-ConditionalAccessPolicies -Path $Path
         Add-BreakGlassAccount -tenantforbreak $tenantforbreak
+        Import-AADGroups -Path $Path
+        Import-ConditionalAccessPolicies -Path $Path
     }
 }
