@@ -8,7 +8,7 @@ param(
 Write-Host
 Write-Host "Creating specified security groups" -ForegroundColor Cyan
 
-$Groups = Import-Csv -Path $Path\CSVs\Groups\*.csv
+$Groups = Import-Csv -Path $Path\CSVs\AADGroups.csv
 
 foreach($Group in $Groups){
 

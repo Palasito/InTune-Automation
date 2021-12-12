@@ -414,7 +414,7 @@ Write-Host
 
 ####################################################
 
-if (-not (Test-Path "$ExportPath\CompliancePolicies")) {
+if (-not (Test-Path "$ExportPath\DeviceCompliancePolicies")) {
     $null = New-Item -Path "$ExportPath\DeviceCompliancePolicies" -ItemType Directory
 }
 

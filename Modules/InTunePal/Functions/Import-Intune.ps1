@@ -15,6 +15,8 @@ function Import-Intune(){
         Get-Tokens
 
         # Graph Api Powershell
+
+        Write-Host "Creating Intune Policies and Profiles as specified in"$Path" folder..." -ForegroundColor Cyan
         
         Import-CompliancePolicies -Path $Path
         Import-DeviceConfigurationPolicies -Path $Path
@@ -29,6 +31,6 @@ function Import-Intune(){
         Import-AADGroups -Path $Path
         Import-ConditionalAccessPolicies -Path $Path
 
-        Write-Host "Starting InTune Assignment import..." 
+        Write-Host "Matching AzureAD Groups and Users to the configuration..." -ForegroundColor Cyan
     }
 }
