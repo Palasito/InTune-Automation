@@ -31,6 +31,7 @@ function Import-Intune(){
         Import-AADGroups -Path $Path
         Import-ConditionalAccessPolicies -Path $Path
 
-        Write-Host "Matching AzureAD Groups and Users to the configuration..." -ForegroundColor Cyan
+        Write-Host "Do you want to ha"
+        Write-Host "Matching AzureAD Groups to the configuration..." -ForegroundColor Cyan
     }
 }

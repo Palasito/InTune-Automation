@@ -4,7 +4,7 @@ Modern Workplace Force MFA Users,This group is intended for users that should us
 MFA and SSPR Registration Users,This group is intended for users that will be able to register with the MFA service and SSPR
 Service Accounts,This group is intended for all existing service accounts
 Modern Workplace Windows Devices,This group is intended for Modern Workplace Windows Devices
-Modern Workplace Mobile Devices,This group is intended for All Modern Workplace Andoid/iOS Devices
+Modern Workplace Android Devices,This group is intended for Modern Workplace Android Devices
+Modern Workplace iOS Devices,This group is intended for Modern Workplace iOS Devices
 Windows Updates Early Adopters,This group is intended for users that receive windows updates after 7 days
 Windows Updates Late Adopters,This group is intended for users that receive windows updates after 21 days
-Modern Workplace Pilot Users,This group is intended for testing new policies and profiles
