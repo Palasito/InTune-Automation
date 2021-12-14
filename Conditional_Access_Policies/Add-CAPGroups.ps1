@@ -14,20 +14,22 @@ function Add-CAPGroups(){
 
     foreach($Pol in $CAPGroups){
         $Policy = Get-AzureADMSConditionalAccessPolicy | Where-Object displayName -eq $pol.DisplayName
-        $InclGrps = $CAPGroups.IncludeGroups -split ";"
-        $ExclGrps = $CAPGroups.ExcludeGroups -split ";"
+        $InclGrps = $pol.IncludeGroups -split ";"
+        $ExclGrps = $pol.ExcludeGroups -split ";"
         $PolicyConditions = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessUserCondition
         # $Importarray = New-Object System.Collections.Generic.List[System.Object]
 
             foreach ($grp in $InclGrps){
                 $grpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp" | Select-Object Id
-                $PolicyConditions.IncludeGroups = $grpid
+                $PolicyConditions.IncludeGroups = "$grpid"
+                Write-Host "$grpid"
                 # $Importarray.Add("$grpid")
             }
 
             foreach($grp in $ExclGrps){
                 $grpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp" | Select-Object Id
-                $PolicyConditions.ExcludeGroups = $grpid
+                # $PolicyConditions.ExcludeGroups = "$grpid"
+                Write-Host "$grpid"
                 # $Importarray.Add("$grpid")
             }
         
