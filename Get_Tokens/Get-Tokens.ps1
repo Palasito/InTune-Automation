@@ -116,7 +116,7 @@ function Get-AuthToken {
 
 ####################################################
 
-function Get-Tokens(){
+# function Get-Tokens(){
 
     $DateTime = (Get-Date).ToUniversalTime()
 
@@ -171,4 +171,4 @@ function Get-Tokens(){
             
             }
         
-}
+# }

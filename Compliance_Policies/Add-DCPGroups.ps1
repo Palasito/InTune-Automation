@@ -109,36 +109,47 @@ function Add-DCPGroups(){
         $Path
     )
 
-    $Path = "c:\script_output\test\"
-
-    $Conditions = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet
-
     $DCPGroups = Import-Csv -Path $Path\CSVs\CompliancePolicies\*.csv -Delimiter ','
 
     foreach($Pol in $DCPGroups){
         $Policy = Get-DeviceCompliancePolicy | Where-Object displayName -match $pol.DisplayName
         $InclGrps = $pol.IncludeGroups -split ";"
         $ExclGrps = $pol.ExcludeGroups -split ";"
-        Write-Host "Importing policy" $policy.displayname
+        $Body = @{
+            assignments = @()
+        }
 
+        Write-Host "Importing policy" $policy.displayname
         Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
             foreach ($grp in $InclGrps){
-                $inclgrpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp"
-                Write-Host $inclgrpid.Id
-                $PolicyConditions.IncludeGroups += $inclgrpid.id
+                $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                $targetmember = @{}
+                $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+                $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                $targetmember.groupId = $g.id
+
+                $body.assignments += @{
+                    "target" = $targetmember
+                }
             }
 
             foreach($grp in $ExclGrps){
-                $exclgrpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp" 
-                Write-Host $exclgrpid.Id
-                $PolicyConditions.ExcludeGroups += $exclgrpid.Id
+                $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                $targetmember = @{}
+                $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                $targetmember.groupId = $g.id
+
+                $body.assignments += @{
+                    "target" = $targetmember
+                }
             }
-
-        $Conditions.Users = $PolicyConditions
-
-        write-host $policy.id -ForegroundColor Yellow
-
-        Set-AzureADMSConditionalAccessPolicy -PolicyId $Policy.Id -Conditions $Conditions
+        
+        $Body = $Body | ConvertTo-Json -Depth 100
+    
+        Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/deviceManagement/deviceCompliancePolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
     }
 
 }
