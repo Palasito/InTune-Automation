@@ -330,7 +330,7 @@ function Get-AuthToken {
     
     ####################################################
     
-function Get-UpdatePolicies(){
+# function Get-UpdatePolicies(){
     
     # Checking if authToken exists before running authentication
     if($global:authToken){
@@ -473,4 +473,4 @@ function Get-UpdatePolicies(){
     
     Write-Host
 
-}
+# }
