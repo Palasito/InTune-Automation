@@ -6,8 +6,6 @@ function Add-CAPGroups(){
         $Path
     )
 
-    $Path = "c:\script_output\test\"
-
     $Conditions = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet
 
     $CAPGroups = Import-Csv -Path $Path\CSVs\ConditionalAccess\*.csv -Delimiter ','
