@@ -39,6 +39,29 @@ foreach ($Json in $BackupJsons) {
     $Users.ExcludeUsers = $BreakGlass.ObjectId
     $Conditions.Users = $Users
 
+    $OldInclLocations = $policy.Conditions.Locations.IncludeLocations
+    $OldExclLocations = $Policy.Conditions.Locations.ExcludeLocations
+        if($null -ne $OldInclLocations){
+        $Locations = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessLocationCondition
+        foreach ($loc in $OldExclLocations) {
+            if(-not[string]::IsNullOrEmpty($OldExclLocations)){
+                $Exclloc = Get-AzureADMSNamedLocationPolicy | Where-object displayName -eq "$loc"
+                $Locations.ExcludeLocations += $Exclloc.Id
+            }
+        }
+        foreach ($loc in $OldInclLocations) {
+            if($OldInclLocations = "All"){
+                $Locations.IncludeLocations = "All"
+            }
+            elseif(-not[string]::IsNullOrEmpty($OldInclLocations)){
+                $Inclloc = Get-AzureADMSNamedLocationPolicy | Where-object displayName -eq "$loc"
+                $Locations.IncludeLocations += $Inclloc.Id
+            }
+        }
+
+        $Conditions.Locations = $locations
+        }
+
     # Do the same thing for the applications
     $OldApplications = $Policy.Conditions.Applications
     $ApplicationMembers = $OldApplications | Get-Member -MemberType NoteProperty
