@@ -140,18 +140,6 @@ $authority = "https://login.microsoftonline.com/$Tenant"
 
 Function Get-GeneralDeviceConfigurationPolicy(){
 
-<#
-.SYNOPSIS
-This function is used to get device configuration policies from the Graph API REST interface
-.DESCRIPTION
-The function connects to the Graph API Interface and gets any device configuration policies
-.EXAMPLE
-Get-GeneralDeviceConfigurationPolicy
-Returns any device configuration policies configured in Intune
-.NOTES
-NAME: Get-GeneralDeviceConfigurationPolicy
-#>
-
 [cmdletbinding()]
 
 $graphApiVersion = "Beta"
