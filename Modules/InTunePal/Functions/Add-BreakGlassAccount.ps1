@@ -37,6 +37,6 @@ Function Add-BreakGlassAccount(){
     $null = New-AzureADMSRoleAssignment -DirectoryScopeId '/' -RoleDefinitionId $roleDefinition.Id -PrincipalId $userassignment.objectId
 
     Write-Host
-    Write-Host "Global Administrator role has been successfully assigned to the Break the glass account!" -ForegroundColor Cyan
+    Write-Host "Global Administrator role has been successfully assigned to the Break the glass account!" -ForegroundColor Yellow
 
 }

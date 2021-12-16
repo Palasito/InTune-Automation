@@ -52,15 +52,13 @@ Function Get-SoftwareUpdatePolicy(){
     
     ####################################################
 
-    # function Add-DUPGroups(){
+    function Add-DUPGroups(){
     
-        # [cmdletbinding()]
+        [cmdletbinding()]
     
-        # param(
-        #     $Path
-        # )
-
-        $Path = "C:\script_output\test"
+        param(
+            $Path
+        )
     
         $DCPGroups = Import-Csv -Path $Path\CSVs\UpdatePolicies\*.csv -Delimiter ','
     
@@ -105,4 +103,4 @@ Function Get-SoftwareUpdatePolicy(){
             Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/deviceManagement/deviceConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
         }
     
-    # }
+    }
