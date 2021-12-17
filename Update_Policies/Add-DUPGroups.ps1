@@ -1,26 +1,6 @@
-Function Get-SoftwareUpdatePolicy(){
-    
-    <#
-    .SYNOPSIS
-    This function is used to get Software Update policies from the Graph API REST interface
-    .DESCRIPTION
-    The function connects to the Graph API Interface and gets any Software Update policies
-    .EXAMPLE
-    Get-SoftwareUpdatePolicy -Windows10
-    Returns Windows 10 Software Update policies configured in Intune
-    .EXAMPLE
-    Get-SoftwareUpdatePolicy -iOS
-    Returns iOS update policies configured in Intune
-    .NOTES
-    NAME: Get-SoftwareUpdatePolicy
-    #>
+Function Get-SoftwareUpdatePolicyAssignments(){
     
     [cmdletbinding()]
-    
-    param
-    (
-
-    )
     
     $graphApiVersion = "Beta"
     
@@ -63,7 +43,7 @@ Function Get-SoftwareUpdatePolicy(){
         $DCPGroups = Import-Csv -Path $Path\CSVs\UpdatePolicies\*.csv -Delimiter ','
     
         foreach($Pol in $DCPGroups){
-            $Policy = Get-SoftwareUpdatePolicy | Where-Object displayName -match $pol.DisplayName
+            $Policy = Get-SoftwareUpdatePolicyAssignments | Where-Object displayName -match $pol.DisplayName
             $InclGrps = $pol.IncludeGroups -split ";"
             $ExclGrps = $pol.ExcludeGroups -split ";"
             $Body = @{

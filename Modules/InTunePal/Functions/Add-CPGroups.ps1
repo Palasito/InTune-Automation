@@ -101,14 +101,15 @@ Function Get-DeviceCompliancePolicy(){
     }    
 
 
-function Add-CPGroups(){
+# function Add-CPGroups(){
     
-    [cmdletbinding()]
+#     [cmdletbinding()]
 
-    param(
-        $Path
-    )
+#     param(
+#         $Path
+#     )
 
+$Path = "C:\script_output\test"
     $DCPGroups = Import-Csv -Path $Path\CSVs\CompliancePolicies\*.csv -Delimiter ','
 
     foreach($Pol in $DCPGroups){
@@ -148,8 +149,10 @@ function Add-CPGroups(){
             }
         
         $Body = $Body | ConvertTo-Json -Depth 100
+
+        $Body
     
         Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/deviceManagement/deviceCompliancePolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
     }
 
-}
+# }

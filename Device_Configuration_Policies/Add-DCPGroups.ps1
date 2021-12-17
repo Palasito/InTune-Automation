@@ -143,6 +143,8 @@ function Add-DCPGroups(){
 
     $DCPGroups = Import-Csv -Path $Path\CSVs\DeviceConfigurationProfiles\*.csv -Delimiter ','
 
+    Write-Host "Adding specified Groups to the Configuration Policies" -ForegroundColor Cyan
+
     foreach($Pol in $DCPGroups){
     
         try{

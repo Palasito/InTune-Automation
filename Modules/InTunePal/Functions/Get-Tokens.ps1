@@ -166,8 +166,6 @@ function Get-Tokens{
 
             $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
             $global:tenantforbreak = $userUpn.Host
-
-            Write-Host $global:tenantforbreak
             
             }
         

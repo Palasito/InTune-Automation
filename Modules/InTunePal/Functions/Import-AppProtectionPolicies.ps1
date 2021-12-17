@@ -246,17 +246,19 @@ function Get-AuthToken {
     
     ####################################################
     
-    function Import-AppProtectionPolicies(){
+    # function Import-AppProtectionPolicies(){
 
-    [cmdletbinding()]
+    # [cmdletbinding()]
     
-    param
-    (
-        $Path
-    )
+    # param
+    # (
+    #     $Path
+    # )
 
     #region Authentication
     
+    $Path = "C:\script_output\test"
+
     write-host
     
     # Checking if authToken exists before running authentication
@@ -324,9 +326,7 @@ function Get-AuthToken {
     ####################################################
     
     $JSON_Data =  Get-ChildItem "$ImportPath\AppProtectionPolicies" -Recurse -Include *.json
-    $Count = (Get-ChildItem "$ImportPath\AppProtectionPolicies" -Recurse -Include *.json).Count
 
-    Write-Host "Found" $Count "App Protection Policies" -ForegroundColor Cyan
     write-host "Importing App Protection Policies" -ForegroundColor Cyan
     write-host
 
@@ -334,11 +334,15 @@ function Get-AuthToken {
 
         $Json_file = Get-Content $json
 
-        $JSON_Convert = $Json_file | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,"@odata.context",apps@odata.context,deployedAppCount
+        $JSON_Convert = $Json_file | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version
 
-        $JSON_Apps = $JSON_Convert.apps | Select-Object * -ExcludeProperty id,version
+        # $JSON_Apps = $JSON_Convert.apps | Select-Object * -ExcludeProperty id,version
 
-        $JSON_Convert | Add-Member -MemberType NoteProperty -Name 'apps' -Value @($JSON_Apps) -Force
+        # $JSON_Convert | Add-Member -MemberType NoteProperty -Name 'apps' -Value @($JSON_Apps) -Force
+
+        if ($JSON_Convert.supportsScopeTags) {
+            $JSON_Convert.supportsScopeTags = $false
+        }
 
         $DisplayName = $JSON_Convert.displayName
 
@@ -355,4 +359,4 @@ function Get-AuthToken {
 
     }
 
-}
+# }
