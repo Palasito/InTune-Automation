@@ -29,6 +29,7 @@ foreach ($Json in $BackupJsons) {
     [Microsoft.Open.MSGraph.Model.ConditionalAccessSessionControls]$SessionControls = $Policy.SessionControls
     $BreakGlass = Get-AzureADUser | where-object {$_.UserPrincipalName -match "breakuser@"}
     $incluser = Get-AzureADUser | where-object {$_.UserPrincipalName -match "testuser@"}
+    $OLUser = Get-AzureADUser | where-object {$_.UserPrincipalName -match "officeline@"}
 
     $Users = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessUserCondition
 
@@ -49,7 +50,8 @@ foreach ($Json in $BackupJsons) {
     }
 
     $Users.IncludeUsers = $incluser.ObjectId
-    $Users.ExcludeUsers = $BreakGlass.ObjectId
+    $Users.ExcludeUsers += $BreakGlass.ObjectId
+    $Users.ExcludeUsers += $OLUser.ObjectId
     $Conditions.Users = $Users
 
     $OldInclLocations = $policy.Conditions.Locations.IncludeLocations
