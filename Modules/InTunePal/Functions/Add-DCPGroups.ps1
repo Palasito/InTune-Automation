@@ -105,7 +105,7 @@ Function Add-Memberships(){
     Write-Host "Importing policy" $policy.displayname
     Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
     foreach ($grp in $InclGrps){
-        $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+       $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
         $targetmember = @{}
         $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -133,16 +133,18 @@ Function Add-Memberships(){
     }
 
     $Body = $Body | ConvertTo-Json -Depth 100
+    return $Body
 }
 
-function Add-DCPGroups(){
+# function Add-DCPGroups(){
     
-    [cmdletbinding()]
+#     [cmdletbinding()]
 
-    param(
-        $Path
-    )
+#     param(
+#         $Path
+#     )
 
+$Path = "C:\script_output\test"
     $DCPGroups = Import-Csv -Path $Path\CSVs\DeviceConfigurationProfiles\*.csv -Delimiter ','
 
     Write-Host "Adding specified Groups to the Configuration Policies" -ForegroundColor Cyan
@@ -188,4 +190,4 @@ function Add-DCPGroups(){
             break
         }
     }
-}
+# }
