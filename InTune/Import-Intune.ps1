@@ -33,10 +33,10 @@ function Import-Intune(){
 
         Write-Host "Matching AzureAD Groups to the configuration..." -ForegroundColor Cyan
 
-        Add-CAPGroups -Path $Path
         Add-CPGroups -Path $Path
         Add-DCPGroups -Path $Path
         Add-DUPGroups -Path $Path
+        Add-APPGroups -Path $Path
 
     }
 }
