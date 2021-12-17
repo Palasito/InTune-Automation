@@ -105,7 +105,7 @@ Function Add-Memberships(){
     Write-Host "Importing policy" $policy.displayname
     Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
     foreach ($grp in $InclGrps){
-       $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+        $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
         $targetmember = @{}
         $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -117,6 +117,7 @@ Function Add-Memberships(){
         }
     }
 
+    if ($ExclGrps -lt 1){
     foreach($grp in $ExclGrps){
         $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
         $targetmember = @{}
@@ -128,6 +129,7 @@ Function Add-Memberships(){
        $body.assignments += @{
             "target" = $targetmember
        }
+    }
     }
 
     $Body = $Body | ConvertTo-Json -Depth 100

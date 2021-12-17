@@ -134,6 +134,7 @@ function Add-CPGroups(){
                 }
             }
 
+        if ($ExclGrps -lt 1){
             foreach($grp in $ExclGrps){
                 $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                 $targetmember = @{}
@@ -146,6 +147,7 @@ function Add-CPGroups(){
                     "target" = $targetmember
                 }
             }
+        }
         
         $Body = $Body | ConvertTo-Json -Depth 100
     

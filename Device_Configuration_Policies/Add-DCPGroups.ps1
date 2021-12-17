@@ -117,6 +117,7 @@ Function Add-Memberships(){
         }
     }
 
+    if ($ExclGrps -lt 1){
     foreach($grp in $ExclGrps){
         $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
         $targetmember = @{}
@@ -128,6 +129,7 @@ Function Add-Memberships(){
        $body.assignments += @{
             "target" = $targetmember
        }
+    }
     }
 
     $Body = $Body | ConvertTo-Json -Depth 100
