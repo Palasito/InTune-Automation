@@ -116,7 +116,7 @@ function Get-AuthToken {
 
 ####################################################
 
-# function Get-Tokens(){
+function Get-Tokens{
 
     $DateTime = (Get-Date).ToUniversalTime()
 
@@ -166,9 +166,7 @@ function Get-AuthToken {
 
             $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
             $global:tenantforbreak = $userUpn.Host
-
-            Write-Host $global:tenantforbreak
             
             }
         
-# }
+}

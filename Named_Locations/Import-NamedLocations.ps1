@@ -36,16 +36,19 @@ foreach ($Json in $BackupJsons) {
 Write-Host "Creating Trusted IP Range Policy..."
 
 [System.Collections.Generic.List`1[Microsoft.Open.MSGraph.Model.IpRange]]$cidrAddress = @()
-$IPs = do
-{
-    $ip = Read-Host "Enter IP or press enter to finish"
-    $ip
-} while ($ip -ne '')
+# $IPs = do
+# {
+#     $ip = Read-Host "Enter IP or press enter to finish"
+#     $ip
+# } while ($ip -ne '')
 
-$IPs = ($IPs[0..($IPs.Length-2)])
+# $IPs = ($IPs[0..($IPs.Length-2)])
+$Path = "C:\script_output\test"
+$IPCSV = Import-Csv $path\CSVs\IPs\*.csv
 
-foreach($i in $IPs){
-    $cidrAddress.Add("$i")
+foreach($i in $IPCSV){
+    $IP = $i.IP
+    $cidrAddress.Add("$IP")
 }
 
 $Parameters = @{
