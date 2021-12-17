@@ -7,8 +7,12 @@ Function Add-BreakGlassAccount(){
     $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
     $PasswordProfile.Password = "P@55w.rd"
     $UserPrincipalName = 'breakuser@' + $tenantforbreak
-    Write-Host "Creating the Break-Glass account with username: $UserPrincipalName and password: "$PasswordProfile.Password" !" -ForegroundColor Cyan
-    Write-Host
+    Write-Host "Will be creating the following users:" -ForegroundColor Cyan
+    write-host "Break-Glass account with username: $UserPrincipalName and password: "$PasswordProfile.Password -ForegroundColor Cyan
+    write-host "Test User account with username: $UserPrincipalName and password: "$PasswordProfile.Password -ForegroundColor Cyan
+    write-host "Officeline account with username: $UserPrincipalName and password: "$PasswordProfile.Password -ForegroundColor Cyan
+    Write-Host 
+    Start-Sleep -Seconds 5
     
     $Parameters= @{
         AccountEnabled = $true
@@ -19,12 +23,9 @@ Function Add-BreakGlassAccount(){
     }
 
     $null = New-AzureADUser @Parameters
-
-    Write-Host
-    Write-Host "Break the glass account has been successfully created!" -ForegroundColor Cyan
     
     [PSCustomObject]@{
-        "Action" = "Cration"
+        "Action" = "Creation"
         "Type"   = "Account"
         "Name"   = $UserPrincipalName
         "Path"   = ""
@@ -36,7 +37,50 @@ Function Add-BreakGlassAccount(){
 
     $null = New-AzureADMSRoleAssignment -DirectoryScopeId '/' -RoleDefinitionId $roleDefinition.Id -PrincipalId $userassignment.objectId
 
+    $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
+    $PasswordProfile.Password = "P@55w.rd"
+    $UserPrincipalName = 'testuser@' + $tenantforbreak
+    
+
+    $Parameters= @{
+        AccountEnabled = $true
+        DisplayName = "testuser"
+        PasswordProfile = $PasswordProfile
+        UserPrincipalName = $UserPrincipalName
+        MailNickName = "testuser"
+    }
+
+    [PSCustomObject]@{
+        "Action" = "Creation"
+        "Type"   = "Account"
+        "Name"   = $UserPrincipalName
+        "Path"   = ""
+    }
+
+    $null = New-AzureADUser @Parameters
+
+    $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
+    $PasswordProfile.Password = "P@55w.rd"
+    $UserPrincipalName = 'officeline@' + $tenantforbreak
+    
+    $Parameters= @{
+        AccountEnabled = $true
+        DisplayName = "officeline"
+        PasswordProfile = $PasswordProfile
+        UserPrincipalName = $UserPrincipalName
+        MailNickName = "officeline"
+    }
+
+    [PSCustomObject]@{
+        "Action" = "Creation"
+        "Type"   = "Account"
+        "Name"   = $UserPrincipalName
+        "Path"   = ""
+    }
+
+    $null = New-AzureADUser @Parameters
+
     Write-Host
     Write-Host "Global Administrator role has been successfully assigned to the Break the glass account!" -ForegroundColor Yellow
-
+    
 }

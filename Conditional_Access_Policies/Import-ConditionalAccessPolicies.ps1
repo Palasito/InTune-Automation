@@ -1,10 +1,12 @@
-function Import-ConditionalAccessPolicies(){
+# function Import-ConditionalAccessPolicies(){
 
-param(
-    $Path,
-    $Prefix,
-    $AzureADToken
-)
+# param(
+#     $Path,
+#     $Prefix,
+#     $AzureADToken
+# )
+
+$Path = "C:\script_output\test"
 
 if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens){
     Write-Host "Getting AzureAD authToken"
@@ -14,28 +16,39 @@ if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
     
 }
 
+$CAPGroups = Import-Csv -Path $Path\CSVs\ConditionalAccess\*.csv -Delimiter ','
 $BackupJsons = Get-ChildItem "$Path\ConditionalAccessPolicies" -Recurse -Include *.json
 Write-Host "Importing Conditional Access Policies..." -ForegroundColor cyan
 foreach ($Json in $BackupJsons) {
 
     $policy = Get-Content $Json.FullName | ConvertFrom-Json
-    # $policy.DisplayName
 
     # Create objects for the conditions and GrantControls
     [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
     [Microsoft.Open.MSGraph.Model.ConditionalAccessGrantControls]$GrantControls = $Policy.GrantControls
     [Microsoft.Open.MSGraph.Model.ConditionalAccessSessionControls]$SessionControls = $Policy.SessionControls
     $BreakGlass = Get-AzureADUser | where-object {$_.UserPrincipalName -match "breakuser@"}
-    # Create an object for the users. 
-    # By going through the members we only add properties that are not null
-    $OldUsers = $Policy.Conditions.Users
-    $UserMembers = $OldUsers | Get-Member -MemberType NoteProperty
+    $incluser = Get-AzureADUser | where-object {$_.UserPrincipalName -match "testuser@"}
+
     $Users = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessUserCondition
-    foreach ($member in $UserMembers) {
-        if (-not[string]::IsNullOrEmpty($OldUsers.$($member.Name))) {
-            $Users.($member.Name) = ($OldUsers.$($member.Name))
+
+    if ($null -ne ($CAPGroups | Where-Object displayname -eq $policy.DisplayName)){
+        $InclGrps = $CAPGroups.IncludeGroups -split ";"
+        $ExclGrps = $CAPGroups.ExcludeGroups -split ";"
+
+        foreach ($grp in $InclGrps){
+            $inclgrpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp"
+            $Users.IncludeGroups += $inclgrpid.id
         }
+
+        foreach($grp in $ExclGrps){
+            $exclgrpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp" 
+            $Users.ExcludeGroups += $exclgrpid.Id
+        }
+
     }
+
+    $Users.IncludeUsers = $incluser.ObjectId
     $Users.ExcludeUsers = $BreakGlass.ObjectId
     $Conditions.Users = $Users
 
@@ -90,4 +103,4 @@ foreach ($Json in $BackupJsons) {
 
    $null = New-AzureADMSConditionalAccessPolicy @Parameters
 }
-}
+# }
