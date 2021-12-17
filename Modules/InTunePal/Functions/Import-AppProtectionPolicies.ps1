@@ -246,18 +246,14 @@ function Get-AuthToken {
     
     ####################################################
     
-    # function Import-AppProtectionPolicies(){
+    function Import-AppProtectionPolicies(){
 
-    # [cmdletbinding()]
+    [cmdletbinding()]
     
-    # param
-    # (
-    #     $Path
-    # )
-
-    #region Authentication
-    
-    $Path = "C:\script_output\test"
+    param
+    (
+        $Path
+    )
 
     write-host
     
@@ -359,4 +355,4 @@ function Get-AuthToken {
 
     }
 
-# }
+}
