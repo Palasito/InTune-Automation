@@ -12,9 +12,7 @@ Function Get-AndroidAPPPolicy(){
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
         }
-        
     
-        
         catch {
     
         $ex = $_.Exception

@@ -13,8 +13,6 @@ Function Get-AndroidAPPPolicy(){
     
         }
         
-    
-        
         catch {
     
         $ex = $_.Exception
@@ -46,8 +44,6 @@ Function Get-iOSAPPPolicy(){
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
         }
-        
-    
         
         catch {
     
@@ -81,8 +77,6 @@ Function Get-WindowsInformationProtectionPolicy(){
     
         }
         
-    
-        
         catch {
     
         $ex = $_.Exception
@@ -114,8 +108,6 @@ Function Get-mdmWindowsInformationProtectionPolicy(){
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
         }
-        
-    
         
         catch {
     
