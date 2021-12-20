@@ -206,15 +206,16 @@ $Resource = "deviceManagement/deviceCompliancePolicies"
 
 ####################################################
 
-Function Import-CompliancePolicies(){
+# Function Import-CompliancePolicies(){
 
-    [cmdletbinding()]
+#     [cmdletbinding()]
     
-    param
-    (
-        $Path
-    )
+#     param
+#     (
+#         $Path
+#     )
 
+$Path = "C:\script_output\test"
 # Checking if authToken exists before running authentication
 if($global:authToken){
 
@@ -302,7 +303,7 @@ foreach ($json in $AvailableJsons) {
     Write-Host
     Write-Host "Checking Compliance Policy against existing policies..."
     $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceCompliancePolicies"
-    $Policycontainer = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayname').contains($DisplayName) }
+    $Policycontainer = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayname').equals($DisplayName) }
     if($null -eq $Policycontainer){
         write-host
         write-Host "Adding Compliance Policy '$DisplayName'" -ForegroundColor Yellow
@@ -314,4 +315,4 @@ foreach ($json in $AvailableJsons) {
     }
 
 }
-}
+# }

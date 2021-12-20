@@ -1,22 +1,4 @@
 Function Get-DeviceCompliancePolicy(){
-
-    <#
-    .SYNOPSIS
-    This function is used to get device compliance policies from the Graph API REST interface
-    .DESCRIPTION
-    The function connects to the Graph API Interface and gets any device compliance policies
-    .EXAMPLE
-    Get-DeviceCompliancePolicy
-    Returns any device compliance policies configured in Intune
-    .EXAMPLE
-    Get-DeviceCompliancePolicy -Android
-    Returns any device compliance policies for Android configured in Intune
-    .EXAMPLE
-    Get-DeviceCompliancePolicy -iOS
-    Returns any device compliance policies for iOS configured in Intune
-    .NOTES
-    NAME: Get-DeviceCompliancePolicy
-    #>
     
     [cmdletbinding()]
     
@@ -134,7 +116,7 @@ function Add-CPGroups(){
                 }
             }
 
-        if ($ExclGrps -lt 1){
+        if ($null -eq $ExclGrps[0]){
             foreach($grp in $ExclGrps){
                 $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                 $targetmember = @{}
@@ -147,6 +129,9 @@ function Add-CPGroups(){
                     "target" = $targetmember
                 }
             }
+        }
+        else {
+
         }
         
         $Body = $Body | ConvertTo-Json -Depth 100
