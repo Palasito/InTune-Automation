@@ -29,7 +29,7 @@
         }
 
         else {
-            Write-Host "Group already exists, will skip creation of" $Group.DisplayName
+            Write-Host "Group already exists, will skip creation of" $Group.DisplayName -ForegroundColor Yellow
         }
     }
 # }
