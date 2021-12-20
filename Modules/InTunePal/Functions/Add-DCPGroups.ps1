@@ -95,56 +95,14 @@ Function Get-GeneralDeviceConfigurationPolicy(){
     
 }
 
-Function Add-Memberships(){
-    $InclGrps = $pol.IncludeGroups -split ";"
-    $ExclGrps = $pol.ExcludeGroups -split ";"
-    $Body = @{
-        assignments = @()
-    }
-
-    Write-Host "Importing policy" $policy.displayname
-    Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
-    foreach ($grp in $InclGrps){
-       $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
-        $targetmember = @{}
-        $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
-        $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-        $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-        $targetmember.groupId = $g.id
-
-        $body.assignments += @{
-            "target" = $targetmember
-        }
-    }
-
-    if ($ExclGrps -lt 1){
-    foreach($grp in $ExclGrps){
-        $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
-        $targetmember = @{}
-        $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
-        $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-        $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-        $targetmember.groupId = $g.id
-
-       $body.assignments += @{
-            "target" = $targetmember
-       }
-    }
-    }
-
-    $Body = $Body | ConvertTo-Json -Depth 100
-    return $Body
-}
-
-# function Add-DCPGroups(){
+function Add-DCPGroups(){
     
-#     [cmdletbinding()]
+    [cmdletbinding()]
 
-#     param(
-#         $Path
-#     )
+    param(
+        $Path
+    )
 
-$Path = "C:\script_output\test"
     $DCPGroups = Import-Csv -Path $Path\CSVs\DeviceConfigurationProfiles\*.csv -Delimiter ','
 
     Write-Host "Adding specified Groups to the Configuration Policies" -ForegroundColor Cyan
@@ -155,20 +113,135 @@ $Path = "C:\script_output\test"
 
             if($null -ne ($Policy = Get-GeneralDeviceConfigurationPolicy | Where-Object displayName -eq $pol.DisplayName)){
                 
-                Add-Memberships
+                $InclGrps = $Pol.IncludeGroups -split ";"
+                $ExclGrps = $Pol.ExcludeGroups -split ";"
+                
+                $Body = @{
+                    assignments = @()
+                }
+            
+                Write-Host "Importing policy" $policy.displayname
+                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
+                foreach ($grp in $InclGrps){
+                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $targetmember = @{}
+                    $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                    $targetmember.groupId = $g.id
+            
+                    $body.assignments += @{
+                        "target" = $targetmember
+                    }
+                }
+            
+                if ($ExclGrps -gt 1){
+                    foreach($grp in $ExclGrps){
+                        $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                        $targetmember = @{}
+                        $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                        $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                        $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                        $targetmember.groupId = $g.id
+                
+                        $body.assignments += @{
+                            "target" = $targetmember
+                        }
+                    }
+                }
+            
+                $Body = $Body | ConvertTo-Json -Depth 100
+            
+            
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
 
             }
 
             elseif($null -ne ($Policy = Get-DeviceAdministrativeTemplates |Where-Object displayName -eq $Pol.DisplayName)){
 
-                Add-Memberships
+                $InclGrps = $Pol.IncludeGroups -split ";"
+                $ExclGrps = $Pol.ExcludeGroups -split ";"
+                
+                $Body = @{
+                    assignments = @()
+                }
+            
+                Write-Host "Importing policy" $policy.displayname
+                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
+                foreach ($grp in $InclGrps){
+                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $targetmember = @{}
+                    $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                    $targetmember.groupId = $g.id
+            
+                    $body.assignments += @{
+                        "target" = $targetmember
+                    }
+                }
+            
+                if ($ExclGrps -gt 1){
+                    foreach($grp in $ExclGrps){
+                        $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                        $targetmember = @{}
+                        $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                        $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                        $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                        $targetmember.groupId = $g.id
+                
+                        $body.assignments += @{
+                            "target" = $targetmember
+                        }
+                    }
+                }
+            
+                $Body = $Body | ConvertTo-Json -Depth 100
+
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/groupPolicyConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
             }
 
             elseif($null -ne ($Policy = Get-DeviceSettingsCatalogPolicy | Where-Object name -eq $Pol.DisplayName)){
 
-                Add-Memberships
+                                $InclGrps = $Pol.IncludeGroups -split ";"
+                $ExclGrps = $Pol.ExcludeGroups -split ";"
+                
+                $Body = @{
+                    assignments = @()
+                }
+            
+                Write-Host "Importing policy" $policy.displayname
+                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
+                foreach ($grp in $InclGrps){
+                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $targetmember = @{}
+                    $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                    $targetmember.groupId = $g.id
+            
+                    $body.assignments += @{
+                        "target" = $targetmember
+                    }
+                }
+            
+                if ($ExclGrps -gt 1){
+                    foreach($grp in $ExclGrps){
+                        $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                        $targetmember = @{}
+                        $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                        $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                        $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                        $targetmember.groupId = $g.id
+                
+                        $body.assignments += @{
+                            "target" = $targetmember
+                        }
+                    }
+                }
+            
+                $Body = $Body | ConvertTo-Json -Depth 100
+
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/configurationPolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
             }
         
@@ -190,4 +263,4 @@ $Path = "C:\script_output\test"
             break
         }
     }
-# }
+}
