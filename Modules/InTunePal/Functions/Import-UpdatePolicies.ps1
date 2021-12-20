@@ -1,26 +1,4 @@
-<#
-
-.COPYRIGHT
-Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-See LICENSE in the project root for license information.
-
-#>
-
-####################################################
-
 function Get-AuthToken {
-
-<#
-.SYNOPSIS
-This function is used to authenticate with the Graph API REST interface
-.DESCRIPTION
-The function authenticate with the Graph API Interface with the tenant name
-.EXAMPLE
-Get-AuthToken
-Authenticates you with the Graph API interface
-.NOTES
-NAME: Get-AuthToken
-#>
 
 [cmdletbinding()]
 
@@ -54,16 +32,11 @@ Write-Host "Checking for AzureAD module..."
         exit
     }
 
-# Getting path to ActiveDirectory Assemblies
-# If the module count is greater than 1 find the latest version
-
     if($AadModule.count -gt 1){
 
         $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
 
         $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
-
-            # Checking if there are multiple versions of the same module found
 
             if($AadModule.count -gt 1){
 
@@ -108,11 +81,7 @@ $authority = "https://login.microsoftonline.com/$Tenant"
 
     $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI,$clientId,$redirectUri,$platformParameters,$userId).Result
 
-        # If the accesstoken is valid then create the authentication header
-
         if($authResult.AccessToken){
-
-        # Creating header for Authorization token
 
         $authHeader = @{
             'Content-Type'='application/json'
@@ -149,18 +118,6 @@ $authority = "https://login.microsoftonline.com/$Tenant"
 ####################################################
 
 Function Add-DeviceConfigurationPolicy(){
-
-<#
-.SYNOPSIS
-This function is used to add an device configuration policy using the Graph API REST interface
-.DESCRIPTION
-The function connects to the Graph API Interface and adds a device configuration policy
-.EXAMPLE
-Add-DeviceConfigurationPolicy -JSON $JSON
-Adds a device configuration policy in Intune
-.NOTES
-NAME: Add-DeviceConfigurationPolicy
-#>
 
 [cmdletbinding()]
 
@@ -213,18 +170,6 @@ Write-Verbose "Resource: $DCP_resource"
 
 Function Test-JSON(){
 
-<#
-.SYNOPSIS
-This function is used to test if the JSON passed to a REST Post request is valid
-.DESCRIPTION
-The function tests if the JSON passed to the REST Post is valid
-.EXAMPLE
-Test-JSON -JSON $JSON
-Test if the JSON is valid before calling the Graph REST interface
-.NOTES
-NAME: Test-AuthHeader
-#>
-
 param (
 
 $JSON
@@ -265,21 +210,16 @@ function Import-UpdatePolicies(){
         $Path
     )
 
-# Checking if authToken exists before running authentication
-if($global:authToken){
+    if($global:authToken){
 
-    # Setting DateTime to Universal time to work in all timezones
     $DateTime = (Get-Date).ToUniversalTime()
 
-    # If the authToken exists checking when it expires
     $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
 
         if($TokenExpires -le 0){
 
         write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
         write-host
-
-            # Defining User Principal Name if not present
 
             if($null -eq $User -or $User -eq ""){
 
@@ -291,11 +231,9 @@ if($global:authToken){
         $global:authToken = Get-AuthToken -User $User
 
         }
-}
+    }
 
-# Authentication doesn't exist, calling Get-AuthToken function
-
-else {
+    else {
 
     if($null -eq $User -or $User -eq ""){
 
@@ -304,7 +242,6 @@ else {
 
     }
 
-# Getting the authorization token
 $global:authToken = Get-AuthToken -User $User
 
 }
@@ -315,7 +252,6 @@ $global:authToken = Get-AuthToken -User $User
 
 $ImportPath = $Path
 
-# Replacing quotes for Test-Path
 $ImportPath = $ImportPath.replace('"','')
 
 if(!(Test-Path "$ImportPath")){
@@ -331,42 +267,46 @@ break
 
 $AvailableJsonsiOS =  Get-ChildItem "$ImportPath\iOSUpdatePolicies" -Recurse -Include *.json
 
-foreach($json in $AvailableJsonsiOS){
+    foreach($json in $AvailableJsonsiOS){
 
-    $JSON_Data = Get-Content $json
+        $JSON_Data = Get-Content $json
 
-    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,'groupAssignments@odata.context',groupAssignments,supportsScopeTags
+        $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,'groupAssignments@odata.context',groupAssignments,supportsScopeTags
 
-    $DisplayName = $JSON_Convert.displayName
+        $DisplayName = $JSON_Convert.displayName
 
-    $JSON_Output = $JSON_Convert | ConvertTo-Json
+        $JSON_Output = $JSON_Convert | ConvertTo-Json
 
-    write-host
-    write-host "Software Update Policy '$DisplayName' Found..." -ForegroundColor Yellow
-    write-host
-    Write-Host "Adding Software Update Policy '$DisplayName'" -ForegroundColor Yellow
-    $null = Add-DeviceConfigurationPolicy -JSON $JSON_Output
+        write-host
+        write-host "Software Update Policy '$DisplayName' Found..." -ForegroundColor Yellow
+        write-host
+        Write-Host "Adding Software Update Policy '$DisplayName'" -ForegroundColor Yellow
+        $null = Add-DeviceConfigurationPolicy -JSON $JSON_Output
 
-}
+    }
+
+    Write-Host "Importing Software Update Policies as specified in $($Path)" -ForegroundColor Cyan
+    Write-Host
 
 $AvailableJsonsWindows =  Get-ChildItem "$ImportPath\WindowsUpdatePolicies" -Recurse -Include *.json
 
-foreach($json in $AvailableJsonsWindows){
+    foreach($json in $AvailableJsonsWindows){
 
-    $JSON_Data = Get-Content $json
+        $JSON_Data = Get-Content $json
 
-    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,'groupAssignments@odata.context',groupAssignments,supportsScopeTags
+        $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,'groupAssignments@odata.context',groupAssignments,supportsScopeTags
 
-    $DisplayName = $JSON_Convert.displayName
+        $DisplayName = $JSON_Convert.displayName
 
-    $JSON_Output = $JSON_Convert | ConvertTo-Json
+        $JSON_Output = $JSON_Convert | ConvertTo-Json
 
-    write-host
-    write-host "Software Update Policy '$DisplayName' Found..." -ForegroundColor Yellow
-    write-host
-    Write-Host "Adding Software Update Policy '$DisplayName'" -ForegroundColor Yellow
-    $null = Add-DeviceConfigurationPolicy -JSON $JSON_Output
+        $null = Add-DeviceConfigurationPolicy -JSON $JSON_Output
 
-}
-
+        [PSCustomObject]@{
+            "Action" = "Import"
+            "Type"   = "Software Update Policy"
+            "Name"   = $DisplayName
+            "Path"   = "$($ImportPath)\WindowsUpdatePolicies"
+        }
+    }
 }
