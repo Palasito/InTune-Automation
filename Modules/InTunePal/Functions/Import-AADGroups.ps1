@@ -1,25 +1,35 @@
-Function Import-AADGroups(){
+# Function Import-AADGroups(){
 
-param(
-    [parameter()]
-    [String]$Path
-)
+# param(
+#     [parameter()]
+#     [String]$Path
+# )
 
-Write-Host
-Write-Host "Creating specified security groups" -ForegroundColor Cyan
+    $Path = "C:\script_output\test"
 
-$Groups = Import-Csv -Path $Path\CSVs\AADGroups\*.csv
+    Write-Host
+    Write-Host "Creating specified security groups" -ForegroundColor Cyan
 
-foreach($Group in $Groups){
+    $Groups = Import-Csv -Path $Path\CSVs\AADGroups\*.csv
 
-    $null = New-AzureADMSGroup -DisplayName $Group.DisplayName -Description $Group.Description -MailEnabled $False -MailNickName "group" -SecurityEnabled $True
+    foreach($Group in $Groups){
 
-    [PSCustomObject]@{
-        "Action" = "Import"
-        "Type"   = "Groups"
-        "Name"   = $Group.DisplayName
-        "Path"   = "$Path\CSVs\AADGroups"
+    $check = Get-AzureADMSGroup | Where-Object DisplayName -eq $Group.DisplayName
+
+        if ($null -eq $check) {
+
+        $null = New-AzureADMSGroup -DisplayName $Group.DisplayName -Description $Group.Description -MailEnabled $False -MailNickName "group" -SecurityEnabled $True
+
+            [PSCustomObject]@{
+                "Action" = "Import"
+                "Type"   = "Groups"
+                "Name"   = $Group.DisplayName
+                "Path"   = "$Path\CSVs\AADGroups"
+            }
+        }
+
+        else {
+            Write-Host "Group already exists, will skip creation of" $Group.DisplayName
+        }
     }
-}
-
-}
+# }
