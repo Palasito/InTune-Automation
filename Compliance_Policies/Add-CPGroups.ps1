@@ -93,6 +93,9 @@ function Add-CPGroups(){
 
     $DCPGroups = Import-Csv -Path $Path\CSVs\CompliancePolicies\*.csv -Delimiter ','
 
+    Write-Host "Adding specified groups to Device Compliance Policies..." -ForegroundColor Cyan
+    Write-Host
+    
     foreach($Pol in $DCPGroups){
         $Policy = Get-DeviceCompliancePolicy | Where-Object displayName -match $pol.DisplayName
         $InclGrps = $pol.IncludeGroups -split ";"
@@ -101,8 +104,6 @@ function Add-CPGroups(){
             assignments = @()
         }
 
-        Write-Host "Importing policy" $policy.displayname
-        Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
             foreach ($grp in $InclGrps){
                 $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                 $targetmember = @{}
@@ -137,6 +138,14 @@ function Add-CPGroups(){
         $Body = $Body | ConvertTo-Json -Depth 100
     
         Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/deviceManagement/deviceCompliancePolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+    
+        [PSCustomObject]@{
+            "Action" = "Assign"
+            "Type"   = "Compliance Policies"
+            "Name"   = $Policy.displayName
+            "Included Groups"   = $InclGrps
+            "Excluded Groups"   = $ExclGrps
+        }
     }
 
 }

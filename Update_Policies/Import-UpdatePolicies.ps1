@@ -285,7 +285,7 @@ $AvailableJsonsiOS =  Get-ChildItem "$ImportPath\iOSUpdatePolicies" -Recurse -In
 
     }
 
-    Write-Host "Importing Software Update Policies as specified in $($Path)" -ForegroundColor Cyan
+    Write-Host "Importing Software Update Policies..." -ForegroundColor Cyan
     Write-Host
 
 $AvailableJsonsWindows =  Get-ChildItem "$ImportPath\WindowsUpdatePolicies" -Recurse -Include *.json

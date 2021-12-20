@@ -105,7 +105,7 @@ function Add-DCPGroups(){
 
     $DCPGroups = Import-Csv -Path $Path\CSVs\DeviceConfigurationProfiles\*.csv -Delimiter ','
 
-    Write-Host "Adding specified Groups to the Configuration Policies" -ForegroundColor Cyan
+    Write-Host "Adding specified Groups to the Device Configuration Policies..." -ForegroundColor Cyan
 
     foreach($Pol in $DCPGroups){
     
@@ -120,8 +120,6 @@ function Add-DCPGroups(){
                     assignments = @()
                 }
             
-                Write-Host "Importing policy" $policy.displayname
-                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
                 foreach ($grp in $InclGrps){
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
@@ -155,6 +153,13 @@ function Add-DCPGroups(){
             
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
 
+                [PSCustomObject]@{
+                    "Action" = "Assign"
+                    "Type"   = "Configuration Profiles"
+                    "Name"   = $Policy.displayName
+                    "Included Groups"   = $InclGrps
+                    "Excluded Groups"   = $ExclGrps
+                }
             }
 
             elseif($null -ne ($Policy = Get-DeviceAdministrativeTemplates |Where-Object displayName -eq $Pol.DisplayName)){
@@ -166,8 +171,6 @@ function Add-DCPGroups(){
                     assignments = @()
                 }
             
-                Write-Host "Importing policy" $policy.displayname
-                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
                 foreach ($grp in $InclGrps){
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
@@ -199,6 +202,14 @@ function Add-DCPGroups(){
                 $Body = $Body | ConvertTo-Json -Depth 100
 
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/groupPolicyConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+            
+                [PSCustomObject]@{
+                    "Action" = "Assign"
+                    "Type"   = "Configuration Profiles"
+                    "Name"   = $Policy.displayName
+                    "Included Groups"   = $InclGrps
+                    "Excluded Groups"   = $ExclGrps
+                }
             }
 
             elseif($null -ne ($Policy = Get-DeviceSettingsCatalogPolicy | Where-Object name -eq $Pol.DisplayName)){
@@ -209,9 +220,7 @@ function Add-DCPGroups(){
                 $Body = @{
                     assignments = @()
                 }
-            
-                Write-Host "Importing policy" $policy.displayname
-                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
+
                 foreach ($grp in $InclGrps){
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
@@ -243,6 +252,14 @@ function Add-DCPGroups(){
                 $Body = $Body | ConvertTo-Json -Depth 100
 
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/configurationPolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+            
+                [PSCustomObject]@{
+                    "Action" = "Assign"
+                    "Type"   = "Configuration Profiles"
+                    "Name"   = $Policy.displayName
+                    "Included Groups"   = $InclGrps
+                    "Excluded Groups"   = $ExclGrps
+                }
             }
         
             else{

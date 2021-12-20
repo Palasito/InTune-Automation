@@ -325,7 +325,8 @@ function Get-AuthToken {
     
     $JSON_Data =  Get-ChildItem "$ImportPath\AppProtectionPolicies" -Recurse -Include *.json
 
-    write-host "Importing App Protection Policies" -ForegroundColor Cyan
+    write-host "Importing App Protection Policies..." -ForegroundColor Cyan
+    Write-Host
 
     foreach($json in $JSON_Data){
 

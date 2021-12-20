@@ -17,6 +17,7 @@ if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
 
 $BackupJsons = Get-ChildItem "$Path\NamedLocations" -Recurse -Include *.json
 
+Write-Host
 Write-Host "Importing Named Locations (Countries Only)..." -ForegroundColor cyan
 foreach ($Json in $BackupJsons) {
 
@@ -31,9 +32,14 @@ foreach ($Json in $BackupJsons) {
     }
 
     New-AzureADMSNamedLocationPolicy @Parameters
-}
 
-Write-Host "Creating Trusted IP Range Policy..."
+    [PSCustomObject]@{
+        "Action" = "Import"
+        "Type"   = "Named Location"
+        "Name"   = $policy.DisplayName
+        "From"   = "$json"
+    }
+}
 
 [System.Collections.Generic.List`1[Microsoft.Open.MSGraph.Model.IpRange]]$cidrAddress = @()
 # $IPs = do
@@ -43,20 +49,27 @@ Write-Host "Creating Trusted IP Range Policy..."
 # } while ($ip -ne '')
 
 # $IPs = ($IPs[0..($IPs.Length-2)])
-$Path = "C:\script_output\test"
-$IPCSV = Import-Csv $path\CSVs\IPs\*.csv
 
-foreach($i in $IPCSV){
-    $IP = $i.IP
-    $cidrAddress.Add("$IP")
-}
+    $IPCSV = Import-Csv $path\CSVs\IPs\*.csv
 
-$Parameters = @{
-    OdataType       = '#microsoft.graph.ipNamedLocation'
-    DisplayName     = 'Trusted Networks'
-    IsTrusted       = $true
-    IpRanges        = $cidrAddress
-}
-$null = New-AzureADMSNamedLocationPolicy @parameters
+    foreach($i in $IPCSV){
+        $IP = $i.IP
+        $cidrAddress.Add("$IP")
+    }
+
+    $Parameters = @{
+        OdataType       = '#microsoft.graph.ipNamedLocation'
+        DisplayName     = 'Trusted Networks'
+        IsTrusted       = $true
+        IpRanges        = $cidrAddress
+    }
+    $null = New-AzureADMSNamedLocationPolicy @parameters
+
+    [PSCustomObject]@{
+        "Action" = "Import"
+        "Type"   = "Trusted IP Range Policy"
+        "Name"   = "Trusted Networks"
+        "From"   = "$($Path)\CSVs\IPs"
+    }
 
 }

@@ -313,18 +313,6 @@ Function Add-DeviceAdministrativeTeamplatePolicy(){
 ####################################################
 Function Test-JSON(){
 
-<#
-.SYNOPSIS
-This function is used to test if the JSON passed to a REST Post request is valid
-.DESCRIPTION
-The function tests if the JSON passed to the REST Post is valid
-.EXAMPLE
-Test-JSON -JSON $JSON
-Test if the JSON is valid before calling the Graph REST interface
-.NOTES
-NAME: Test-AuthHeader
-#>
-
 param (
 
 $JSON
@@ -356,16 +344,15 @@ $JSON
 
 ####################################################
 
-function Import-DeviceConfigurationPolicies(){
+# function Import-DeviceConfigurationPolicies(){
 
-    [cmdletbinding()]
+#     [cmdletbinding()]
     
-    param
-    (
-        $Path
-    )
+#     param
+#     (
+#         $Path
+#     )
 
-# Checking if authToken exists before running authentication
 if($global:authToken){
 
     # Setting DateTime to Universal time to work in all timezones
@@ -442,6 +429,7 @@ foreach ($json in $AvailableJsonsGDC){
     $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
     $null = Add-DeviceGeneralConfigurationPolicy -JSON $JSON_Output
+
     [PSCustomObject]@{
         "Action" = "Import"
         "Type"   = "Device Configuration Profile"
@@ -451,6 +439,8 @@ foreach ($json in $AvailableJsonsGDC){
 }
 
 Write-Host "Importing Settings Catalog Profiles..." -ForegroundColor cyan
+Write-Host
+
 $AvailableJsonsSCP =  Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include SC_*.json
 foreach ($json in $AvailableJsonsSCP){
 
@@ -463,6 +453,7 @@ foreach ($json in $AvailableJsonsSCP){
     $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
     $null = Add-DeviceSettingsCatalogConfigurationPolicy -JSON $JSON_Output
+
     [PSCustomObject]@{
         "Action" = "Import"
         "Type"   = "Settings Catalog Profile"
@@ -472,6 +463,8 @@ foreach ($json in $AvailableJsonsSCP){
 }
 
 Write-Host "Importing Administrative Templates..." -ForegroundColor cyan
+Write-Host
+
 $AvailableJsonsAT =  Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include AT_*.json
 foreach ($json in $AvailableJsonsAT){
 
@@ -484,6 +477,7 @@ foreach ($json in $AvailableJsonsAT){
     $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
     $null = Add-DeviceAdministrativeTeamplatePolicy -JSON $JSON_Output
+    
     [PSCustomObject]@{
         "Action" = "Import"
         "Type"   = "Administrative Template"
@@ -491,4 +485,4 @@ foreach ($json in $AvailableJsonsAT){
         "From"   = "$json"
     }
 }
-}
+# }

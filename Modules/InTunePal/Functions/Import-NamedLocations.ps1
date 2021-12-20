@@ -31,6 +31,13 @@ foreach ($Json in $BackupJsons) {
     }
 
     New-AzureADMSNamedLocationPolicy @Parameters
+
+    [PSCustomObject]@{
+        "Action" = "Import"
+        "Type"   = "Named Location"
+        "Name"   = $policy.DisplayName
+        "From"   = "$json"
+    }
 }
 
 Write-Host "Creating Trusted IP Range Policy..."
@@ -43,7 +50,7 @@ Write-Host "Creating Trusted IP Range Policy..."
 # } while ($ip -ne '')
 
 # $IPs = ($IPs[0..($IPs.Length-2)])
-$Path = "C:\script_output\test"
+
 $IPCSV = Import-Csv $path\CSVs\IPs\*.csv
 
 foreach($i in $IPCSV){
@@ -58,5 +65,12 @@ $Parameters = @{
     IpRanges        = $cidrAddress
 }
 $null = New-AzureADMSNamedLocationPolicy @parameters
+
+[PSCustomObject]@{
+    "Action" = "Import"
+    "Type"   = "Trusted IP Range Policy"
+    "Name"   = "Trusted Networks"
+    "From"   = "$($Path)\CSVs\IPs"
+}
 
 }

@@ -316,7 +316,7 @@ break
 
 ####################################################
 
-Write-Host "Importing Client Apps as specified in $($Path)" -ForegroundColor Cyan
+Write-Host "Importing Client Apps..." -ForegroundColor Cyan
 Write-Host
 
 $AvailableJSONS = Get-ChildItem "$ImportPath\ClientApps" -Recurse -Include *.json

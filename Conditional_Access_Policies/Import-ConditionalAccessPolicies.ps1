@@ -18,7 +18,10 @@ if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
 
 $CAPGroups = Import-Csv -Path $Path\CSVs\ConditionalAccess\*.csv -Delimiter ','
 $BackupJsons = Get-ChildItem "$Path\ConditionalAccessPolicies" -Recurse -Include *.json
+
+Write-Host
 Write-Host "Importing Conditional Access Policies..." -ForegroundColor cyan
+
 foreach ($Json in $BackupJsons) {
 
     $policy = Get-Content $Json.FullName | ConvertFrom-Json

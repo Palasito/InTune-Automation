@@ -429,6 +429,7 @@ foreach ($json in $AvailableJsonsGDC){
     $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
     $null = Add-DeviceGeneralConfigurationPolicy -JSON $JSON_Output
+
     [PSCustomObject]@{
         "Action" = "Import"
         "Type"   = "Device Configuration Profile"
@@ -438,6 +439,8 @@ foreach ($json in $AvailableJsonsGDC){
 }
 
 Write-Host "Importing Settings Catalog Profiles..." -ForegroundColor cyan
+Write-Host
+
 $AvailableJsonsSCP =  Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include SC_*.json
 foreach ($json in $AvailableJsonsSCP){
 
@@ -450,6 +453,7 @@ foreach ($json in $AvailableJsonsSCP){
     $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
     $null = Add-DeviceSettingsCatalogConfigurationPolicy -JSON $JSON_Output
+
     [PSCustomObject]@{
         "Action" = "Import"
         "Type"   = "Settings Catalog Profile"
@@ -459,6 +463,8 @@ foreach ($json in $AvailableJsonsSCP){
 }
 
 Write-Host "Importing Administrative Templates..." -ForegroundColor cyan
+Write-Host
+
 $AvailableJsonsAT =  Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include AT_*.json
 foreach ($json in $AvailableJsonsAT){
 
@@ -471,6 +477,7 @@ foreach ($json in $AvailableJsonsAT){
     $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
     $null = Add-DeviceAdministrativeTeamplatePolicy -JSON $JSON_Output
+    
     [PSCustomObject]@{
         "Action" = "Import"
         "Type"   = "Administrative Template"

@@ -134,7 +134,6 @@ function Add-APPGroups(){
         $Path
     )
 
-$Path = "C:\script_output\test"
     $APPGroups = Import-Csv -Path $Path\CSVs\AppProtection\*.csv -Delimiter ','
 
     foreach($Pol in $APPGroups){
@@ -149,8 +148,6 @@ $Path = "C:\script_output\test"
                     assignments = @()
                 }
 
-                Write-Host "Importing policy" $policy.displayname
-                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
                 foreach ($grp in $InclGrps){
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
@@ -181,6 +178,13 @@ $Path = "C:\script_output\test"
 
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/androidManagedAppProtections/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
 
+                [PSCustomObject]@{
+                    "Action" = "Assign"
+                    "Type"   = "App Protection Policy"
+                    "Name"   = $Policy.displayName
+                    "Included Groups"   = $InclGrps
+                    "Excluded Groups"   = $ExclGrps
+                }
             }
 
             elseif($null -ne ($Policy = Get-iOSAPPPolicy |Where-Object displayName -eq $Pol.DisplayName)){
@@ -191,8 +195,6 @@ $Path = "C:\script_output\test"
                     assignments = @()
                 }
 
-                Write-Host "Importing policy" $policy.displayname
-                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
                 foreach ($grp in $InclGrps){
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
@@ -222,6 +224,14 @@ $Path = "C:\script_output\test"
                 $Body = $Body | ConvertTo-Json -Depth 100
 
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/iosManagedAppProtections/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+            
+                [PSCustomObject]@{
+                    "Action" = "Assign"
+                    "Type"   = "App Protection Policy"
+                    "Name"   = $Policy.displayName
+                    "Included Groups"   = $InclGrps
+                    "Excluded Groups"   = $ExclGrps
+                }
             }
 
             elseif($null -ne ($Policy = Get-WindowsInformationProtectionPolicy | Where-Object name -eq $Pol.DisplayName)){
@@ -232,8 +242,6 @@ $Path = "C:\script_output\test"
                     assignments = @()
                 }
 
-                Write-Host "Importing policy" $policy.displayname
-                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
                 foreach ($grp in $InclGrps){
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
@@ -263,6 +271,14 @@ $Path = "C:\script_output\test"
                 $Body = $Body | ConvertTo-Json -Depth 100
 
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/windowsInformationProtectionPolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+            
+                [PSCustomObject]@{
+                    "Action" = "Assign"
+                    "Type"   = "App Protection Policy"
+                    "Name"   = $Policy.displayName
+                    "Included Groups"   = $InclGrps
+                    "Excluded Groups"   = $ExclGrps
+                }
             }
 
             elseif($null -ne ($Policy = Get-mdmWindowsInformationProtectionPolicy | Where-Object name -eq $Pol.DisplayName)){
@@ -273,8 +289,6 @@ $Path = "C:\script_output\test"
                     assignments = @()
                 }
 
-                Write-Host "Importing policy" $policy.displayname
-                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
                 foreach ($grp in $InclGrps){
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
@@ -304,6 +318,14 @@ $Path = "C:\script_output\test"
                 $Body = $Body | ConvertTo-Json -Depth 100
 
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/mdmWindowsInformationProtectionPolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+            
+                [PSCustomObject]@{
+                    "Action" = "Assign"
+                    "Type"   = "App Protection Policy"
+                    "Name"   = $Policy.displayName
+                    "Included Groups"   = $InclGrps
+                    "Excluded Groups"   = $ExclGrps
+                }
             }
         
             else{
