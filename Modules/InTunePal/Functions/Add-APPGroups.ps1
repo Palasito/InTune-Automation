@@ -134,44 +134,6 @@ Function Get-mdmWindowsInformationProtectionPolicy(){
     
 }
 
-Function Add-Memberships(){
-    $InclGrps = $pol.IncludeGroups -split ";"
-    $ExclGrps = $pol.ExcludeGroups -split ";"
-    $Body = @{
-        assignments = @()
-    }
-
-    Write-Host "Importing policy" $policy.displayname
-    Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
-    foreach ($grp in $InclGrps){
-       $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
-        $targetmember = @{}
-        $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
-        $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-        $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-        $targetmember.groupId = $g.id
-
-        $body.assignments += @{
-            "target" = $targetmember
-        }
-    }
-
-    foreach($grp in $ExclGrps){
-        $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
-        $targetmember = @{}
-        $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
-        $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-        $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-        $targetmember.groupId = $g.id
-
-       $body.assignments += @{
-            "target" = $targetmember
-       }
-    }
-
-    $Body = $Body | ConvertTo-Json -Depth 100
-}
-
 function Add-APPGroups(){
     
     [cmdletbinding()]
@@ -188,26 +150,166 @@ function Add-APPGroups(){
 
             if($null -ne ($Policy = Get-AndroidAPPPolicy | Where-Object displayName -eq $pol.DisplayName)){
                 
-                Add-Memberships
+                $InclGrps = $pol.IncludeGroups -split ";"
+                $ExclGrps = $pol.ExcludeGroups -split ";"
+                $Body = @{
+                    assignments = @()
+                }
+
+                Write-Host "Importing policy" $policy.displayname
+                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
+                foreach ($grp in $InclGrps){
+                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $targetmember = @{}
+                    $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                    $targetmember.groupId = $g.id
+
+                    $body.assignments += @{
+                        "target" = $targetmember
+                    }
+                }
+
+                foreach($grp in $ExclGrps){
+                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $targetmember = @{}
+                    $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                    $targetmember.groupId = $g.id
+
+                    $body.assignments += @{
+                            "target" = $targetmember
+                    }
+                }
+
+                $Body = $Body | ConvertTo-Json -Depth 100
+
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/androidManagedAppProtections/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
 
             }
 
             elseif($null -ne ($Policy = Get-iOSAPPPolicy |Where-Object displayName -eq $Pol.DisplayName)){
 
-                Add-Memberships
+                $InclGrps = $pol.IncludeGroups -split ";"
+                $ExclGrps = $pol.ExcludeGroups -split ";"
+                $Body = @{
+                    assignments = @()
+                }
+
+                Write-Host "Importing policy" $policy.displayname
+                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
+                foreach ($grp in $InclGrps){
+                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $targetmember = @{}
+                    $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                    $targetmember.groupId = $g.id
+
+                    $body.assignments += @{
+                        "target" = $targetmember
+                    }
+                }
+
+                foreach($grp in $ExclGrps){
+                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $targetmember = @{}
+                    $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                    $targetmember.groupId = $g.id
+
+                    $body.assignments += @{
+                            "target" = $targetmember
+                    }
+                }
+
+                $Body = $Body | ConvertTo-Json -Depth 100
+
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/iosManagedAppProtections/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
             }
 
             elseif($null -ne ($Policy = Get-WindowsInformationProtectionPolicy | Where-Object name -eq $Pol.DisplayName)){
 
-                Add-Memberships
+                                $InclGrps = $pol.IncludeGroups -split ";"
+                $ExclGrps = $pol.ExcludeGroups -split ";"
+                $Body = @{
+                    assignments = @()
+                }
+
+                Write-Host "Importing policy" $policy.displayname
+                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
+                foreach ($grp in $InclGrps){
+                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $targetmember = @{}
+                    $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                    $targetmember.groupId = $g.id
+
+                    $body.assignments += @{
+                        "target" = $targetmember
+                    }
+                }
+
+                foreach($grp in $ExclGrps){
+                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $targetmember = @{}
+                    $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                    $targetmember.groupId = $g.id
+
+                    $body.assignments += @{
+                            "target" = $targetmember
+                    }
+                }
+
+                $Body = $Body | ConvertTo-Json -Depth 100
+
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/windowsInformationProtectionPolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
             }
 
             elseif($null -ne ($Policy = Get-mdmWindowsInformationProtectionPolicy | Where-Object name -eq $Pol.DisplayName)){
 
-                Add-Memberships
+                                $InclGrps = $pol.IncludeGroups -split ";"
+                $ExclGrps = $pol.ExcludeGroups -split ";"
+                $Body = @{
+                    assignments = @()
+                }
+
+                Write-Host "Importing policy" $policy.displayname
+                Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
+                foreach ($grp in $InclGrps){
+                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $targetmember = @{}
+                    $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                    $targetmember.groupId = $g.id
+
+                    $body.assignments += @{
+                        "target" = $targetmember
+                    }
+                }
+
+                foreach($grp in $ExclGrps){
+                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $targetmember = @{}
+                    $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                    $targetmember.groupId = $g.id
+
+                    $body.assignments += @{
+                            "target" = $targetmember
+                    }
+                }
+
+                $Body = $Body | ConvertTo-Json -Depth 100
+
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/mdmWindowsInformationProtectionPolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
             }
         
