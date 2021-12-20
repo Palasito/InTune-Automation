@@ -1,11 +1,9 @@
-# Function Import-AADGroups(){
+Function Import-AADGroups(){
 
-# param(
-#     [parameter()]
-#     [String]$Path
-# )
-
-    $Path = "C:\script_output\test"
+param(
+    [parameter()]
+    [String]$Path
+)
 
     Write-Host
     Write-Host "Creating specified security groups" -ForegroundColor Cyan
@@ -32,4 +30,4 @@
             Write-Host "Group already exists, will skip creation of" $Group.DisplayName -ForegroundColor Yellow
         }
     }
-# }
+}
