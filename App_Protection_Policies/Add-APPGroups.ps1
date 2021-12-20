@@ -134,6 +134,7 @@ function Add-APPGroups(){
         $Path
     )
 
+$Path = "C:\script_output\test"
     $APPGroups = Import-Csv -Path $Path\CSVs\AppProtection\*.csv -Delimiter ','
 
     foreach($Pol in $APPGroups){

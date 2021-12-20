@@ -12,7 +12,7 @@ Function Get-AndroidAPPPolicy(){
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
         }
-    
+        
         catch {
     
         $ex = $_.Exception
@@ -44,8 +44,6 @@ Function Get-iOSAPPPolicy(){
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
         }
-        
-    
         
         catch {
     
@@ -79,8 +77,6 @@ Function Get-WindowsInformationProtectionPolicy(){
     
         }
         
-    
-        
         catch {
     
         $ex = $_.Exception
@@ -113,8 +109,6 @@ Function Get-mdmWindowsInformationProtectionPolicy(){
     
         }
         
-    
-        
         catch {
     
         $ex = $_.Exception
@@ -140,6 +134,7 @@ function Add-APPGroups(){
         $Path
     )
 
+$Path = "C:\script_output\test"
     $APPGroups = Import-Csv -Path $Path\CSVs\AppProtection\*.csv -Delimiter ','
 
     foreach($Pol in $APPGroups){
