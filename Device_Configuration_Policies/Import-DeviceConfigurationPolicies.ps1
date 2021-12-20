@@ -344,14 +344,14 @@ $JSON
 
 ####################################################
 
-# function Import-DeviceConfigurationPolicies(){
+function Import-DeviceConfigurationPolicies(){
 
-#     [cmdletbinding()]
+    [cmdletbinding()]
     
-#     param
-#     (
-#         $Path
-#     )
+    param
+    (
+        $Path
+    )
 
 if($global:authToken){
 
@@ -466,23 +466,23 @@ Write-Host "Importing Administrative Templates..." -ForegroundColor cyan
 Write-Host
 
 $AvailableJsonsAT =  Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include AT_*.json
-foreach ($json in $AvailableJsonsAT){
+    foreach ($json in $AvailableJsonsAT){
 
-    $JSON_Data = Get-Content $json.FullName
+        $JSON_Data = Get-Content $json.FullName
 
-    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,supportsScopeTags
+        $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,supportsScopeTags
 
-    $DisplayName = $JSON_Convert.displayName
+        $DisplayName = $JSON_Convert.displayName
 
-    $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
+        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
-    $null = Add-DeviceAdministrativeTeamplatePolicy -JSON $JSON_Output
-    
-    [PSCustomObject]@{
-        "Action" = "Import"
-        "Type"   = "Administrative Template"
-        "Name"   = $DisplayName
-        "From"   = "$json"
+        $null = Add-DeviceAdministrativeTeamplatePolicy -JSON $JSON_Output
+        
+        [PSCustomObject]@{
+            "Action" = "Import"
+            "Type"   = "Administrative Template"
+            "Name"   = $DisplayName
+            "From"   = "$json"
+        }
     }
 }
-# }

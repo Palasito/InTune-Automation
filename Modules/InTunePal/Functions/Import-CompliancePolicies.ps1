@@ -206,16 +206,15 @@ $Resource = "deviceManagement/deviceCompliancePolicies"
 
 ####################################################
 
-# Function Import-CompliancePolicies(){
+Function Import-CompliancePolicies(){
 
-#     [cmdletbinding()]
+    [cmdletbinding()]
     
-#     param
-#     (
-#         $Path
-#     )
+    param
+    (
+        $Path
+    )
 
-$Path = "C:\script_output\test"
 # Checking if authToken exists before running authentication
 if($global:authToken){
 
@@ -280,44 +279,44 @@ break
 
 $AvailableJsons = Get-ChildItem "$ImportPath\DeviceCompliancePolicies" -Recurse -Include *.json
 
-foreach ($json in $AvailableJsons) {
+    foreach ($json in $AvailableJsons) {
 
-    $JSON_Data = Get-Content $json.FullName
+        $JSON_Data = Get-Content $json.FullName
 
-    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version
+        $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version
 
-    $DisplayName = $JSON_Convert.displayName
-    
-    $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
+        $DisplayName = $JSON_Convert.displayName
+        
+        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
 
-    $scheduledActionsForRule = '"scheduledActionsForRule":[{"ruleName":"PasswordRequired","scheduledActionConfigurations":[{"actionType":"block","gracePeriodHours":0,"notificationTemplateId":"","notificationMessageCCList":[]}]}]'
+        $scheduledActionsForRule = '"scheduledActionsForRule":[{"ruleName":"PasswordRequired","scheduledActionConfigurations":[{"actionType":"block","gracePeriodHours":0,"notificationTemplateId":"","notificationMessageCCList":[]}]}]'
 
-    $JSON_Output = $JSON_Output.trimend("}")
+        $JSON_Output = $JSON_Output.trimend("}")
 
-    $JSON_Output = $JSON_Output.TrimEnd() + "," + "`r`n"
+        $JSON_Output = $JSON_Output.TrimEnd() + "," + "`r`n"
 
-    $JSON_Output = $JSON_Output + $scheduledActionsForRule + "`r`n" + "}"
+        $JSON_Output = $JSON_Output + $scheduledActionsForRule + "`r`n" + "}"
 
-    Write-Host "Importing Device Compliance Policies..." -ForegroundColor Cyan
-    Write-Host
-
-    $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceCompliancePolicies"
-    $Policycontainer = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayname').equals($DisplayName) }
-    if($null -eq $Policycontainer){
-
-        $null = Add-DeviceCompliancePolicy -JSON $JSON_Output
-
-        [PSCustomObject]@{
-            "Action" = "Import"
-            "Type"   = "Device Compliance Policy"
-            "Name"   = $DisplayName
-            "Path"   = "$($ImportPath)\DeviceCompliancePolicies"
-        }
-    }    
-    else {
+        Write-Host "Importing Device Compliance Policies..." -ForegroundColor Cyan
         Write-Host
-        Write-Host "Policy '$DisplayName' already exists and will not be imported!" -ForegroundColor Yellow
-    }
 
+        $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceCompliancePolicies"
+        $Policycontainer = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayname').equals($DisplayName) }
+        if($null -eq $Policycontainer){
+
+            $null = Add-DeviceCompliancePolicy -JSON $JSON_Output
+
+            [PSCustomObject]@{
+                "Action" = "Import"
+                "Type"   = "Device Compliance Policy"
+                "Name"   = $DisplayName
+                "Path"   = "$($ImportPath)\DeviceCompliancePolicies"
+            }
+        }    
+        else {
+            Write-Host
+            Write-Host "Policy '$DisplayName' already exists and will not be imported!" -ForegroundColor Yellow
+        }
+
+    }
 }
-# }
