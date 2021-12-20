@@ -41,6 +41,8 @@ foreach ($Json in $BackupJsons) {
     }
 }
 
+Write-Host "Creating Trusted IP Range Policy..."
+
 [System.Collections.Generic.List`1[Microsoft.Open.MSGraph.Model.IpRange]]$cidrAddress = @()
 # $IPs = do
 # {
@@ -50,26 +52,26 @@ foreach ($Json in $BackupJsons) {
 
 # $IPs = ($IPs[0..($IPs.Length-2)])
 
-    $IPCSV = Import-Csv $path\CSVs\IPs\*.csv
+$IPCSV = Import-Csv $path\CSVs\IPs\*.csv
 
-    foreach($i in $IPCSV){
-        $IP = $i.IP
-        $cidrAddress.Add("$IP")
-    }
+foreach($i in $IPCSV){
+    $IP = $i.IP
+    $cidrAddress.Add("$IP")
+}
 
-    $Parameters = @{
-        OdataType       = '#microsoft.graph.ipNamedLocation'
-        DisplayName     = 'Trusted Networks'
-        IsTrusted       = $true
-        IpRanges        = $cidrAddress
-    }
-    $null = New-AzureADMSNamedLocationPolicy @parameters
+$Parameters = @{
+    OdataType       = '#microsoft.graph.ipNamedLocation'
+    DisplayName     = 'Trusted Networks'
+    IsTrusted       = $true
+    IpRanges        = $cidrAddress
+}
+$null = New-AzureADMSNamedLocationPolicy @parameters
 
-    [PSCustomObject]@{
-        "Action" = "Import"
-        "Type"   = "Trusted IP Range Policy"
-        "Name"   = "Trusted Networks"
-        "From"   = "$($Path)\CSVs\IPs"
-    }
+[PSCustomObject]@{
+    "Action" = "Import"
+    "Type"   = "Trusted IP Range Policy"
+    "Name"   = "Trusted Networks"
+    "From"   = "$($Path)\CSVs\IPs"
+}
 
 }

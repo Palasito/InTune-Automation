@@ -50,8 +50,6 @@ Function Get-SoftwareUpdatePolicyAssignments(){
                 assignments = @()
             }
     
-            Write-Host "Importing policy" $policy.displayname
-            Write-Host "Policy " $pol.DisplayName " with groups " $pol.IncludeGroups " and " $pol.ExcludeGroups
                 foreach ($grp in $InclGrps){
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
@@ -81,6 +79,14 @@ Function Get-SoftwareUpdatePolicyAssignments(){
             $Body = $Body | ConvertTo-Json -Depth 100
         
             Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/deviceManagement/deviceConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+        
+            [PSCustomObject]@{
+                "Action" = "Assign"
+                "Type"   = "Update Policy"
+                "Name"   = $policy.DisplayName
+                "Included Groups"   = $InclGrps
+                "Excluded Groups"   = $ExclGrps
+            }
         }
     
     }

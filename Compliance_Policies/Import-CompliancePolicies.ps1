@@ -277,6 +277,9 @@ break
 
 }
 
+Write-Host "Importing Device Compliance Policies..." -ForegroundColor Cyan
+Write-Host
+
 $AvailableJsons = Get-ChildItem "$ImportPath\DeviceCompliancePolicies" -Recurse -Include *.json
 
     foreach ($json in $AvailableJsons) {
@@ -296,9 +299,6 @@ $AvailableJsons = Get-ChildItem "$ImportPath\DeviceCompliancePolicies" -Recurse 
         $JSON_Output = $JSON_Output.TrimEnd() + "," + "`r`n"
 
         $JSON_Output = $JSON_Output + $scheduledActionsForRule + "`r`n" + "}"
-
-        Write-Host "Importing Device Compliance Policies..." -ForegroundColor Cyan
-        Write-Host
 
         $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceCompliancePolicies"
         $Policycontainer = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayname').equals($DisplayName) }

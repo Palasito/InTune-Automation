@@ -17,6 +17,7 @@ if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
 
 $BackupJsons = Get-ChildItem "$Path\NamedLocations" -Recurse -Include *.json
 
+Write-Host
 Write-Host "Importing Named Locations (Countries Only)..." -ForegroundColor cyan
 foreach ($Json in $BackupJsons) {
 

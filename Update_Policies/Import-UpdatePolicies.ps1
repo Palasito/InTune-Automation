@@ -264,6 +264,8 @@ break
 }
 
 ####################################################
+Write-Host "Importing Software Update Policies..." -ForegroundColor Cyan
+Write-Host
 
 $AvailableJsonsiOS =  Get-ChildItem "$ImportPath\iOSUpdatePolicies" -Recurse -Include *.json
 
@@ -277,16 +279,15 @@ $AvailableJsonsiOS =  Get-ChildItem "$ImportPath\iOSUpdatePolicies" -Recurse -In
 
         $JSON_Output = $JSON_Convert | ConvertTo-Json
 
-        write-host
-        write-host "Software Update Policy '$DisplayName' Found..." -ForegroundColor Yellow
-        write-host
-        Write-Host "Adding Software Update Policy '$DisplayName'" -ForegroundColor Yellow
         $null = Add-DeviceConfigurationPolicy -JSON $JSON_Output
 
+        [PSCustomObject]@{
+            "Action" = "Import"
+            "Type"   = "Software Update Policy"
+            "Name"   = $DisplayName
+            "Path"   = "$($ImportPath)\iOSUpdatePolicies"
+        }
     }
-
-    Write-Host "Importing Software Update Policies..." -ForegroundColor Cyan
-    Write-Host
 
 $AvailableJsonsWindows =  Get-ChildItem "$ImportPath\WindowsUpdatePolicies" -Recurse -Include *.json
 

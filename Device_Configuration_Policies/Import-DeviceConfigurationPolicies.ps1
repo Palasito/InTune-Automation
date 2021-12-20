@@ -417,6 +417,7 @@ break
 ####################################################
 
 Write-Host "Importing Device Configuration Profiles..." -ForegroundColor cyan
+
 $AvailableJsonsGDC =  Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include GDC_*.json
 foreach ($json in $AvailableJsonsGDC){
 
@@ -438,6 +439,7 @@ foreach ($json in $AvailableJsonsGDC){
     }
 }
 
+Write-Host
 Write-Host "Importing Settings Catalog Profiles..." -ForegroundColor cyan
 Write-Host
 
@@ -462,6 +464,7 @@ foreach ($json in $AvailableJsonsSCP){
     }
 }
 
+Write-Host
 Write-Host "Importing Administrative Templates..." -ForegroundColor cyan
 Write-Host
 
