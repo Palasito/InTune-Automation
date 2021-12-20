@@ -252,30 +252,25 @@ $JSON
 
 ####################################################
 
-# function Import-ClientApps(){
+function Import-ClientApps(){
 
-#     [cmdletbinding()]
+    [cmdletbinding()]
     
-#     param
-#     (
-#         $Path
-#     )
-$Path = "C:\script_output\test"
-# Checking if authToken exists before running authentication
+    param
+    (
+        $Path
+    )
+
 if($global:authToken){
 
-    # Setting DateTime to Universal time to work in all timezones
     $DateTime = (Get-Date).ToUniversalTime()
 
-    # If the authToken exists checking when it expires
     $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
 
         if($TokenExpires -le 0){
 
         write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
         write-host
-
-            # Defining User Principal Name if not present
 
             if($null -eq $User -or $User -eq ""){
 
@@ -289,8 +284,6 @@ if($global:authToken){
         }
 }
 
-# Authentication doesn't exist, calling Get-AuthToken function
-
 else {
 
     if($null -eq $User -or $User -eq ""){
@@ -300,7 +293,6 @@ else {
 
     }
 
-# Getting the authorization token
 $global:authToken = Get-AuthToken -User $User
 
 }
@@ -311,7 +303,6 @@ $global:authToken = Get-AuthToken -User $User
 
 $ImportPath = $Path
 
-# Replacing quotes for Test-Path
 $ImportPath = $ImportPath.replace('"','')
 
 if(!(Test-Path "$ImportPath\ClientApps")){
@@ -325,24 +316,29 @@ break
 
 ####################################################
 
+Write-Host "Importing Client Apps as specified in $($Path)" -ForegroundColor Cyan
+Write-Host
+
 $AvailableJSONS = Get-ChildItem "$ImportPath\ClientApps" -Recurse -Include *.json
 
-foreach($json in $AvailableJSONS){
+    foreach($json in $AvailableJSONS){
 
-    $JSON_Data = Get-Content $json
+        $JSON_Data = Get-Content $json
 
-    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,"@odata.context",uploadState,packageId,appIdentifier,publishingState,usedLicenseCount,totalLicenseCount,productKey,licenseType,packageIdentityName
-    
-    $DisplayName = $JSON_Convert.displayName
+        $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,"@odata.context",uploadState,packageId,appIdentifier,publishingState,usedLicenseCount,totalLicenseCount,productKey,licenseType,packageIdentityName
+        
+        $DisplayName = $JSON_Convert.displayName
 
-    $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 10
+        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 10
+        
+        [PSCustomObject]@{
+            "Action" = "Import"
+            "Type"   = "ClientApp"
+            "Name"   = $DisplayName
+            "From"   = "$json"
+        }
 
-    Write-Host
-    Write-Host "MDM Application '$DisplayName' Found..." -ForegroundColor Yellow
+        $null = Add-MDMApplication -JSON $JSON_Output
 
-    Write-Host
-    Write-Host "Creating MDM Application '$DisplayName'" -ForegroundColor Yellow
-    $null = Add-MDMApplication -JSON $JSON_Output
-
+    }
 }
-# }
