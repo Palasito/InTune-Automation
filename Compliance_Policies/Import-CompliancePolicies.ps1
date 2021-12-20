@@ -298,20 +298,25 @@ foreach ($json in $AvailableJsons) {
 
     $JSON_Output = $JSON_Output + $scheduledActionsForRule + "`r`n" + "}"
 
-    write-host
-    write-host "Compliance Policy '$DisplayName' Found..." -ForegroundColor Yellow
+    Write-Host "Importing Device Compliance Policies..." -ForegroundColor Cyan
     Write-Host
-    Write-Host "Checking Compliance Policy against existing policies..."
+
     $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceCompliancePolicies"
     $Policycontainer = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayname').equals($DisplayName) }
     if($null -eq $Policycontainer){
-        write-host
-        write-Host "Adding Compliance Policy '$DisplayName'" -ForegroundColor Yellow
+
         $null = Add-DeviceCompliancePolicy -JSON $JSON_Output
+
+        [PSCustomObject]@{
+            "Action" = "Import"
+            "Type"   = "Device Compliance Policy"
+            "Name"   = $DisplayName
+            "Path"   = "$($ImportPath)\DeviceCompliancePolicies"
+        }
     }    
     else {
         Write-Host
-        Write-Host "Policy '$DisplayName' already exists and will not be imported!"
+        Write-Host "Policy '$DisplayName' already exists and will not be imported!" -ForegroundColor Yellow
     }
 
 }
