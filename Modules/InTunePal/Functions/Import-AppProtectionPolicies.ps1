@@ -246,14 +246,18 @@ function Get-AuthToken {
     
     ####################################################
     
-    function Import-AppProtectionPolicies(){
+    # function Import-AppProtectionPolicies(){
 
-    [cmdletbinding()]
+    # [cmdletbinding()]
     
-    param
-    (
-        $Path
-    )
+    # param
+    # (
+    #     $Path
+    # )
+
+    #region Authentication
+    
+    $Path = "C:\script_output\test"
 
     write-host
     
@@ -324,35 +328,28 @@ function Get-AuthToken {
     $JSON_Data =  Get-ChildItem "$ImportPath\AppProtectionPolicies" -Recurse -Include *.json
 
     write-host "Importing App Protection Policies" -ForegroundColor Cyan
-    write-host
 
     foreach($json in $JSON_Data){
 
         $Json_file = Get-Content $json
 
-        $JSON_Convert = $Json_file | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version
+        $JSON_Convert = $Json_file | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,apps
 
-        # $JSON_Apps = $JSON_Convert.apps | Select-Object * -ExcludeProperty id,version
-
-        # $JSON_Convert | Add-Member -MemberType NoteProperty -Name 'apps' -Value @($JSON_Apps) -Force
-
-        if ($JSON_Convert.supportsScopeTags) {
-            $JSON_Convert.supportsScopeTags = $false
-        }
+        $JSON_Convert | Add-Member -MemberType NoteProperty -Name 'appGroupType' -Value "allApps" -Force
 
         $DisplayName = $JSON_Convert.displayName
 
-        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
+        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
         $null = Add-ManagedAppPolicy -JSON $JSON_Output
 
         [PSCustomObject]@{
             "Action" = "Import"
-            "Type"   = "Settings Catalog Profile"
+            "Type"   = "Intune App Protection"
             "Name"   = $DisplayName
             "From"   = "$json"
         }
 
     }
 
-}
+# }

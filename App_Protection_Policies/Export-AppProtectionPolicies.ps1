@@ -230,15 +230,15 @@ Function Get-ManagedAppPolicy(){
     
     ####################################################
     
-    function Export-AppProtectionPolicies(){
+    # function Export-AppProtectionPolicies(){
     
-    [cmdletbinding()]
+    # [cmdletbinding()]
     
-    param
-    (
-        $Path
-    )
-    
+    # param
+    # (
+    #     $Path
+    # )
+    $Path = "C:\script_output\test"
     write-host
     
     # Checking if authToken exists before running authentication
@@ -377,4 +377,4 @@ Function Get-ManagedAppPolicy(){
     
     }
 
-}
+# }

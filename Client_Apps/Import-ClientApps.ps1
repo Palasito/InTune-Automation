@@ -252,15 +252,15 @@ $JSON
 
 ####################################################
 
-function Import-ClientApps(){
+# function Import-ClientApps(){
 
-    [cmdletbinding()]
+#     [cmdletbinding()]
     
-    param
-    (
-        $Path
-    )
-
+#     param
+#     (
+#         $Path
+#     )
+$Path = "C:\script_output\test"
 # Checking if authToken exists before running authentication
 if($global:authToken){
 
@@ -345,4 +345,4 @@ foreach($json in $AvailableJSONS){
     $null = Add-MDMApplication -JSON $JSON_Output
 
 }
-}
+# }
