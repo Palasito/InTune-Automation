@@ -15,6 +15,7 @@ function Export-Intune(){
     Export-CompliancePolicies -Path $Path
     Export-DeviceConfigurationPolicies -Path $Path
     Export-UpdatePolicies -Path $Path
+    Export-EndpointSecurityPolicy -Path $Path
 
     # AzureAD Powershell
 

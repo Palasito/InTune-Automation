@@ -387,7 +387,7 @@ function Get-AuthToken {
     
             else {
     
-            $JSON1 = ConvertTo-Json $JSON -Depth 5
+            $JSON1 = ConvertTo-Json $JSON -Depth 10
     
             $JSON_Convert = $JSON1 | ConvertFrom-Json
     
@@ -397,12 +397,9 @@ function Get-AuthToken {
             $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
     
                 # Added milliseconds to date format due to duplicate policy name
-                $FileName_JSON = "$DisplayName" + "_" + ".json"
-    
-                write-host "Export Path:" "$ExportPath"
+                $FileName_JSON = "$DisplayName" + ".json"
     
                 $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
-                write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
                 
             }
     
@@ -470,9 +467,15 @@ function Get-AuthToken {
     
     ####################################################
     
-    #region ExportPath
+function Export-EndpointSecurityPolicy(){
     
-    $ExportPath = Read-Host -Prompt "Please specify a path to export the policy data to e.g. C:\IntuneOutput"
+    [cmdletbinding()]
+
+    param(
+        $Path
+    )
+
+    $ExportPath = $Path
     
         # If the directory path doesn't exist prompt user to create the directory
         $ExportPath = $ExportPath.replace('"','')
@@ -521,10 +524,11 @@ function Get-AuthToken {
         $null = New-Item -Path "$ExportPath\EndpointSecurityPolicies" -ItemType Directory
     }
 
+    Write-Host "Exporting Endpoint Security Policies..." -ForegroundColor Cyan
+
     # Looping through all policies configured
     foreach($policy in $ESPolicies){
     
-        Write-Host "Endpoint Security Policy:"$policy.displayName -ForegroundColor Yellow
         $PolicyName = $policy.displayName
         $PolicyDescription = $policy.description
         $policyId = $policy.id
@@ -579,8 +583,13 @@ function Get-AuthToken {
             ####################################################
     
             Export-JSONData -JSON $JSON -ExportPath "$ExportPath\EndpointSecurityPolicies"
-    
-            Write-Host
+
+            [PSCustomObject]@{
+                "Action" = "Export"
+                "Type"   = "Endpoint Security"
+                "Name"   = $policy.displayName
+                "Path"   = "$ExportPath\EndpointSecurityPolicies"
+            }
     
             # Clearing up variables so previous data isn't exported in each policy
             Clear-Variable JSON
@@ -589,3 +598,4 @@ function Get-AuthToken {
         }
     
     }
+}
