@@ -134,6 +134,9 @@ function Add-APPGroups(){
         $Path
     )
 
+    Write-Host "Adding specified groups to App Protection Policies..." -ForegroundColor Cyan
+    Write-Host
+    
     $APPGroups = Import-Csv -Path $Path\CSVs\AppProtection\*.csv -Delimiter ','
 
     foreach($Pol in $APPGroups){

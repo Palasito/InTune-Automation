@@ -40,6 +40,7 @@ Function Get-SoftwareUpdatePolicyAssignments(){
             $Path
         )
     
+        Write-Host "Adding specified groups to Software Update Policies..." -ForegroundColor Cyan
         $DCPGroups = Import-Csv -Path $Path\CSVs\UpdatePolicies\*.csv -Delimiter ','
     
         foreach($Pol in $DCPGroups){
