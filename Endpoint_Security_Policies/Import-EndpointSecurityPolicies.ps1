@@ -39,14 +39,14 @@ Write-Host "Checking for AzureAD module..."
 
     $AadModule = Get-Module -Name "AzureAD" -ListAvailable
 
-    if ($AadModule -eq $null) {
+    if ($null -eq $AadModule) {
 
         Write-Host "AzureAD PowerShell module not found, looking for AzureADPreview"
         $AadModule = Get-Module -Name "AzureADPreview" -ListAvailable
 
     }
 
-    if ($AadModule -eq $null) {
+    if ($null -eq $AadModule) {
         write-host
         write-host "AzureAD Powershell module not installed..." -f Red
         write-host "Install by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt" -f Yellow
@@ -60,15 +60,15 @@ Write-Host "Checking for AzureAD module..."
 
     if($AadModule.count -gt 1){
 
-        $Latest_Version = ($AadModule | select version | Sort-Object)[-1]
+        $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
 
-        $aadModule = $AadModule | ? { $_.version -eq $Latest_Version.version }
+        $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
 
             # Checking if there are multiple versions of the same module found
 
             if($AadModule.count -gt 1){
 
-            $aadModule = $AadModule | select -Unique
+            $aadModule = $AadModule | Select-Object -Unique
 
             }
 
@@ -195,18 +195,6 @@ $ESP_resource = "deviceManagement/templates?`$filter=(isof(%27microsoft.graph.se
 
 Function Add-EndpointSecurityPolicy(){
 
-<#
-.SYNOPSIS
-This function is used to add an Endpoint Security policy using the Graph API REST interface
-.DESCRIPTION
-The function connects to the Graph API Interface and adds an Endpoint Security  policy
-.EXAMPLE
-Add-EndpointSecurityDiskEncryptionPolicy -JSON $JSON -TemplateId $templateId
-Adds an Endpoint Security Policy in Endpoint Manager
-.NOTES
-NAME: Add-EndpointSecurityPolicy
-#>
-
 [cmdletbinding()]
 
 param
@@ -221,7 +209,7 @@ Write-Verbose "Resource: $ESP_resource"
 
     try {
 
-        if($JSON -eq "" -or $JSON -eq $null){
+        if($JSON -eq "" -or $null -eq $JSON){
 
         write-host "No JSON specified, please specify valid JSON for the Endpoint Security Policy..." -f Red
 
@@ -279,7 +267,7 @@ $JSON
 
     try {
 
-    $TestJSON = ConvertFrom-Json $JSON -ErrorAction Stop
+    $null = ConvertFrom-Json $JSON -ErrorAction Stop
     $validJson = $true
 
     }
@@ -322,7 +310,7 @@ if($global:authToken){
 
             # Defining User Principal Name if not present
 
-            if($User -eq $null -or $User -eq ""){
+            if($null -eq $User -or $User -eq ""){
 
             $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
             Write-Host
@@ -338,7 +326,7 @@ if($global:authToken){
 
 else {
 
-    if($User -eq $null -or $User -eq ""){
+    if($null -eq $User -or $User -eq ""){
 
     $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
     Write-Host
@@ -353,8 +341,8 @@ $global:authToken = Get-AuthToken -User $User
 #endregion
 
 ####################################################
-
-$ImportPath = Read-Host -Prompt "Please specify a path to a JSON file to import data from e.g. C:\IntuneOutput\Policies\policy.json"
+$Path = "C:\script_output\test"
+$ImportPath = $Path
 
 # Replacing quotes for Test-Path
 $ImportPath = $ImportPath.replace('"','')
@@ -371,7 +359,7 @@ break
 ####################################################
 
 # Getting content of JSON Import file
-$JSON_Data = gc "$ImportPath"
+$JSON_Data = Get-ChildItem "$ImportPath\EndpointSecurityPolicies" -Recurse -Include *.json
 
 # Converting input to JSON format
 $JSON_Convert = $JSON_Data | ConvertFrom-Json
@@ -381,11 +369,6 @@ $JSON_DN = $JSON_Convert.displayName
 $JSON_TemplateDisplayName = $JSON_Convert.TemplateDisplayName
 $JSON_TemplateId = $JSON_Convert.templateId
 
-Write-Host
-Write-Host "Endpoint Security Policy '$JSON_DN' found..." -ForegroundColor Cyan
-Write-Host "Template Display Name: $JSON_TemplateDisplayName"
-Write-Host "Template ID: $JSON_TemplateId"
-
 ####################################################
 
 # Get all Endpoint Security Templates
@@ -394,7 +377,7 @@ $Templates = Get-EndpointSecurityTemplate
 ####################################################
 
 # Checking if templateId from JSON is a valid templateId
-$ES_Template = $Templates | ?  { $_.id -eq $JSON_TemplateId }
+$ES_Template = $Templates | Where-Object  { $_.id -eq $JSON_TemplateId }
 
 ####################################################
 
@@ -420,9 +403,9 @@ elseif($ES_Template){
     # If template deprecated, look for lastest version
     elseif($ES_Template.isDeprecated -eq $true) {
 
-        $Template = $Templates | ? { $_.displayName -eq "$JSON_TemplateDisplayName" }
+        $Template = $Templates | Where-Object { $_.displayName -eq "$JSON_TemplateDisplayName" }
 
-        $Template = $Template | ? { $_.isDeprecated -eq $false }
+        $Template = $Template | Where-Object { $_.isDeprecated -eq $false }
 
         $TemplateId = $Template.id
 
@@ -433,10 +416,10 @@ elseif($ES_Template){
 ####################################################
 
 # Else If Imported JSON template ID can't be found check if Template Display Name can be used
-elseif($ES_Template -eq $null){
+elseif($null -eq $ES_Template){
 
     Write-Host "Didn't find Template with ID $JSON_TemplateId, checking if Template DisplayName '$JSON_TemplateDisplayName' can be used..." -ForegroundColor Red
-    $ES_Template = $Templates | ?  { $_.displayName -eq "$JSON_TemplateDisplayName" }
+    $ES_Template = $Templates | Where-Object  { $_.displayName -eq "$JSON_TemplateDisplayName" }
 
     If($ES_Template){
 
@@ -454,7 +437,7 @@ elseif($ES_Template -eq $null){
 
             Write-Host "Template with displayName '$JSON_TemplateDisplayName' found..." -ForegroundColor Green
 
-            $Template = $ES_Template | ? { $_.isDeprecated -eq $false }
+            $Template = $ES_Template | Where-Object { $_.isDeprecated -eq $false }
 
             $TemplateId = $Template.id
 
@@ -483,8 +466,6 @@ $DisplayName = $JSON_Convert.displayName
 
 $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
 
-write-host
-$JSON_Output
 write-host
 Write-Host "Adding Endpoint Security Policy '$DisplayName'" -ForegroundColor Yellow
 Add-EndpointSecurityPolicy -TemplateId $TemplateId -JSON $JSON_Output

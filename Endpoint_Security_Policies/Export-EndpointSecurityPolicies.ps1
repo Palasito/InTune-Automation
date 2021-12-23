@@ -467,7 +467,7 @@ function Get-AuthToken {
     
     ####################################################
     
-function Export-EndpointSecurityPolicy(){
+function Export-EndpointSecurityPolicies(){
     
     [cmdletbinding()]
 

@@ -415,14 +415,9 @@ function Get-AuthToken {
     
     ####################################################
     
-
-function Export-EndpointSecurityPolicy(){
+    #region Authentication
     
-    [cmdletbinding()]
-
-    param(
-        $Path
-    )
+    write-host
     
     # Checking if authToken exists before running authentication
     if($global:authToken){
@@ -471,6 +466,14 @@ function Export-EndpointSecurityPolicy(){
     #endregion
     
     ####################################################
+    
+function Export-EndpointSecurityPolicies(){
+    
+    [cmdletbinding()]
+
+    param(
+        $Path
+    )
 
     $ExportPath = $Path
     
@@ -500,6 +503,8 @@ function Export-EndpointSecurityPolicy(){
             }
     
         }
+    
+    Write-Host
     
     #endregion
     
