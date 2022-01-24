@@ -413,7 +413,15 @@ function Get-AuthToken {
     
     }
     
-    ####################################################
+function Export-EndpointSecurityPolicies(){
+    
+    [cmdletbinding()]
+
+    param(
+        $Path
+    )
+
+        ####################################################
     
     #region Authentication
     
@@ -467,14 +475,6 @@ function Get-AuthToken {
     
     ####################################################
     
-function Export-EndpointSecurityPolicies(){
-    
-    [cmdletbinding()]
-
-    param(
-        $Path
-    )
-
     $ExportPath = $Path
     
         # If the directory path doesn't exist prompt user to create the directory
