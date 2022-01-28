@@ -246,18 +246,6 @@ $Resource = "deviceManagement/deviceCompliancePolicies"
 
 Function Export-JSONData(){
 
-<#
-.SYNOPSIS
-This function is used to export JSON data returned from Graph
-.DESCRIPTION
-This function is used to export JSON data returned from Graph
-.EXAMPLE
-Export-JSONData -JSON $JSON
-Export the JSON inputted on the function
-.NOTES
-NAME: Export-JSONData
-#>
-
 param (
 
 $JSON,

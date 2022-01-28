@@ -27,7 +27,7 @@ foreach ($Policy in $AllPolicies) {
 
     $FinalJSONDisplayName = $JSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
 
-    $PolicyJSON | Out-File $Path\ConditionalAccessPolicies\$($FinalJSONdisplayName).json
+    $PolicyJSON | Out-File -LiteralPath "$($Path)\ConditionalAccessPolicies\$($FinalJSONdisplayName).json"
 
     [PSCustomObject]@{
         "Action" = "Export"
