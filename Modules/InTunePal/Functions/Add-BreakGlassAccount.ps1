@@ -10,8 +10,8 @@ Function Add-BreakGlassAccount(){
     Write-Host
     Write-Host "Will be creating the following users:" -ForegroundColor Cyan
     write-host "Break-Glass account with username: $UserPrincipalName and password: "$PasswordProfile.Password -ForegroundColor Cyan
-    write-host "Test User account with username: $UserPrincipalName and password: "$PasswordProfile.Password -ForegroundColor Cyan
-    write-host "Officeline account with username: $UserPrincipalName and password: "$PasswordProfile.Password -ForegroundColor Cyan
+    write-host "Test User account with username: testuser@$($tenantforbreak) and password: "$PasswordProfile.Password -ForegroundColor Cyan
+    write-host "Officeline account with username: Officeline@$($tenantforbreak) and password: "$PasswordProfile.Password -ForegroundColor Cyan
     Write-Host 
     Start-Sleep -Seconds 5
     

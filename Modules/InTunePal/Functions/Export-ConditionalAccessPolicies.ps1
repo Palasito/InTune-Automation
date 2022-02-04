@@ -21,7 +21,7 @@ Write-Host "Exporting Conditional Access Policies..." -ForegroundColor cyan
 
 $AllPolicies = Get-AzureADMSConditionalAccessPolicy
 foreach ($Policy in $AllPolicies) {
-    $PolicyJSON = $Policy | ConvertTo-Json -Depth 6
+    $PolicyJSON = $Policy | ConvertTo-Json -Depth 20
 
     $JSONdisplayName = $Policy.DisplayName
 
