@@ -1,4 +1,4 @@
-Function Get-AndroidAPPPolicy(){
+Function Get-AndroidAPPPolicy() {
     <#Explanation of function to be added#>
     
     [cmdletbinding()]
@@ -6,14 +6,14 @@ Function Get-AndroidAPPPolicy(){
     $graphApiVersion = "Beta"
     $DSC_Resource = "deviceAppManagement/androidManagedAppProtections"
         
-        try {
+    try {
         
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)"
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-        }
+    }
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -26,11 +26,11 @@ Function Get-AndroidAPPPolicy(){
         write-host
         break
     
-        }
+    }
     
 }
 
-Function Get-iOSAPPPolicy(){
+Function Get-iOSAPPPolicy() {
     <#Explanation of function to be added#>
     
     [cmdletbinding()]
@@ -38,14 +38,14 @@ Function Get-iOSAPPPolicy(){
     $graphApiVersion = "Beta"
     $DSC_Resource = "deviceAppManagement/iosManagedAppProtections"
         
-        try {
+    try {
         
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)"
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-        }
+    }
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -58,11 +58,11 @@ Function Get-iOSAPPPolicy(){
         write-host
         break
     
-        }
+    }
     
 }
 
-Function Get-WindowsInformationProtectionPolicy(){
+Function Get-WindowsInformationProtectionPolicy() {
     <#Explanation of function to be added#>
     
     [cmdletbinding()]
@@ -70,14 +70,14 @@ Function Get-WindowsInformationProtectionPolicy(){
     $graphApiVersion = "Beta"
     $DSC_Resource = "deviceAppManagement/windowsInformationProtectionPolicies"
         
-        try {
+    try {
         
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)"
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-        }
+    }
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -90,11 +90,11 @@ Function Get-WindowsInformationProtectionPolicy(){
         write-host
         break
     
-        }
+    }
     
 }
 
-Function Get-mdmWindowsInformationProtectionPolicy(){
+Function Get-mdmWindowsInformationProtectionPolicy() {
     <#Explanation of function to be added#>
     
     [cmdletbinding()]
@@ -102,14 +102,14 @@ Function Get-mdmWindowsInformationProtectionPolicy(){
     $graphApiVersion = "Beta"
     $DSC_Resource = "deviceAppManagement/mdmWindowsInformationProtectionPolicies"
         
-        try {
+    try {
         
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)"
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-        }
+    }
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -122,11 +122,11 @@ Function Get-mdmWindowsInformationProtectionPolicy(){
         write-host
         break
     
-        }
+    }
     
 }
 
-function Add-APPGroups(){
+function Add-APPGroups() {
     
     [cmdletbinding()]
 
@@ -139,11 +139,11 @@ function Add-APPGroups(){
     
     $APPGroups = Import-Csv -Path $Path\CSVs\AppProtection\*.csv -Delimiter ','
 
-    foreach($Pol in $APPGroups){
+    foreach ($Pol in $APPGroups) {
     
-        try{
+        try {
 
-            if($null -ne ($Policy = Get-AndroidAPPPolicy | Where-Object displayName -eq $pol.DisplayName)){
+            if ($null -ne ($Policy = Get-AndroidAPPPolicy | Where-Object displayName -eq $pol.DisplayName)) {
                 
                 $InclGrps = $pol.IncludeGroups -split ";"
                 $ExclGrps = $pol.ExcludeGroups -split ";"
@@ -151,7 +151,7 @@ function Add-APPGroups(){
                     assignments = @()
                 }
 
-                foreach ($grp in $InclGrps){
+                foreach ($grp in $InclGrps) {
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
@@ -164,7 +164,7 @@ function Add-APPGroups(){
                     }
                 }
 
-                foreach($grp in $ExclGrps){
+                foreach ($grp in $ExclGrps) {
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
@@ -173,7 +173,7 @@ function Add-APPGroups(){
                     $targetmember.groupId = $g.id
 
                     $body.assignments += @{
-                            "target" = $targetmember
+                        "target" = $targetmember
                     }
                 }
 
@@ -182,15 +182,15 @@ function Add-APPGroups(){
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/androidManagedAppProtections/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
 
                 [PSCustomObject]@{
-                    "Action" = "Assign"
-                    "Type"   = "App Protection Policy"
-                    "Name"   = $Policy.displayName
-                    "Included Groups"   = $InclGrps
-                    "Excluded Groups"   = $ExclGrps
+                    "Action"          = "Assign"
+                    "Type"            = "App Protection Policy"
+                    "Name"            = $Policy.displayName
+                    "Included Groups" = $InclGrps
+                    "Excluded Groups" = $ExclGrps
                 }
             }
 
-            elseif($null -ne ($Policy = Get-iOSAPPPolicy |Where-Object displayName -eq $Pol.DisplayName)){
+            elseif ($null -ne ($Policy = Get-iOSAPPPolicy | Where-Object displayName -eq $Pol.DisplayName)) {
 
                 $InclGrps = $pol.IncludeGroups -split ";"
                 $ExclGrps = $pol.ExcludeGroups -split ";"
@@ -198,7 +198,7 @@ function Add-APPGroups(){
                     assignments = @()
                 }
 
-                foreach ($grp in $InclGrps){
+                foreach ($grp in $InclGrps) {
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
@@ -211,7 +211,7 @@ function Add-APPGroups(){
                     }
                 }
 
-                foreach($grp in $ExclGrps){
+                foreach ($grp in $ExclGrps) {
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
@@ -220,7 +220,7 @@ function Add-APPGroups(){
                     $targetmember.groupId = $g.id
 
                     $body.assignments += @{
-                            "target" = $targetmember
+                        "target" = $targetmember
                     }
                 }
 
@@ -229,23 +229,23 @@ function Add-APPGroups(){
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/iosManagedAppProtections/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
             
                 [PSCustomObject]@{
-                    "Action" = "Assign"
-                    "Type"   = "App Protection Policy"
-                    "Name"   = $Policy.displayName
-                    "Included Groups"   = $InclGrps
-                    "Excluded Groups"   = $ExclGrps
+                    "Action"          = "Assign"
+                    "Type"            = "App Protection Policy"
+                    "Name"            = $Policy.displayName
+                    "Included Groups" = $InclGrps
+                    "Excluded Groups" = $ExclGrps
                 }
             }
 
-            elseif($null -ne ($Policy = Get-WindowsInformationProtectionPolicy | Where-Object name -eq $Pol.DisplayName)){
+            elseif ($null -ne ($Policy = Get-WindowsInformationProtectionPolicy | Where-Object name -eq $Pol.DisplayName)) {
 
-                                $InclGrps = $pol.IncludeGroups -split ";"
+                $InclGrps = $pol.IncludeGroups -split ";"
                 $ExclGrps = $pol.ExcludeGroups -split ";"
                 $Body = @{
                     assignments = @()
                 }
 
-                foreach ($grp in $InclGrps){
+                foreach ($grp in $InclGrps) {
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
@@ -258,7 +258,7 @@ function Add-APPGroups(){
                     }
                 }
 
-                foreach($grp in $ExclGrps){
+                foreach ($grp in $ExclGrps) {
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
@@ -267,7 +267,7 @@ function Add-APPGroups(){
                     $targetmember.groupId = $g.id
 
                     $body.assignments += @{
-                            "target" = $targetmember
+                        "target" = $targetmember
                     }
                 }
 
@@ -276,23 +276,23 @@ function Add-APPGroups(){
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/windowsInformationProtectionPolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
             
                 [PSCustomObject]@{
-                    "Action" = "Assign"
-                    "Type"   = "App Protection Policy"
-                    "Name"   = $Policy.displayName
-                    "Included Groups"   = $InclGrps
-                    "Excluded Groups"   = $ExclGrps
+                    "Action"          = "Assign"
+                    "Type"            = "App Protection Policy"
+                    "Name"            = $Policy.displayName
+                    "Included Groups" = $InclGrps
+                    "Excluded Groups" = $ExclGrps
                 }
             }
 
-            elseif($null -ne ($Policy = Get-mdmWindowsInformationProtectionPolicy | Where-Object name -eq $Pol.DisplayName)){
+            elseif ($null -ne ($Policy = Get-mdmWindowsInformationProtectionPolicy | Where-Object name -eq $Pol.DisplayName)) {
 
-                                $InclGrps = $pol.IncludeGroups -split ";"
+                $InclGrps = $pol.IncludeGroups -split ";"
                 $ExclGrps = $pol.ExcludeGroups -split ";"
                 $Body = @{
                     assignments = @()
                 }
 
-                foreach ($grp in $InclGrps){
+                foreach ($grp in $InclGrps) {
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
@@ -305,7 +305,7 @@ function Add-APPGroups(){
                     }
                 }
 
-                foreach($grp in $ExclGrps){
+                foreach ($grp in $ExclGrps) {
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
@@ -314,7 +314,7 @@ function Add-APPGroups(){
                     $targetmember.groupId = $g.id
 
                     $body.assignments += @{
-                            "target" = $targetmember
+                        "target" = $targetmember
                     }
                 }
 
@@ -323,20 +323,20 @@ function Add-APPGroups(){
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceAppManagement/mdmWindowsInformationProtectionPolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
             
                 [PSCustomObject]@{
-                    "Action" = "Assign"
-                    "Type"   = "App Protection Policy"
-                    "Name"   = $Policy.displayName
-                    "Included Groups"   = $InclGrps
-                    "Excluded Groups"   = $ExclGrps
+                    "Action"          = "Assign"
+                    "Type"            = "App Protection Policy"
+                    "Name"            = $Policy.displayName
+                    "Included Groups" = $InclGrps
+                    "Excluded Groups" = $ExclGrps
                 }
             }
         
-            else{
+            else {
                 Write-Host "Could not find policy:" $Pol.DisplayName -ForegroundColor Red
             }
         }
 
-        catch{
+        catch {
             $ex = $_.Exception
             $errorResponse = $ex.Response.GetResponseStream()
             $reader = New-Object System.IO.StreamReader($errorResponse)

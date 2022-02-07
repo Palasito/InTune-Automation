@@ -1,109 +1,118 @@
-function Import-ConditionalAccessPolicies(){
+function Import-ConditionalAccessPolicies() {
 
-param(
-    $Path,
-    $Prefix,
-    $AzureADToken
-)
+    param(
+        $Path,
+        $Prefix,
+        $AzureADToken
+    )
 
-if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens){
-    Write-Host "Getting AzureAD authToken"
-    Connect-AzureAD
-} else {
-    $azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
+    if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens) {
+        Write-Host "Getting AzureAD authToken"
+        Connect-AzureAD
+    }
+    else {
+        $azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
     
-}
+    }
 
-$CAPGroups = Import-Csv -Path $Path\CSVs\ConditionalAccess\*.csv -Delimiter ','
-$BackupJsons = Get-ChildItem "$Path\ConditionalAccessPolicies" -Recurse -Include *.json
+    $CAPGroups = Import-Csv -Path $Path\CSVs\ConditionalAccess\*.csv -Delimiter ','
+    $BackupJsons = Get-ChildItem "$Path\ConditionalAccessPolicies" -Recurse -Include *.json
 
-Write-Host
-Write-Host "Importing Conditional Access Policies..." -ForegroundColor cyan
+    Write-Host
+    Write-Host "Importing Conditional Access Policies..." -ForegroundColor cyan
 
     foreach ($Json in $BackupJsons) {
 
         $policy = Get-Content $Json.FullName | ConvertFrom-Json
 
-        # Create objects for the conditions and GrantControls
-        [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
-        [Microsoft.Open.MSGraph.Model.ConditionalAccessGrantControls]$GrantControls = $Policy.GrantControls
-        [Microsoft.Open.MSGraph.Model.ConditionalAccessSessionControls]$SessionControls = $Policy.SessionControls
-        $BreakGlass = Get-AzureADUser | where-object {$_.UserPrincipalName -match "breakuser@"}
-        $incluser = Get-AzureADUser | where-object {$_.UserPrincipalName -match "testuser@"}
-        $OLUser = Get-AzureADUser | where-object {$_.UserPrincipalName -match "officeline@"}
+        $check = Get-AzureADMSConditionalAccessPolicy | Where-object { $_.DisplayName -eq $policy.DisplayName }
 
-        $Users = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessUserCondition
+        if ($null -eq $check) {
 
-        if ($null -ne ($CAPGroups | Where-Object displayname -eq $policy.DisplayName)){
-            $InclGrps = $CAPGroups.IncludeGroups -split ";"
-            $ExclGrps = $CAPGroups.ExcludeGroups -split ";"
+            # Create objects for the conditions and GrantControls
+            [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
+            [Microsoft.Open.MSGraph.Model.ConditionalAccessGrantControls]$GrantControls = $Policy.GrantControls
+            [Microsoft.Open.MSGraph.Model.ConditionalAccessSessionControls]$SessionControls = $Policy.SessionControls
+            $BreakGlass = Get-AzureADUser | where-object { $_.UserPrincipalName -match "breakuser@" }
+            $incluser = Get-AzureADUser | where-object { $_.UserPrincipalName -match "testuser@" }
+            $OLUser = Get-AzureADUser | where-object { $_.UserPrincipalName -match "officeline@" }
 
-            foreach ($grp in $InclGrps){
-                $inclgrpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp"
-                $Users.IncludeGroups += $inclgrpid.id
+            $Users = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessUserCondition
+
+            if ($null -ne ($CAPGroups | Where-Object displayname -eq $policy.DisplayName)) {
+                $InclGrps = $CAPGroups.IncludeGroups -split ";"
+                $ExclGrps = $CAPGroups.ExcludeGroups -split ";"
+
+                foreach ($grp in $InclGrps) {
+                    $inclgrpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp"
+                    $Users.IncludeGroups += $inclgrpid.id
+                }
+
+                foreach ($grp in $ExclGrps) {
+                    $exclgrpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp" 
+                    $Users.ExcludeGroups += $exclgrpid.Id
+                }
+
             }
 
-            foreach($grp in $ExclGrps){
-                $exclgrpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp" 
-                $Users.ExcludeGroups += $exclgrpid.Id
+            $Users.IncludeUsers = $incluser.ObjectId
+            $Users.ExcludeUsers += $BreakGlass.ObjectId
+            $Users.ExcludeUsers += $OLUser.ObjectId
+            $Conditions.Users = $Users
+
+            $OldInclLocations = $policy.Conditions.Locations.IncludeLocations
+            $OldExclLocations = $Policy.Conditions.Locations.ExcludeLocations
+            if ($null -ne $OldInclLocations) {
+                $Locations = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessLocationCondition
+                foreach ($loc in $OldExclLocations) {
+                    if (-not[string]::IsNullOrEmpty($OldExclLocations)) {
+                        $Exclloc = Get-AzureADMSNamedLocationPolicy | Where-object displayName -eq "$loc"
+                        $Locations.ExcludeLocations += $Exclloc.Id
+                    }
+                }
+                foreach ($loc in $OldInclLocations) {
+                    if ($OldInclLocations = "All") {
+                        $Locations.IncludeLocations = "All"
+                    }
+                    elseif (-not[string]::IsNullOrEmpty($OldInclLocations)) {
+                        $Inclloc = Get-AzureADMSNamedLocationPolicy | Where-object displayName -eq "$loc"
+                        $Locations.IncludeLocations += $Inclloc.Id
+                    }
+                }
+
+                $Conditions.Locations = $locations
             }
 
-        }
-
-        $Users.IncludeUsers = $incluser.ObjectId
-        $Users.ExcludeUsers += $BreakGlass.ObjectId
-        $Users.ExcludeUsers += $OLUser.ObjectId
-        $Conditions.Users = $Users
-
-        $OldInclLocations = $policy.Conditions.Locations.IncludeLocations
-        $OldExclLocations = $Policy.Conditions.Locations.ExcludeLocations
-            if($null -ne $OldInclLocations){
-            $Locations = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessLocationCondition
-            foreach ($loc in $OldExclLocations) {
-                if(-not[string]::IsNullOrEmpty($OldExclLocations)){
-                    $Exclloc = Get-AzureADMSNamedLocationPolicy | Where-object displayName -eq "$loc"
-                    $Locations.ExcludeLocations += $Exclloc.Id
+            # Do the same thing for the applications
+            $OldApplications = $Policy.Conditions.Applications
+            $ApplicationMembers = $OldApplications | Get-Member -MemberType NoteProperty
+            $Applications = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessApplicationCondition
+            foreach ($member in $ApplicationMembers) {
+                if (-not[string]::IsNullOrEmpty($OldApplications.$($member.Name))) {
+                    $Applications.($member.Name) = ($OldApplications.$($member.Name))
                 }
             }
-            foreach ($loc in $OldInclLocations) {
-                if($OldInclLocations = "All"){
-                    $Locations.IncludeLocations = "All"
-                }
-                elseif(-not[string]::IsNullOrEmpty($OldInclLocations)){
-                    $Inclloc = Get-AzureADMSNamedLocationPolicy | Where-object displayName -eq "$loc"
-                    $Locations.IncludeLocations += $Inclloc.Id
-                }
+            $Conditions.Applications = $Applications
+            $NewDisplayName = $Prefix + $Policy.DisplayName
+            $Parameters = @{
+                DisplayName     = $NewDisplayName
+                State           = $Policy.State
+                Conditions      = $Conditions
+                GrantControls   = $GrantControls
+                SessionControls = $SessionControls
             }
-
-            $Conditions.Locations = $locations
-            }
-
-        # Do the same thing for the applications
-        $OldApplications = $Policy.Conditions.Applications
-        $ApplicationMembers = $OldApplications | Get-Member -MemberType NoteProperty
-        $Applications = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessApplicationCondition
-        foreach ($member in $ApplicationMembers) {
-            if (-not[string]::IsNullOrEmpty($OldApplications.$($member.Name))) {
-                $Applications.($member.Name) = ($OldApplications.$($member.Name))
-            }
-        }
-        $Conditions.Applications = $Applications
-        $NewDisplayName = $Prefix + $Policy.DisplayName
-        $Parameters = @{
-            DisplayName     = $NewDisplayName
-            State           = $Policy.State
-            Conditions      = $Conditions
-            GrantControls   = $GrantControls
-            SessionControls = $SessionControls
-        }
         
-        [PSCustomObject]@{
-            "Action" = "Import"
-            "Type"   = "Conditional Access Policy"
-            "Name"   = $NewDisplayName
-            "From"   = $Json
-        }
+            [PSCustomObject]@{
+                "Action" = "Import"
+                "Type"   = "Conditional Access Policy"
+                "Name"   = $NewDisplayName
+                "From"   = $Json
+            }
 
-    $null = New-AzureADMSConditionalAccessPolicy @Parameters
+            $null = New-AzureADMSConditionalAccessPolicy @Parameters
+        }
+    }
+    else {
+        Write-Host "Conditional Access policy $($policy.DisplayName) already exists and will not be imported" -ForegroundColor Red
     }
 }

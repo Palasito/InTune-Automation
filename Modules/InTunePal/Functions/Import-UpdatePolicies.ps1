@@ -1,18 +1,18 @@
 function Get-AuthToken {
 
-[cmdletbinding()]
+    [cmdletbinding()]
 
-param
-(
-    [Parameter(Mandatory=$true)]
-    $User
-)
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        $User
+    )
 
-$userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
+    $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
 
-$tenant = $userUpn.Host
+    $tenant = $userUpn.Host
 
-Write-Host "Checking for AzureAD module..."
+    Write-Host "Checking for AzureAD module..."
 
     $AadModule = Get-Module -Name "AzureAD" -ListAvailable
 
@@ -32,17 +32,17 @@ Write-Host "Checking for AzureAD module..."
         exit
     }
 
-    if($AadModule.count -gt 1){
+    if ($AadModule.count -gt 1) {
 
         $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
 
         $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
 
-            if($AadModule.count -gt 1){
+        if ($AadModule.count -gt 1) {
 
             $aadModule = $AadModule | Select-Object -Unique
 
-            }
+        }
 
         $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
         $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
@@ -56,94 +56,94 @@ Write-Host "Checking for AzureAD module..."
 
     }
 
-[System.Reflection.Assembly]::LoadFrom($adal) | Out-Null
+    [System.Reflection.Assembly]::LoadFrom($adal) | Out-Null
 
-[System.Reflection.Assembly]::LoadFrom($adalforms) | Out-Null
+    [System.Reflection.Assembly]::LoadFrom($adalforms) | Out-Null
 
-$clientId = "d1ddf0e4-d672-4dae-b554-9d5bdfd93547"
+    $clientId = "d1ddf0e4-d672-4dae-b554-9d5bdfd93547"
 
-$redirectUri = "urn:ietf:wg:oauth:2.0:oob"
+    $redirectUri = "urn:ietf:wg:oauth:2.0:oob"
 
-$resourceAppIdURI = "https://graph.microsoft.com"
+    $resourceAppIdURI = "https://graph.microsoft.com"
 
-$authority = "https://login.microsoftonline.com/$Tenant"
+    $authority = "https://login.microsoftonline.com/$Tenant"
 
     try {
 
-    $authContext = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" -ArgumentList $authority
+        $authContext = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" -ArgumentList $authority
 
-    # https://msdn.microsoft.com/en-us/library/azure/microsoft.identitymodel.clients.activedirectory.promptbehavior.aspx
-    # Change the prompt behaviour to force credentials each time: Auto, Always, Never, RefreshSession
+        # https://msdn.microsoft.com/en-us/library/azure/microsoft.identitymodel.clients.activedirectory.promptbehavior.aspx
+        # Change the prompt behaviour to force credentials each time: Auto, Always, Never, RefreshSession
 
-    $platformParameters = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.PlatformParameters" -ArgumentList "Auto"
+        $platformParameters = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.PlatformParameters" -ArgumentList "Auto"
 
-    $userId = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifier" -ArgumentList ($User, "OptionalDisplayableId")
+        $userId = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifier" -ArgumentList ($User, "OptionalDisplayableId")
 
-    $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI,$clientId,$redirectUri,$platformParameters,$userId).Result
+        $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI, $clientId, $redirectUri, $platformParameters, $userId).Result
 
-        if($authResult.AccessToken){
+        if ($authResult.AccessToken) {
 
-        $authHeader = @{
-            'Content-Type'='application/json'
-            'Authorization'="Bearer " + $authResult.AccessToken
-            'ExpiresOn'=$authResult.ExpiresOn
+            $authHeader = @{
+                'Content-Type'  = 'application/json'
+                'Authorization' = "Bearer " + $authResult.AccessToken
+                'ExpiresOn'     = $authResult.ExpiresOn
             }
 
-        return $authHeader
+            return $authHeader
 
         }
 
         else {
 
-        Write-Host
-        Write-Host "Authorization Access Token is null, please re-run authentication..." -ForegroundColor Red
-        Write-Host
+            Write-Host
+            Write-Host "Authorization Access Token is null, please re-run authentication..." -ForegroundColor Red
+            Write-Host
+            break
+
+        }
+
+    }
+
+    catch {
+
+        write-host $_.Exception.Message -f Red
+        write-host $_.Exception.ItemName -f Red
+        write-host
         break
 
-        }
-
-    }
-
-    catch {
-
-    write-host $_.Exception.Message -f Red
-    write-host $_.Exception.ItemName -f Red
-    write-host
-    break
-
     }
 
 }
 
 ####################################################
 
-Function Add-DeviceConfigurationPolicy(){
+Function Add-DeviceConfigurationPolicy() {
 
-[cmdletbinding()]
+    [cmdletbinding()]
 
-param
-(
-    $JSON
-)
+    param
+    (
+        $JSON
+    )
 
-$graphApiVersion = "Beta"
-$DCP_resource = "deviceManagement/deviceConfigurations"
-Write-Verbose "Resource: $DCP_resource"
+    $graphApiVersion = "Beta"
+    $DCP_resource = "deviceManagement/deviceConfigurations"
+    Write-Verbose "Resource: $DCP_resource"
 
     try {
 
-        if($JSON -eq "" -or $null -eq $JSON){
+        if ($JSON -eq "" -or $null -eq $JSON) {
 
-        write-host "No JSON specified, please specify valid JSON for the Android Policy..." -f Red
+            write-host "No JSON specified, please specify valid JSON for the Android Policy..." -f Red
 
         }
 
         else {
 
-        Test-JSON -JSON $JSON
+            Test-JSON -JSON $JSON
 
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($DCP_resource)"
-        Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
+            $uri = "https://graph.microsoft.com/$graphApiVersion/$($DCP_resource)"
+            Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
 
         }
 
@@ -151,16 +151,16 @@ Write-Verbose "Resource: $DCP_resource"
     
     catch {
 
-    $ex = $_.Exception
-    $errorResponse = $ex.Response.GetResponseStream()
-    $reader = New-Object System.IO.StreamReader($errorResponse)
-    $reader.BaseStream.Position = 0
-    $reader.DiscardBufferedData()
-    $responseBody = $reader.ReadToEnd();
-    Write-Host "Response content:`n$responseBody" -f Red
-    Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-    write-host
-    break
+        $ex = $_.Exception
+        $errorResponse = $ex.Response.GetResponseStream()
+        $reader = New-Object System.IO.StreamReader($errorResponse)
+        $reader.BaseStream.Position = 0
+        $reader.DiscardBufferedData()
+        $responseBody = $reader.ReadToEnd();
+        Write-Host "Response content:`n$responseBody" -f Red
+        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+        write-host
+        break
 
     }
 
@@ -168,32 +168,32 @@ Write-Verbose "Resource: $DCP_resource"
 
 ####################################################
 
-Function Test-JSON(){
+Function Test-JSON() {
 
-param (
+    param (
 
-$JSON
+        $JSON
 
-)
+    )
 
     try {
 
-    ConvertFrom-Json $JSON -ErrorAction Stop
-    $validJson = $true
+        ConvertFrom-Json $JSON -ErrorAction Stop
+        $validJson = $true
 
     }
 
     catch {
 
-    $validJson = $false
-    $_.Exception
+        $validJson = $false
+        $_.Exception
 
     }
 
-    if (!$validJson){
+    if (!$validJson) {
     
-    Write-Host "Provided JSON isn't in valid JSON format" -f Red
-    break
+        Write-Host "Provided JSON isn't in valid JSON format" -f Red
+        break
 
     }
 
@@ -201,7 +201,7 @@ $JSON
 
 ####################################################
 
-function Import-UpdatePolicies(){
+function Import-UpdatePolicies() {
 
     [cmdletbinding()]
     
@@ -210,104 +210,118 @@ function Import-UpdatePolicies(){
         $Path
     )
 
-    if($global:authToken){
+    if ($global:authToken) {
 
-    $DateTime = (Get-Date).ToUniversalTime()
+        $DateTime = (Get-Date).ToUniversalTime()
 
-    $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
+        $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
 
-        if($TokenExpires -le 0){
+        if ($TokenExpires -le 0) {
 
-        write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
-        write-host
+            write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
+            write-host
 
-            if($null -eq $User -or $User -eq ""){
+            if ($null -eq $User -or $User -eq "") {
 
-            $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-            Write-Host
+                $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
+                Write-Host
 
             }
 
-        $global:authToken = Get-AuthToken -User $User
+            $global:authToken = Get-AuthToken -User $User
 
         }
     }
 
     else {
 
-    if($null -eq $User -or $User -eq ""){
+        if ($null -eq $User -or $User -eq "") {
 
-    $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-    Write-Host
+            $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
+            Write-Host
+
+        }
+
+        $global:authToken = Get-AuthToken -User $User
 
     }
 
-$global:authToken = Get-AuthToken -User $User
+    #endregion
 
-}
+    ####################################################
 
-#endregion
+    $ImportPath = $Path
 
-####################################################
+    $ImportPath = $ImportPath.replace('"', '')
 
-$ImportPath = $Path
+    if (!(Test-Path "$ImportPath")) {
 
-$ImportPath = $ImportPath.replace('"','')
+        Write-Host "Import Path for JSON file doesn't exist..." -ForegroundColor Red
+        Write-Host "Script can't continue..." -ForegroundColor Red
+        Write-Host
+        break
 
-if(!(Test-Path "$ImportPath")){
+    }
 
-Write-Host "Import Path for JSON file doesn't exist..." -ForegroundColor Red
-Write-Host "Script can't continue..." -ForegroundColor Red
-Write-Host
-break
+    ####################################################
+    Write-Host "Importing Software Update Policies..." -ForegroundColor Cyan
+    Write-Host
 
-}
+    $AvailableJsonsiOS = Get-ChildItem "$ImportPath\iOSUpdatePolicies" -Recurse -Include *.json
 
-####################################################
-Write-Host "Importing Software Update Policies..." -ForegroundColor Cyan
-Write-Host
-
-$AvailableJsonsiOS =  Get-ChildItem "$ImportPath\iOSUpdatePolicies" -Recurse -Include *.json
-
-    foreach($json in $AvailableJsonsiOS){
+    foreach ($json in $AvailableJsonsiOS) {
 
         $JSON_Data = Get-Content $json
 
-        $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,'groupAssignments@odata.context',groupAssignments,supportsScopeTags
+        $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id, createdDateTime, lastModifiedDateTime, version, 'groupAssignments@odata.context', groupAssignments, supportsScopeTags
 
         $DisplayName = $JSON_Convert.displayName
 
-        $JSON_Output = $JSON_Convert | ConvertTo-Json
+        $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceConfigurations"
+        $check = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value | Where-Object { $_.displayName -eq $DisplayName }
+        if ($null -eq $check) {
+            $JSON_Output = $JSON_Convert | ConvertTo-Json
 
-        $null = Add-DeviceConfigurationPolicy -JSON $JSON_Output
-
-        [PSCustomObject]@{
-            "Action" = "Import"
-            "Type"   = "Software Update Policy"
-            "Name"   = $DisplayName
-            "Path"   = "$($ImportPath)\iOSUpdatePolicies"
+            $null = Add-DeviceConfigurationPolicy -JSON $JSON_Output
+    
+            [PSCustomObject]@{
+                "Action" = "Import"
+                "Type"   = "Software Update Policy"
+                "Name"   = $DisplayName
+                "Path"   = "$($ImportPath)\iOSUpdatePolicies"
+            }
+        }
+        else {
+            Write-Host "iOS update policy $($DisplayName) already exists and will not be imported" -ForegroundColor Red
         }
     }
 
-$AvailableJsonsWindows =  Get-ChildItem "$ImportPath\WindowsUpdatePolicies" -Recurse -Include *.json
+    $AvailableJsonsWindows = Get-ChildItem "$ImportPath\WindowsUpdatePolicies" -Recurse -Include *.json
 
-    foreach($json in $AvailableJsonsWindows){
+    foreach ($json in $AvailableJsonsWindows) {
 
         $JSON_Data = Get-Content $json
 
-        $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,'groupAssignments@odata.context',groupAssignments,supportsScopeTags
+        $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id, createdDateTime, lastModifiedDateTime, version, 'groupAssignments@odata.context', groupAssignments, supportsScopeTags
 
         $DisplayName = $JSON_Convert.displayName
 
-        $JSON_Output = $JSON_Convert | ConvertTo-Json
+        $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceConfigurations"
+        $check = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value | Where-Object { $_.displayName -eq $DisplayName }
+        if ($null -eq $check) {
+            $JSON_Output = $JSON_Convert | ConvertTo-Json
 
-        $null = Add-DeviceConfigurationPolicy -JSON $JSON_Output
-
-        [PSCustomObject]@{
-            "Action" = "Import"
-            "Type"   = "Software Update Policy"
-            "Name"   = $DisplayName
-            "Path"   = "$($ImportPath)\WindowsUpdatePolicies"
+            $null = Add-DeviceConfigurationPolicy -JSON $JSON_Output
+    
+            [PSCustomObject]@{
+                "Action" = "Import"
+                "Type"   = "Software Update Policy"
+                "Name"   = $DisplayName
+                "Path"   = "$($ImportPath)\WindowsUpdatePolicies"
+            }
+        }
+        else {
+            Write-Host "Windows Update Policy $($DisplayName) already exists and will not be imported" -ForegroundColor Red
         }
     }
 }

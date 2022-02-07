@@ -1,4 +1,4 @@
-Function Get-ManagedAppPolicy(){
+Function Get-ManagedAppPolicy() {
     
     [cmdletbinding()]
     
@@ -10,25 +10,25 @@ Function Get-ManagedAppPolicy(){
     $graphApiVersion = "Beta"
     $Resource = "deviceAppManagement/managedAppPolicies"
     
-        try {
+    try {
         
-            if($Name){
+        if ($Name) {
         
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayName').contains("$Name") }
         
-            }
+        }
         
-            else {
+        else {
         
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'@odata.type').contains("ManagedAppProtection") -or ($_.'@odata.type').contains("InformationProtectionPolicy") }
         
-            }
-        
         }
         
-        catch {
+    }
+        
+    catch {
         
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -41,13 +41,13 @@ Function Get-ManagedAppPolicy(){
         write-host
         break
         
-        }
-        
     }
+        
+}
     
-    ####################################################
+####################################################
     
-    Function Get-ManagedAppProtection(){
+Function Get-ManagedAppProtection() {
     
     <#
     .SYNOPSIS
@@ -69,75 +69,75 @@ Function Get-ManagedAppPolicy(){
     
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         $id,
-        [Parameter(Mandatory=$true)]
-        [ValidateSet("Android","iOS","WIP_WE","WIP_MDM")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("Android", "iOS", "WIP_WE", "WIP_MDM")]
         $OS    
     )
     
     $graphApiVersion = "Beta"
     
-        try {
+    try {
         
-            if($id -eq "" -or $null -eq $id){
+        if ($id -eq "" -or $null -eq $id) {
         
             write-host "No Managed App Policy id specified, please provide a policy id..." -f Red
             break
         
-            }
+        }
         
-            else {
+        else {
         
-                if($OS -eq "" -or $null -eq $OS){
+            if ($OS -eq "" -or $null -eq $OS) {
         
                 write-host "No OS parameter specified, please provide an OS. Supported value are Android,iOS,WIP_WE,WIP_MDM..." -f Red
                 Write-Host
                 break
         
-                }
+            }
         
-                elseif($OS -eq "Android"){
+            elseif ($OS -eq "Android") {
         
                 $Resource = "deviceAppManagement/androidManagedAppProtections('$id')/?`$expand=apps"
         
                 $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
                 Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get
         
-                }
+            }
         
-                elseif($OS -eq "iOS"){
+            elseif ($OS -eq "iOS") {
         
                 $Resource = "deviceAppManagement/iosManagedAppProtections('$id')/?`$expand=apps"
         
                 $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
                 Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get
         
-                }
+            }
     
-                elseif($OS -eq "WIP_WE"){
+            elseif ($OS -eq "WIP_WE") {
         
                 $Resource = "deviceAppManagement/windowsInformationProtectionPolicies('$id')?`$expand=protectedAppLockerFiles,exemptAppLockerFiles,assignments"
         
                 $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
                 Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get
         
-                }
+            }
     
-                elseif($OS -eq "WIP_MDM"){
+            elseif ($OS -eq "WIP_MDM") {
         
                 $Resource = "deviceAppManagement/mdmWindowsInformationProtectionPolicies('$id')?`$expand=protectedAppLockerFiles,exemptAppLockerFiles,assignments"
         
                 $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
                 Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get
     
-                }
-        
             }
         
         }
+        
+    }
     
-        catch {
+    catch {
         
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -150,13 +150,13 @@ Function Get-ManagedAppPolicy(){
         write-host
         break
         
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Export-JSONData(){
+####################################################
+    
+Function Export-JSONData() {
     
     <#
     .SYNOPSIS
@@ -172,32 +172,32 @@ Function Get-ManagedAppPolicy(){
     
     param (
     
-    $JSON,
-    $ExportPath
+        $JSON,
+        $ExportPath
     
     )
     
-        try {
+    try {
     
-            if($JSON -eq "" -or $null -eq $JSON){
+        if ($JSON -eq "" -or $null -eq $JSON) {
     
             write-host "No JSON specified, please specify valid JSON..." -f Red
     
-            }
+        }
     
-            elseif(!$ExportPath){
+        elseif (!$ExportPath) {
     
             write-host "No export path parameter set, please provide a path to export the file" -f Red
     
-            }
+        }
     
-            elseif(!(Test-Path $ExportPath)){
+        elseif (!(Test-Path $ExportPath)) {
     
             write-host "$ExportPath doesn't exist, can't export JSON Data" -f Red
     
-            }
+        }
     
-            else {
+        else {
 
             $JSON1 = ConvertTo-Json $JSON -Depth 5
     
@@ -210,27 +210,27 @@ Function Get-ManagedAppPolicy(){
     
             # $Properties = ($JSON_Convert | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" }).Name
     
-                $FileName_JSON = "$DisplayName" + ".json"
+            $FileName_JSON = "$DisplayName" + ".json"
     
-                # write-host "Export Path:" "$ExportPath"
+            # write-host "Export Path:" "$ExportPath"
     
-                $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+            $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
                 
-            }
-    
-        }
-    
-        catch {
-    
-        $_.Exception
-    
         }
     
     }
     
-    ####################################################
+    catch {
     
-    function Export-AppProtectionPolicies(){
+        $_.Exception
+    
+    }
+    
+}
+    
+####################################################
+    
+function Export-AppProtectionPolicies() {
     
     [cmdletbinding()]
     
@@ -242,7 +242,7 @@ Function Get-ManagedAppPolicy(){
     write-host
     
     # Checking if authToken exists before running authentication
-    if($global:authToken){
+    if ($global:authToken) {
     
         # Setting DateTime to Universal time to work in all timezones
         $DateTime = (Get-Date).ToUniversalTime()
@@ -250,38 +250,38 @@ Function Get-ManagedAppPolicy(){
         # If the authToken exists checking when it expires
         $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
     
-            if($TokenExpires -le 0){
+        if ($TokenExpires -le 0) {
     
             write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
             write-host
     
-                # Defining User Principal Name if not present
+            # Defining User Principal Name if not present
     
-                if($null -eq $User -or $User -eq ""){
+            if ($null -eq $User -or $User -eq "") {
     
                 $global:User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
                 Write-Host
     
-                }
+            }
     
             $global:authToken = Get-AuthToken -User $User
     
-            }
+        }
     }
     
     # Authentication doesn't exist, calling Get-AuthToken function
     
     else {
     
-        if($null -eq $User -or $User -eq ""){
+        if ($null -eq $User -or $User -eq "") {
     
-        $global:User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-        Write-Host
+            $global:User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
+            Write-Host
     
         }
     
-    # Getting the authorization token
-    $global:authToken = Get-AuthToken -User $User
+        # Getting the authorization token
+        $global:authToken = Get-AuthToken -User $User
     
     }
     
@@ -291,31 +291,31 @@ Function Get-ManagedAppPolicy(){
     
     $ExportPath = $Path
     
-        # If the directory path doesn't exist prompt user to create the directory
+    # If the directory path doesn't exist prompt user to create the directory
     
-        if(!(Test-Path "$ExportPath")){
+    if (!(Test-Path "$ExportPath")) {
     
         Write-Host
         Write-Host "Path '$ExportPath' doesn't exist, do you want to create this directory? Y or N?" -ForegroundColor Yellow
     
         $Confirm = read-host
     
-            if($Confirm -eq "y" -or $Confirm -eq "Y"){
+        if ($Confirm -eq "y" -or $Confirm -eq "Y") {
     
             new-item -ItemType Directory -Path "$ExportPath" | Out-Null
             Write-Host
     
-            }
+        }
     
-            else {
+        else {
     
             Write-Host "Creation of directory path was cancelled..." -ForegroundColor Red
             Write-Host
             break
     
-            }
-    
         }
+    
+    }
     
     Write-Host
     
@@ -329,13 +329,13 @@ Function Get-ManagedAppPolicy(){
     
     $ManagedAppPolicies = Get-ManagedAppPolicy | Where-Object { ($_.'@odata.type').contains("ManagedAppProtection") }
     
-    if($ManagedAppPolicies){
+    if ($ManagedAppPolicies) {
     
-        foreach($ManagedAppPolicy in $ManagedAppPolicies){
+        foreach ($ManagedAppPolicy in $ManagedAppPolicies) {
     
-        # write-host "Managed App Policy:"$ManagedAppPolicy.displayName -f Cyan
+            # write-host "Managed App Policy:"$ManagedAppPolicy.displayName -f Cyan
     
-            if($ManagedAppPolicy.'@odata.type' -eq "#microsoft.graph.androidManagedAppProtection"){
+            if ($ManagedAppPolicy.'@odata.type' -eq "#microsoft.graph.androidManagedAppProtection") {
     
                 $AppProtectionPolicy = Get-ManagedAppProtection -id $ManagedAppPolicy.id -OS "Android"
     
@@ -354,7 +354,7 @@ Function Get-ManagedAppPolicy(){
     
             }
     
-            elseif($ManagedAppPolicy.'@odata.type' -eq "#microsoft.graph.iosManagedAppProtection"){
+            elseif ($ManagedAppPolicy.'@odata.type' -eq "#microsoft.graph.iosManagedAppProtection") {
     
                 $AppProtectionPolicy = Get-ManagedAppProtection -id $ManagedAppPolicy.id -OS "iOS"
     

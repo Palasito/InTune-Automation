@@ -1,19 +1,19 @@
-Function Get-SoftwareUpdatePolicyAssignments(){
+Function Get-SoftwareUpdatePolicyAssignments() {
     
     [cmdletbinding()]
     
     $graphApiVersion = "Beta"
     
-        try {
+    try {
     
-            $Resource = "deviceManagement/deviceConfigurations"
+        $Resource = "deviceManagement/deviceConfigurations"
     
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value
     
-        }
+    }
     
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -26,68 +26,68 @@ Function Get-SoftwareUpdatePolicyAssignments(){
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
+    
+####################################################
 
-    function Add-DUPGroups(){
+function Add-DUPGroups() {
     
-        [cmdletbinding()]
+    [cmdletbinding()]
     
-        param(
-            $Path
-        )
+    param(
+        $Path
+    )
     
-        Write-Host "Adding specified groups to Software Update Policies..." -ForegroundColor Cyan
-        $DCPGroups = Import-Csv -Path $Path\CSVs\UpdatePolicies\*.csv -Delimiter ','
+    Write-Host "Adding specified groups to Software Update Policies..." -ForegroundColor Cyan
+    $DCPGroups = Import-Csv -Path $Path\CSVs\UpdatePolicies\*.csv -Delimiter ','
     
-        foreach($Pol in $DCPGroups){
-            $Policy = Get-SoftwareUpdatePolicyAssignments | Where-Object displayName -match $pol.DisplayName
-            $InclGrps = $pol.IncludeGroups -split ";"
-            $ExclGrps = $pol.ExcludeGroups -split ";"
-            $Body = @{
-                assignments = @()
-            }
+    foreach ($Pol in $DCPGroups) {
+        $Policy = Get-SoftwareUpdatePolicyAssignments | Where-Object displayName -match $pol.DisplayName
+        $InclGrps = $pol.IncludeGroups -split ";"
+        $ExclGrps = $pol.ExcludeGroups -split ";"
+        $Body = @{
+            assignments = @()
+        }
     
-                foreach ($grp in $InclGrps){
-                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
-                    $targetmember = @{}
-                    $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
-                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-                    $targetmember.groupId = $g.id
+        foreach ($grp in $InclGrps) {
+            $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+            $targetmember = @{}
+            $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+            $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+            $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+            $targetmember.groupId = $g.id
     
-                    $body.assignments += @{
-                        "target" = $targetmember
-                    }
-                }
-    
-                foreach($grp in $ExclGrps){
-                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
-                    $targetmember = @{}
-                    $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
-                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-                    $targetmember.groupId = $g.id
-    
-                    $body.assignments += @{
-                        "target" = $targetmember
-                    }
-                }
-            
-            $Body = $Body | ConvertTo-Json -Depth 100
-        
-            Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/deviceManagement/deviceConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
-        
-            [PSCustomObject]@{
-                "Action" = "Assign"
-                "Type"   = "Update Policy"
-                "Name"   = $policy.DisplayName
-                "Included Groups"   = $InclGrps
-                "Excluded Groups"   = $ExclGrps
+            $body.assignments += @{
+                "target" = $targetmember
             }
         }
     
+        foreach ($grp in $ExclGrps) {
+            $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+            $targetmember = @{}
+            $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+            $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+            $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+            $targetmember.groupId = $g.id
+    
+            $body.assignments += @{
+                "target" = $targetmember
+            }
+        }
+            
+        $Body = $Body | ConvertTo-Json -Depth 100
+        
+        Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/deviceManagement/deviceConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+        
+        [PSCustomObject]@{
+            "Action"          = "Assign"
+            "Type"            = "Update Policy"
+            "Name"            = $policy.DisplayName
+            "Included Groups" = $InclGrps
+            "Excluded Groups" = $ExclGrps
+        }
     }
+    
+}

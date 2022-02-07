@@ -1,4 +1,4 @@
-Function Get-DeviceSettingsCatalogPolicy(){
+Function Get-DeviceSettingsCatalogPolicy() {
     <#Explanation of function to be added#>
     
     [cmdletbinding()]
@@ -6,16 +6,16 @@ Function Get-DeviceSettingsCatalogPolicy(){
     $graphApiVersion = "Beta"
     $DSC_Resource = "deviceManagement/configurationPolicies"
         
-        try {
+    try {
         
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)"
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-        }
+    }
         
     
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -28,11 +28,11 @@ Function Get-DeviceSettingsCatalogPolicy(){
         write-host
         break
     
-        }
+    }
     
 }
 
-Function Get-DeviceAdministrativeTemplates(){
+Function Get-DeviceAdministrativeTemplates() {
     <#Explanation of function to be added#>
     
     [cmdletbinding()]
@@ -40,14 +40,14 @@ Function Get-DeviceAdministrativeTemplates(){
     $graphApiVersion = "Beta"
     $DAT_Resource = "deviceManagement/groupPolicyConfigurations"
         
-        try {
+    try {
         
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($DAT_Resource)"
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
         
-        }
+    }
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -60,25 +60,25 @@ Function Get-DeviceAdministrativeTemplates(){
         write-host
         break
     
-        }
+    }
     
 }
 
-Function Get-GeneralDeviceConfigurationPolicy(){
+Function Get-GeneralDeviceConfigurationPolicy() {
 
     [cmdletbinding()]
     
     $graphApiVersion = "Beta"
     $GDC_resource = "deviceManagement/deviceConfigurations"
         
-        try {
+    try {
         
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($GDC_resource)"
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
         
-        }
+    }
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -91,11 +91,11 @@ Function Get-GeneralDeviceConfigurationPolicy(){
         write-host
         break
     
-        }
+    }
     
 }
 
-function Add-DCPGroups(){
+function Add-DCPGroups() {
     
     [cmdletbinding()]
 
@@ -107,11 +107,11 @@ function Add-DCPGroups(){
 
     Write-Host "Adding specified Groups to the Device Configuration Policies..." -ForegroundColor Cyan
 
-    foreach($Pol in $DCPGroups){
+    foreach ($Pol in $DCPGroups) {
     
-        try{
+        try {
 
-            if($null -ne ($Policy = Get-GeneralDeviceConfigurationPolicy | Where-Object displayName -eq $pol.DisplayName)){
+            if ($null -ne ($Policy = Get-GeneralDeviceConfigurationPolicy | Where-Object displayName -eq $pol.DisplayName)) {
                 
                 $InclGrps = $Pol.IncludeGroups -split ";"
                 $ExclGrps = $Pol.ExcludeGroups -split ";"
@@ -120,7 +120,7 @@ function Add-DCPGroups(){
                     assignments = @()
                 }
             
-                foreach ($grp in $InclGrps){
+                foreach ($grp in $InclGrps) {
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
@@ -133,8 +133,8 @@ function Add-DCPGroups(){
                     }
                 }
             
-                if ($ExclGrps -gt 1){
-                    foreach($grp in $ExclGrps){
+                if ($ExclGrps -gt 1) {
+                    foreach ($grp in $ExclGrps) {
                         $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
@@ -154,15 +154,15 @@ function Add-DCPGroups(){
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
 
                 [PSCustomObject]@{
-                    "Action" = "Assign"
-                    "Type"   = "Configuration Profiles"
-                    "Name"   = $Policy.displayName
-                    "Included Groups"   = $InclGrps
-                    "Excluded Groups"   = $ExclGrps
+                    "Action"          = "Assign"
+                    "Type"            = "Configuration Profiles"
+                    "Name"            = $Policy.displayName
+                    "Included Groups" = $InclGrps
+                    "Excluded Groups" = $ExclGrps
                 }
             }
 
-            elseif($null -ne ($Policy = Get-DeviceAdministrativeTemplates |Where-Object displayName -eq $Pol.DisplayName)){
+            elseif ($null -ne ($Policy = Get-DeviceAdministrativeTemplates | Where-Object displayName -eq $Pol.DisplayName)) {
 
                 $InclGrps = $Pol.IncludeGroups -split ";"
                 $ExclGrps = $Pol.ExcludeGroups -split ";"
@@ -171,7 +171,7 @@ function Add-DCPGroups(){
                     assignments = @()
                 }
             
-                foreach ($grp in $InclGrps){
+                foreach ($grp in $InclGrps) {
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
@@ -184,8 +184,8 @@ function Add-DCPGroups(){
                     }
                 }
             
-                if ($ExclGrps -gt 1){
-                    foreach($grp in $ExclGrps){
+                if ($ExclGrps -gt 1) {
+                    foreach ($grp in $ExclGrps) {
                         $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
@@ -204,24 +204,24 @@ function Add-DCPGroups(){
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/groupPolicyConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
             
                 [PSCustomObject]@{
-                    "Action" = "Assign"
-                    "Type"   = "Configuration Profiles"
-                    "Name"   = $Policy.displayName
-                    "Included Groups"   = $InclGrps
-                    "Excluded Groups"   = $ExclGrps
+                    "Action"          = "Assign"
+                    "Type"            = "Configuration Profiles"
+                    "Name"            = $Policy.displayName
+                    "Included Groups" = $InclGrps
+                    "Excluded Groups" = $ExclGrps
                 }
             }
 
-            elseif($null -ne ($Policy = Get-DeviceSettingsCatalogPolicy | Where-Object name -eq $Pol.DisplayName)){
+            elseif ($null -ne ($Policy = Get-DeviceSettingsCatalogPolicy | Where-Object name -eq $Pol.DisplayName)) {
 
-                                $InclGrps = $Pol.IncludeGroups -split ";"
+                $InclGrps = $Pol.IncludeGroups -split ";"
                 $ExclGrps = $Pol.ExcludeGroups -split ";"
                 
                 $Body = @{
                     assignments = @()
                 }
 
-                foreach ($grp in $InclGrps){
+                foreach ($grp in $InclGrps) {
                     $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
@@ -234,8 +234,8 @@ function Add-DCPGroups(){
                     }
                 }
             
-                if ($ExclGrps -gt 1){
-                    foreach($grp in $ExclGrps){
+                if ($ExclGrps -gt 1) {
+                    foreach ($grp in $ExclGrps) {
                         $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
@@ -254,20 +254,20 @@ function Add-DCPGroups(){
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/configurationPolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
             
                 [PSCustomObject]@{
-                    "Action" = "Assign"
-                    "Type"   = "Configuration Profiles"
-                    "Name"   = $Policy.displayName
-                    "Included Groups"   = $InclGrps
-                    "Excluded Groups"   = $ExclGrps
+                    "Action"          = "Assign"
+                    "Type"            = "Configuration Profiles"
+                    "Name"            = $Policy.displayName
+                    "Included Groups" = $InclGrps
+                    "Excluded Groups" = $ExclGrps
                 }
             }
         
-            else{
+            else {
                 Write-Host "Could not find policy:" $Pol.DisplayName -ForegroundColor Red
             }
         }
 
-        catch{
+        catch {
             $ex = $_.Exception
             $errorResponse = $ex.Response.GetResponseStream()
             $reader = New-Object System.IO.StreamReader($errorResponse)

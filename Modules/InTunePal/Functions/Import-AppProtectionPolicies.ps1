@@ -1,22 +1,10 @@
 function Get-AuthToken {
-
-    <#
-    .SYNOPSIS
-    This function is used to authenticate with the Graph API REST interface
-    .DESCRIPTION
-    The function authenticate with the Graph API Interface with the tenant name
-    .EXAMPLE
-    Get-AuthToken
-    Authenticates you with the Graph API interface
-    .NOTES
-    NAME: Get-AuthToken
-    #>
     
     [cmdletbinding()]
     
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         $User
     )
     
@@ -26,52 +14,52 @@ function Get-AuthToken {
     
     Write-Host "Checking for AzureAD module..."
     
-        $AadModule = Get-Module -Name "AzureAD" -ListAvailable
+    $AadModule = Get-Module -Name "AzureAD" -ListAvailable
     
-        if ($null -eq $AadModule) {
+    if ($null -eq $AadModule) {
     
-            Write-Host "AzureAD PowerShell module not found, looking for AzureADPreview"
-            $AadModule = Get-Module -Name "AzureADPreview" -ListAvailable
+        Write-Host "AzureAD PowerShell module not found, looking for AzureADPreview"
+        $AadModule = Get-Module -Name "AzureADPreview" -ListAvailable
     
-        }
+    }
     
-        if ($null -eq $AadModule) {
-            write-host
-            write-host "AzureAD Powershell module not installed..." -f Red
-            write-host "Install by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt" -f Yellow
-            write-host "Script can't continue..." -f Red
-            write-host
-            exit
-        }
+    if ($null -eq $AadModule) {
+        write-host
+        write-host "AzureAD Powershell module not installed..." -f Red
+        write-host "Install by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt" -f Yellow
+        write-host "Script can't continue..." -f Red
+        write-host
+        exit
+    }
     
     # Getting path to ActiveDirectory Assemblies
     # If the module count is greater than 1 find the latest version
     
-        if($AadModule.count -gt 1){
+    if ($AadModule.count -gt 1) {
     
-            $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
+        $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
     
-            $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
+        $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
     
-                # Checking if there are multiple versions of the same module found
+        # Checking if there are multiple versions of the same module found
     
-                if($AadModule.count -gt 1){
+        if ($AadModule.count -gt 1) {
     
-                $aadModule = $AadModule | Select-Object -Unique
-    
-                }
-    
-            $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
-            $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+            $aadModule = $AadModule | Select-Object -Unique
     
         }
     
-        else {
+        $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
+        $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
     
-            $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
-            $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+    }
     
-        }
+    else {
+    
+        $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
+        $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+    
+    }
     
     [System.Reflection.Assembly]::LoadFrom($adal) | Out-Null
     
@@ -85,7 +73,7 @@ function Get-AuthToken {
     
     $authority = "https://login.microsoftonline.com/$Tenant"
     
-        try {
+    try {
     
         $authContext = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" -ArgumentList $authority
     
@@ -96,106 +84,82 @@ function Get-AuthToken {
     
         $userId = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifier" -ArgumentList ($User, "OptionalDisplayableId")
     
-        $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI,$clientId,$redirectUri,$platformParameters,$userId).Result
+        $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI, $clientId, $redirectUri, $platformParameters, $userId).Result
     
-            # If the accesstoken is valid then create the authentication header
+        # If the accesstoken is valid then create the authentication header
     
-            if($authResult.AccessToken){
+        if ($authResult.AccessToken) {
     
             # Creating header for Authorization token
     
             $authHeader = @{
-                'Content-Type'='application/json'
-                'Authorization'="Bearer " + $authResult.AccessToken
-                'ExpiresOn'=$authResult.ExpiresOn
-                }
+                'Content-Type'  = 'application/json'
+                'Authorization' = "Bearer " + $authResult.AccessToken
+                'ExpiresOn'     = $authResult.ExpiresOn
+            }
     
             return $authHeader
     
-            }
+        }
     
-            else {
+        else {
     
             Write-Host
             Write-Host "Authorization Access Token is null, please re-run authentication..." -ForegroundColor Red
             Write-Host
             break
     
-            }
-    
         }
     
-        catch {
+    }
+    
+    catch {
     
         write-host $_.Exception.Message -f Red
         write-host $_.Exception.ItemName -f Red
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Test-JSON(){
+####################################################
     
-    <#
-    .SYNOPSIS
-    This function is used to test if the JSON passed to a REST Post request is valid
-    .DESCRIPTION
-    The function tests if the JSON passed to the REST Post is valid
-    .EXAMPLE
-    Test-JSON -JSON $JSON
-    Test if the JSON is valid before calling the Graph REST interface
-    .NOTES
-    NAME: Test-JSON
-    #>
+Function Test-JSON() {
     
     param (
     
-    $JSON
+        $JSON
     
     )
     
-        try {
+    try {
     
         ConvertFrom-Json $JSON -ErrorAction Stop
         $validJson = $true
     
-        }
+    }
     
-        catch {
+    catch {
     
         $validJson = $false
         $_.Exception
     
-        }
+    }
     
-        if (!$validJson){
+    if (!$validJson) {
         
         Write-Host "Provided JSON isn't in valid JSON format" -f Red
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Add-ManagedAppPolicy(){
+####################################################
     
-    <#
-    .SYNOPSIS
-    This function is used to add an Managed App policy using the Graph API REST interface
-    .DESCRIPTION
-    The function connects to the Graph API Interface and adds a Managed App policy
-    .EXAMPLE
-    Add-ManagedAppPolicy -JSON $JSON
-    Adds a Managed App policy in Intune
-    .NOTES
-    NAME: Add-ManagedAppPolicy
-    #>
+Function Add-ManagedAppPolicy() {
     
     [cmdletbinding()]
     
@@ -207,26 +171,26 @@ function Get-AuthToken {
     $graphApiVersion = "Beta"
     $Resource = "deviceAppManagement/managedAppPolicies"
     
-        try {
+    try {
     
-            if($JSON -eq "" -or $null -eq $JSON){
+        if ($JSON -eq "" -or $null -eq $JSON) {
     
             write-host "No JSON specified, please specify valid JSON for a Managed App Policy..." -f Red
     
-            }
+        }
     
-            else {
+        else {
     
             Test-JSON -JSON $JSON
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
     
-            }
-    
         }
     
-        catch {
+    }
+    
+    catch {
     
         Write-Host
         $ex = $_.Exception
@@ -240,13 +204,13 @@ function Get-AuthToken {
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    function Import-AppProtectionPolicies(){
+####################################################
+    
+function Import-AppProtectionPolicies() {
 
     [cmdletbinding()]
     
@@ -260,7 +224,7 @@ function Get-AuthToken {
     write-host
     
     # Checking if authToken exists before running authentication
-    if($global:authToken){
+    if ($global:authToken) {
     
         # Setting DateTime to Universal time to work in all timezones
         $DateTime = (Get-Date).ToUniversalTime()
@@ -268,38 +232,38 @@ function Get-AuthToken {
         # If the authToken exists checking when it expires
         $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
     
-            if($TokenExpires -le 0){
+        if ($TokenExpires -le 0) {
     
             write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
             write-host
     
-                # Defining User Principal Name if not present
+            # Defining User Principal Name if not present
     
-                if($null -eq $User -or $User -eq ""){
+            if ($null -eq $User -or $User -eq "") {
     
                 $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
                 Write-Host
     
-                }
+            }
     
             $global:authToken = Get-AuthToken -User $User
     
-            }
+        }
     }
     
     # Authentication doesn't exist, calling Get-AuthToken function
     
     else {
     
-        if($null -eq $User -or $User -eq ""){
+        if ($null -eq $User -or $User -eq "") {
     
-        $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-        Write-Host
+            $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
+            Write-Host
     
         }
     
-    # Getting the authorization token
-    $global:authToken = Get-AuthToken -User $User
+        # Getting the authorization token
+        $global:authToken = Get-AuthToken -User $User
     
     }
     
@@ -310,45 +274,52 @@ function Get-AuthToken {
     $ImportPath = $Path
     
     # Replacing quotes for Test-Path
-    $ImportPath = $ImportPath.replace('"','')
+    $ImportPath = $ImportPath.replace('"', '')
     
-    if(!(Test-Path "$ImportPath")){
+    if (!(Test-Path "$ImportPath")) {
     
-    Write-Host "Import Path for JSON file doesn't exist..." -ForegroundColor Red
-    Write-Host "Script can't continue..." -ForegroundColor Red
-    Write-Host
-    break
+        Write-Host "Import Path for JSON file doesn't exist..." -ForegroundColor Red
+        Write-Host "Script can't continue..." -ForegroundColor Red
+        Write-Host
+        break
     
     }
     
     ####################################################
     
-    $JSON_Data =  Get-ChildItem "$ImportPath\AppProtectionPolicies" -Recurse -Include *.json
+    $JSON_Data = Get-ChildItem "$ImportPath\AppProtectionPolicies" -Recurse -Include *.json
 
     write-host "Importing App Protection Policies..." -ForegroundColor Cyan
     Write-Host
 
-    foreach($json in $JSON_Data){
+    foreach ($json in $JSON_Data) {
 
         $Json_file = Get-Content $json
 
-        $JSON_Convert = $Json_file | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version,apps
-
-        $JSON_Convert | Add-Member -MemberType NoteProperty -Name 'appGroupType' -Value "allApps" -Force
+        $JSON_Convert = $Json_file | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id, createdDateTime, lastModifiedDateTime, version, apps
 
         $DisplayName = $JSON_Convert.displayName
 
-        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
+        $uri = "https://graph.microsoft.com/Beta/deviceAppManagement/managedAppPolicies"
+        $check = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayName').contains("$DisplayName") }
 
-        $null = Add-ManagedAppPolicy -JSON $JSON_Output
+        if ($null -eq $check) {
 
-        [PSCustomObject]@{
-            "Action" = "Import"
-            "Type"   = "Intune App Protection"
-            "Name"   = $DisplayName
-            "From"   = "$json"
+            $JSON_Convert | Add-Member -MemberType NoteProperty -Name 'appGroupType' -Value "allApps" -Force
+
+            $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
+     
+            $null = Add-ManagedAppPolicy -JSON $JSON_Output
+    
+            [PSCustomObject]@{
+                "Action" = "Import"
+                "Type"   = "Intune App Protection"
+                "Name"   = $DisplayName
+                "From"   = "$json"
+            }
         }
-
+        else {
+            Write-Host "App Managed Policy $($DisplayName) already exists and will not be imported!" -ForegroundColor Red
+        }
     }
-
 }

@@ -1,4 +1,4 @@
-Function Add-BreakGlassAccount(){
+Function Add-BreakGlassAccount() {
 
     param(
         $tenantforbreak
@@ -15,12 +15,12 @@ Function Add-BreakGlassAccount(){
     Write-Host 
     Start-Sleep -Seconds 5
     
-    $Parameters= @{
-        AccountEnabled = $true
-        DisplayName = "Break-Glass Admin"
-        PasswordProfile = $PasswordProfile
+    $Parameters = @{
+        AccountEnabled    = $true
+        DisplayName       = "Break-Glass Admin"
+        PasswordProfile   = $PasswordProfile
         UserPrincipalName = $UserPrincipalName
-        MailNickName = "breakuser"
+        MailNickName      = "breakuser"
     }
 
     $null = New-AzureADUser @Parameters
@@ -43,12 +43,12 @@ Function Add-BreakGlassAccount(){
     $UserPrincipalName = 'testuser@' + $tenantforbreak
     
 
-    $Parameters= @{
-        AccountEnabled = $true
-        DisplayName = "testuser"
-        PasswordProfile = $PasswordProfile
+    $Parameters = @{
+        AccountEnabled    = $true
+        DisplayName       = "testuser"
+        PasswordProfile   = $PasswordProfile
         UserPrincipalName = $UserPrincipalName
-        MailNickName = "testuser"
+        MailNickName      = "testuser"
     }
 
     [PSCustomObject]@{
@@ -64,12 +64,12 @@ Function Add-BreakGlassAccount(){
     $PasswordProfile.Password = "P@55w.rd"
     $UserPrincipalName = 'officeline@' + $tenantforbreak
     
-    $Parameters= @{
-        AccountEnabled = $true
-        DisplayName = "officeline"
-        PasswordProfile = $PasswordProfile
+    $Parameters = @{
+        AccountEnabled    = $true
+        DisplayName       = "officeline"
+        PasswordProfile   = $PasswordProfile
         UserPrincipalName = $UserPrincipalName
-        MailNickName = "officeline"
+        MailNickName      = "officeline"
     }
 
     [PSCustomObject]@{

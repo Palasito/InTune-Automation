@@ -1,88 +1,60 @@
-
-<#
-
-.COPYRIGHT
-Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-See LICENSE in the project root for license information.
-
-#>
-
-####################################################
-
-function Get-AuthToken {
-
-    <#
-    .SYNOPSIS
-    This function is used to authenticate with the Graph API REST interface
-    .DESCRIPTION
-    The function authenticate with the Graph API Interface with the tenant name
-    .EXAMPLE
-    Get-AuthToken
-    Authenticates you with the Graph API interface
-    .NOTES
-    NAME: Get-AuthToken
-    #>
-    
+function Get-AuthToken {    
     [cmdletbinding()]
-    
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         $User
     )
     
     $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
-    
     $tenant = $userUpn.Host
     
     Write-Host "Checking for AzureAD module..."
+    $AadModule = Get-Module -Name "AzureAD" -ListAvailable
+    if ($null -eq $AadModule) {
     
-        $AadModule = Get-Module -Name "AzureAD" -ListAvailable
+        Write-Host "AzureAD PowerShell module not found, looking for AzureADPreview"
+        $AadModule = Get-Module -Name "AzureADPreview" -ListAvailable
     
-        if ($null -eq $AadModule) {
+    }
     
-            Write-Host "AzureAD PowerShell module not found, looking for AzureADPreview"
-            $AadModule = Get-Module -Name "AzureADPreview" -ListAvailable
-    
-        }
-    
-        if ($null -eq $AadModule) {
-            write-host
-            write-host "AzureAD Powershell module not installed..." -f Red
-            write-host "Install by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt" -f Yellow
-            write-host "Script can't continue..." -f Red
-            write-host
-            exit
-        }
+    if ($null -eq $AadModule) {
+        write-host
+        write-host "AzureAD Powershell module not installed..." -f Red
+        write-host "Install by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt" -f Yellow
+        write-host "Script can't continue..." -f Red
+        write-host
+        exit
+    }
     
     # Getting path to ActiveDirectory Assemblies
     # If the module count is greater than 1 find the latest version
     
-        if($AadModule.count -gt 1){
+    if ($AadModule.count -gt 1) {
     
-            $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
+        $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
     
-            $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
+        $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
     
-                # Checking if there are multiple versions of the same module found
+        # Checking if there are multiple versions of the same module found
     
-                if($AadModule.count -gt 1){
+        if ($AadModule.count -gt 1) {
     
-                $aadModule = $AadModule | Select-Object -Unique
-    
-                }
-    
-            $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
-            $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+            $aadModule = $AadModule | Select-Object -Unique
     
         }
     
-        else {
+        $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
+        $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
     
-            $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
-            $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+    }
     
-        }
+    else {
+    
+        $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
+        $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+    
+    }
     
     [System.Reflection.Assembly]::LoadFrom($adal) | Out-Null
     
@@ -96,7 +68,7 @@ function Get-AuthToken {
     
     $authority = "https://login.microsoftonline.com/$Tenant"
     
-        try {
+    try {
     
         $authContext = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" -ArgumentList $authority
     
@@ -107,49 +79,49 @@ function Get-AuthToken {
     
         $userId = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifier" -ArgumentList ($User, "OptionalDisplayableId")
     
-        $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI,$clientId,$redirectUri,$platformParameters,$userId).Result
+        $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI, $clientId, $redirectUri, $platformParameters, $userId).Result
     
-            # If the accesstoken is valid then create the authentication header
+        # If the accesstoken is valid then create the authentication header
     
-            if($authResult.AccessToken){
+        if ($authResult.AccessToken) {
     
             # Creating header for Authorization token
     
             $authHeader = @{
-                'Content-Type'='application/json'
-                'Authorization'="Bearer " + $authResult.AccessToken
-                'ExpiresOn'=$authResult.ExpiresOn
-                }
+                'Content-Type'  = 'application/json'
+                'Authorization' = "Bearer " + $authResult.AccessToken
+                'ExpiresOn'     = $authResult.ExpiresOn
+            }
     
             return $authHeader
     
-            }
+        }
     
-            else {
+        else {
     
             Write-Host
             Write-Host "Authorization Access Token is null, please re-run authentication..." -ForegroundColor Red
             Write-Host
             break
     
-            }
-    
         }
     
-        catch {
+    }
+    
+    catch {
     
         write-host $_.Exception.Message -f Red
         write-host $_.Exception.ItemName -f Red
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Get-SoftwareUpdatePolicy(){
+####################################################
+    
+Function Get-SoftwareUpdatePolicy() {
     
     <#
     .SYNOPSIS
@@ -176,48 +148,48 @@ function Get-AuthToken {
     
     $graphApiVersion = "Beta"
     
-        try {
+    try {
     
-            $Count_Params = 0
+        $Count_Params = 0
     
-            if($iOS.IsPresent){ $Count_Params++ }
-            if($Windows10.IsPresent){ $Count_Params++ }
+        if ($iOS.IsPresent) { $Count_Params++ }
+        if ($Windows10.IsPresent) { $Count_Params++ }
     
-            if($Count_Params -gt 1){
+        if ($Count_Params -gt 1) {
     
             write-host "Multiple parameters set, specify a single parameter -iOS or -Windows10 against the function" -f Red
     
-            }
+        }
     
-            elseif($Count_Params -eq 0){
+        elseif ($Count_Params -eq 0) {
     
             Write-Host "Parameter -iOS or -Windows10 required against the function..." -ForegroundColor Red
             Write-Host
             break
     
-            }
+        }
     
-            elseif($Windows10){
+        elseif ($Windows10) {
     
             $Resource = "deviceManagement/deviceConfigurations?`$filter=isof('microsoft.graph.windowsUpdateForBusinessConfiguration')&`$expand=groupAssignments"
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value
     
-            }
+        }
     
-            elseif($iOS){
+        elseif ($iOS) {
     
             $Resource = "deviceManagement/deviceConfigurations?`$filter=isof('microsoft.graph.iosUpdateConfiguration')&`$expand=groupAssignments"
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-            }
-    
         }
     
-        catch {
+    }
+    
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -230,54 +202,41 @@ function Get-AuthToken {
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Export-JSONData(){
+####################################################
     
-    <#
-    .SYNOPSIS
-    This function is used to export JSON data returned from Graph
-    .DESCRIPTION
-    This function is used to export JSON data returned from Graph
-    .EXAMPLE
-    Export-JSONData -JSON $JSON
-    Export the JSON inputted on the function
-    .NOTES
-    NAME: Export-JSONData
-    #>
-    
+Function Export-JSONData() {    
     param (
     
-    $JSON,
-    $ExportPath
+        $JSON,
+        $ExportPath
     
     )
     
-        try {
+    try {
     
-            if($JSON -eq "" -or $null -eq $JSON){
+        if ($JSON -eq "" -or $null -eq $JSON) {
     
             write-host "No JSON specified, please specify valid JSON..." -f Red
     
-            }
+        }
     
-            elseif(!$ExportPath){
+        elseif (!$ExportPath) {
     
             write-host "No export path parameter set, please provide a path to export the file" -f Red
     
-            }
+        }
     
-            elseif(!(Test-Path $ExportPath)){
+        elseif (!(Test-Path $ExportPath)) {
     
             write-host "$ExportPath doesn't exist, can't export JSON Data" -f Red
     
-            }
+        }
     
-            else {
+        else {
     
             $JSON1 = ConvertTo-Json $JSON
     
@@ -290,33 +249,33 @@ function Get-AuthToken {
     
             $Properties = ($JSON_Convert | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" }).Name
     
-                $FileName_JSON = "$DisplayName" + "_" + ".json"
+            $FileName_JSON = "$DisplayName" + "_" + ".json"
     
-                $Object = New-Object System.Object
+            $Object = New-Object System.Object
     
-                    foreach($Property in $Properties){
+            foreach ($Property in $Properties) {
     
-                    $Object | Add-Member -MemberType NoteProperty -Name $Property -Value $JSON_Convert.$Property
+                $Object | Add-Member -MemberType NoteProperty -Name $Property -Value $JSON_Convert.$Property
     
-                    }
-    
-                $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
-                
             }
     
-        }
-    
-        catch {
-    
-        $_.Exception
-    
+            $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+                
         }
     
     }
     
-    ####################################################
+    catch {
     
-function Export-UpdatePolicies(){
+        $_.Exception
+    
+    }
+    
+}
+    
+####################################################
+    
+function Export-UpdatePolicies() {
     
     [cmdletbinding()]
     
@@ -326,7 +285,7 @@ function Export-UpdatePolicies(){
     )
     
     # Checking if authToken exists before running authentication
-    if($global:authToken){
+    if ($global:authToken) {
     
         # Setting DateTime to Universal time to work in all timezones
         $DateTime = (Get-Date).ToUniversalTime()
@@ -334,38 +293,38 @@ function Export-UpdatePolicies(){
         # If the authToken exists checking when it expires
         $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
     
-            if($TokenExpires -le 0){
+        if ($TokenExpires -le 0) {
     
             write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
             write-host
     
-                # Defining User Principal Name if not present
+            # Defining User Principal Name if not present
     
-                if($null -eq $User -or $User -eq ""){
+            if ($null -eq $User -or $User -eq "") {
     
                 $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
                 Write-Host
     
-                }
+            }
     
             $global:authToken = Get-AuthToken -User $User
     
-            }
+        }
     }
     
     # Authentication doesn't exist, calling Get-AuthToken function
     
     else {
     
-        if($null -eq $User -or $User -eq ""){
+        if ($null -eq $User -or $User -eq "") {
     
-        $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-        Write-Host
+            $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
+            Write-Host
     
         }
     
-    # Getting the authorization token
-    $global:authToken = Get-AuthToken -User $User
+        # Getting the authorization token
+        $global:authToken = Get-AuthToken -User $User
     
     }
     
@@ -375,32 +334,32 @@ function Export-UpdatePolicies(){
     
     $ExportPath = $Path
     
-        # If the directory path doesn't exist prompt user to create the directory
-        $ExportPath = $ExportPath.replace('"','')
+    # If the directory path doesn't exist prompt user to create the directory
+    $ExportPath = $ExportPath.replace('"', '')
     
-        if(!(Test-Path "$ExportPath")){
+    if (!(Test-Path "$ExportPath")) {
     
         Write-Host
         Write-Host "Path '$ExportPath' doesn't exist, do you want to create this directory? Y or N?" -ForegroundColor Yellow
     
         $Confirm = read-host
     
-            if($Confirm -eq "y" -or $Confirm -eq "Y"){
+        if ($Confirm -eq "y" -or $Confirm -eq "Y") {
     
             new-item -ItemType Directory -Path "$ExportPath" | Out-Null
             Write-Host
     
-            }
+        }
     
-            else {
+        else {
     
             Write-Host "Creation of directory path was cancelled..." -ForegroundColor Red
             Write-Host
             break
     
-            }
-    
         }
+    
+    }
     
     ####################################################
 
@@ -412,9 +371,9 @@ function Export-UpdatePolicies(){
 
     $WSUPs = Get-SoftwareUpdatePolicy -Windows10
     
-    if($WSUPs){
+    if ($WSUPs) {
     
-        foreach($WSUP in $WSUPs){
+        foreach ($WSUP in $WSUPs) {
     
             Export-JSONData -JSON $WSUP -ExportPath "$ExportPath\WindowsUpdatePolicies"
 
@@ -444,9 +403,9 @@ function Export-UpdatePolicies(){
 
     $ISUPs = Get-SoftwareUpdatePolicy -iOS
     
-    if($ISUPs){
+    if ($ISUPs) {
     
-        foreach($ISUP in $ISUPs){
+        foreach ($ISUP in $ISUPs) {
     
             Export-JSONData -JSON $ISUP -ExportPath "$ExportPath\iOSUpdatePolicies"
             

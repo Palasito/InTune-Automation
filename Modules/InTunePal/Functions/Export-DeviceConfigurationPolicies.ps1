@@ -1,30 +1,17 @@
 function Get-AuthToken {
+    [cmdletbinding()]
 
-<#
-.SYNOPSIS
-This function is used to authenticate with the Graph API REST interface
-.DESCRIPTION
-The function authenticate with the Graph API Interface with the tenant name
-.EXAMPLE
-Get-AuthToken
-Authenticates you with the Graph API interface
-.NOTES
-NAME: Get-AuthToken
-#>
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        $User
+    )
 
-[cmdletbinding()]
+    $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
 
-param
-(
-    [Parameter(Mandatory=$true)]
-    $User
-)
+    $tenant = $userUpn.Host
 
-$userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
-
-$tenant = $userUpn.Host
-
-Write-Host "Checking for AzureAD module..."
+    Write-Host "Checking for AzureAD module..."
 
     $AadModule = Get-Module -Name "AzureAD" -ListAvailable
 
@@ -44,22 +31,22 @@ Write-Host "Checking for AzureAD module..."
         exit
     }
 
-# Getting path to ActiveDirectory Assemblies
-# If the module count is greater than 1 find the latest version
+    # Getting path to ActiveDirectory Assemblies
+    # If the module count is greater than 1 find the latest version
 
-    if($AadModule.count -gt 1){
+    if ($AadModule.count -gt 1) {
 
         $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
 
         $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
 
-            # Checking if there are multiple versions of the same module found
+        # Checking if there are multiple versions of the same module found
 
-            if($AadModule.count -gt 1){
+        if ($AadModule.count -gt 1) {
 
             $aadModule = $AadModule | Select-Object -Unique
 
-            }
+        }
 
         $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
         $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
@@ -73,53 +60,53 @@ Write-Host "Checking for AzureAD module..."
 
     }
 
-[System.Reflection.Assembly]::LoadFrom($adal) | Out-Null
+    [System.Reflection.Assembly]::LoadFrom($adal) | Out-Null
 
-[System.Reflection.Assembly]::LoadFrom($adalforms) | Out-Null
+    [System.Reflection.Assembly]::LoadFrom($adalforms) | Out-Null
 
-$clientId = "d1ddf0e4-d672-4dae-b554-9d5bdfd93547"
+    $clientId = "d1ddf0e4-d672-4dae-b554-9d5bdfd93547"
 
-$redirectUri = "urn:ietf:wg:oauth:2.0:oob"
+    $redirectUri = "urn:ietf:wg:oauth:2.0:oob"
 
-$resourceAppIdURI = "https://graph.microsoft.com"
+    $resourceAppIdURI = "https://graph.microsoft.com"
 
-$authority = "https://login.microsoftonline.com/$Tenant"
+    $authority = "https://login.microsoftonline.com/$Tenant"
 
     try {
 
-    $authContext = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" -ArgumentList $authority
+        $authContext = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" -ArgumentList $authority
 
-    # https://msdn.microsoft.com/en-us/library/azure/microsoft.identitymodel.clients.activedirectory.promptbehavior.aspx
-    # Change the prompt behaviour to force credentials each time: Auto, Always, Never, RefreshSession
+        # https://msdn.microsoft.com/en-us/library/azure/microsoft.identitymodel.clients.activedirectory.promptbehavior.aspx
+        # Change the prompt behaviour to force credentials each time: Auto, Always, Never, RefreshSession
 
-    $platformParameters = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.PlatformParameters" -ArgumentList "Auto"
+        $platformParameters = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.PlatformParameters" -ArgumentList "Auto"
 
-    $userId = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifier" -ArgumentList ($User, "OptionalDisplayableId")
+        $userId = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifier" -ArgumentList ($User, "OptionalDisplayableId")
 
-    $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI,$clientId,$redirectUri,$platformParameters,$userId).Result
+        $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI, $clientId, $redirectUri, $platformParameters, $userId).Result
 
         # If the accesstoken is valid then create the authentication header
 
-        if($authResult.AccessToken){
+        if ($authResult.AccessToken) {
 
-        # Creating header for Authorization token
+            # Creating header for Authorization token
 
-        $authHeader = @{
-            'Content-Type'='application/json'
-            'Authorization'="Bearer " + $authResult.AccessToken
-            'ExpiresOn'=$authResult.ExpiresOn
+            $authHeader = @{
+                'Content-Type'  = 'application/json'
+                'Authorization' = "Bearer " + $authResult.AccessToken
+                'ExpiresOn'     = $authResult.ExpiresOn
             }
 
-        return $authHeader
+            return $authHeader
 
         }
 
         else {
 
-        Write-Host
-        Write-Host "Authorization Access Token is null, please re-run authentication..." -ForegroundColor Red
-        Write-Host
-        break
+            Write-Host
+            Write-Host "Authorization Access Token is null, please re-run authentication..." -ForegroundColor Red
+            Write-Host
+            break
 
         }
 
@@ -127,10 +114,10 @@ $authority = "https://login.microsoftonline.com/$Tenant"
 
     catch {
 
-    write-host $_.Exception.Message -f Red
-    write-host $_.Exception.ItemName -f Red
-    write-host
-    break
+        write-host $_.Exception.Message -f Red
+        write-host $_.Exception.ItemName -f Red
+        write-host
+        break
 
     }
 
@@ -138,32 +125,32 @@ $authority = "https://login.microsoftonline.com/$Tenant"
 
 ####################################################
 
-Function Get-GeneralDeviceConfigurationPolicy(){
+Function Get-GeneralDeviceConfigurationPolicy() {
 
-[cmdletbinding()]
+    [cmdletbinding()]
 
-$graphApiVersion = "Beta"
-$GDC_resource = "deviceManagement/deviceConfigurations"
+    $graphApiVersion = "Beta"
+    $GDC_resource = "deviceManagement/deviceConfigurations"
     
     try {
     
-    $uri = "https://graph.microsoft.com/$graphApiVersion/$($GDC_resource)"
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($GDC_resource)"
     (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
     }
     
     catch {
 
-    $ex = $_.Exception
-    $errorResponse = $ex.Response.GetResponseStream()
-    $reader = New-Object System.IO.StreamReader($errorResponse)
-    $reader.BaseStream.Position = 0
-    $reader.DiscardBufferedData()
-    $responseBody = $reader.ReadToEnd();
-    Write-Host "Response content:`n$responseBody" -f Red
-    Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-    write-host
-    break
+        $ex = $_.Exception
+        $errorResponse = $ex.Response.GetResponseStream()
+        $reader = New-Object System.IO.StreamReader($errorResponse)
+        $reader.BaseStream.Position = 0
+        $reader.DiscardBufferedData()
+        $responseBody = $reader.ReadToEnd();
+        Write-Host "Response content:`n$responseBody" -f Red
+        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+        write-host
+        break
 
     }
 
@@ -171,7 +158,7 @@ $GDC_resource = "deviceManagement/deviceConfigurations"
 
 ####################################################
 
-Function Get-GeneralDeviceConfigurationPolicyJSON(){
+Function Get-GeneralDeviceConfigurationPolicyJSON() {
 
     param(
         $Policies,
@@ -186,7 +173,7 @@ Function Get-GeneralDeviceConfigurationPolicyJSON(){
             $uri_value = "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations/$($Policyid)/getOmaSettingPlainTextValue(secretReferenceValueId='$($Policies.omaSettings.secretReferenceValueId)')"
             $value = (Invoke-RestMethod -Uri $uri_value -Headers $authToken -Method Get).Value
             $omaSettings = @()
-            foreach($oma in $Policies.omaSettings){
+            foreach ($oma in $Policies.omaSettings) {
                 $newSetting = @{}
                 $newSetting.'@odata.type' = $oma.'@odata.type'
                 $newSetting.displayName = $oma.displayName
@@ -216,7 +203,7 @@ Function Get-GeneralDeviceConfigurationPolicyJSON(){
             
         }
 
-        else{
+        else {
 
             $DisplayName = $Policies.DisplayName
 
@@ -250,17 +237,17 @@ Function Get-GeneralDeviceConfigurationPolicyJSON(){
 
 }
 
-Function Get-DeviceSettingsCatalogPolicy(){
-<#Explanation of function to be added#>
+Function Get-DeviceSettingsCatalogPolicy() {
+    <#Explanation of function to be added#>
 
-[cmdletbinding()]
+    [cmdletbinding()]
 
-$graphApiVersion = "Beta"
-$DSC_Resource = "deviceManagement/configurationPolicies"
+    $graphApiVersion = "Beta"
+    $DSC_Resource = "deviceManagement/configurationPolicies"
     
     try {
     
-    $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)"
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)"
     (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
 
     }
@@ -269,22 +256,22 @@ $DSC_Resource = "deviceManagement/configurationPolicies"
     
     catch {
 
-    $ex = $_.Exception
-    $errorResponse = $ex.Response.GetResponseStream()
-    $reader = New-Object System.IO.StreamReader($errorResponse)
-    $reader.BaseStream.Position = 0
-    $reader.DiscardBufferedData()
-    $responseBody = $reader.ReadToEnd();
-    Write-Host "Response content:`n$responseBody" -f Red
-    Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-    write-host
-    break
+        $ex = $_.Exception
+        $errorResponse = $ex.Response.GetResponseStream()
+        $reader = New-Object System.IO.StreamReader($errorResponse)
+        $reader.BaseStream.Position = 0
+        $reader.DiscardBufferedData()
+        $responseBody = $reader.ReadToEnd();
+        Write-Host "Response content:`n$responseBody" -f Red
+        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+        write-host
+        break
 
     }
 
 }
 
-Function Get-DeviceAdministrativeTemplates(){
+Function Get-DeviceAdministrativeTemplates() {
     <#Explanation of function to be added#>
     
     [cmdletbinding()]
@@ -292,14 +279,14 @@ Function Get-DeviceAdministrativeTemplates(){
     $graphApiVersion = "Beta"
     $DAT_Resource = "deviceManagement/groupPolicyConfigurations"
         
-        try {
+    try {
         
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($DAT_Resource)"
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
         
-        }
+    }
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -312,103 +299,103 @@ Function Get-DeviceAdministrativeTemplates(){
         write-host
         break
     
-        }
+    }
     
+}
+
+Function Get-DeviceAdministrativeTemplatesJSON() {
+    param(
+        $Policies,
+        $ExportPath
+    )
+
+    try {
+
+        $DisplayName = $Policies.DisplayName
+
+        # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
+        $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+
+        $FileName_JSON = "AT" + "_" + "$DisplayName" + ".json"
+
+        $FinalJSON = $Policies | ConvertTo-Json -Depth 5
+
+        $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_JSON"
+
     }
 
-    Function Get-DeviceAdministrativeTemplatesJSON(){
-        param(
-            $Policies,
-            $ExportPath
-        )
+    catch {
 
-        try {
+        $ex = $_.Exception
+        $errorResponse = $ex.Response.GetResponseStream()
+        $reader = New-Object System.IO.StreamReader($errorResponse)
+        $reader.BaseStream.Position = 0
+        $reader.DiscardBufferedData()
+        $responseBody = $reader.ReadToEnd();
+        Write-Host "Response content:`n$responseBody" -f Red
+        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+        write-host
+        break
+    }
+}
 
-            $DisplayName = $Policies.DisplayName
+Function Get-DeviceSettingsCatalogPolicyJSON() {
 
-            # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
-            $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+    param(
+        $Policies,
+        $ExportPath
+    )
 
-            $FileName_JSON = "AT" + "_" + "$DisplayName" + ".json"
+    $graphApiVersion = "Beta"
+    $DSC_Resource = "deviceManagement/configurationPolicies"
 
-            $FinalJSON = $Policies | ConvertTo-Json -Depth 5
+    try {
 
-            $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_JSON"
+        $Policyid = $Policies.id
+        #$PolicyJSON = $Policy | ConvertTo-Json -depth 5
+        $uri_settings = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)/$($Policyid)/settings"
+        $Settings = (Invoke-RestMethod -Uri $uri_settings -Headers $authToken -Method Get).Value
 
+        $PolicyJSON = [pscustomobject]@{
+            name         = $Policies.Name
+            description  = $Policies.description
+            platforms    = $Policies.platforms
+            technologies = $Policies.technologies
+            settings     = $Settings
         }
 
-        catch {
+        $FinalJSONdisplayName = $Policies.name
 
-            $ex = $_.Exception
-            $errorResponse = $ex.Response.GetResponseStream()
-            $reader = New-Object System.IO.StreamReader($errorResponse)
-            $reader.BaseStream.Position = 0
-            $reader.DiscardBufferedData()
-            $responseBody = $reader.ReadToEnd();
-            Write-Host "Response content:`n$responseBody" -f Red
-            Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-            write-host
-            break
-        }
+        $FinalJSONDisplayName = $FinalJSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+
+        $FileName_FinalJSON = "SC" + "_" + "$FinalJSONDisplayName" + ".json"
+
+        $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
+
+        $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_FinalJSON"
+            
     }
 
-    Function Get-DeviceSettingsCatalogPolicyJSON(){
-
-        param(
-            $Policies,
-            $ExportPath
-        )
-
-        $graphApiVersion = "Beta"
-        $DSC_Resource = "deviceManagement/configurationPolicies"
-
-        try {
-
-            $Policyid = $Policies.id
-            #$PolicyJSON = $Policy | ConvertTo-Json -depth 5
-            $uri_settings = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)/$($Policyid)/settings"
-            $Settings = (Invoke-RestMethod -Uri $uri_settings -Headers $authToken -Method Get).Value
-
-            $PolicyJSON = [pscustomobject]@{
-                name = $Policies.Name
-                description = $Policies.description
-                platforms = $Policies.platforms
-                technologies = $Policies.technologies
-                settings = $Settings
-            }
-
-            $FinalJSONdisplayName = $Policies.name
-
-            $FinalJSONDisplayName = $FinalJSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
-
-            $FileName_FinalJSON = "SC" + "_" + "$FinalJSONDisplayName" + ".json"
-
-            $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
-
-            $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_FinalJSON"
-            
-        }
-
-            catch {
+    catch {
     
-                $ex = $_.Exception
-                $errorResponse = $ex.Response.GetResponseStream()
-                $reader = New-Object System.IO.StreamReader($errorResponse)
-                $reader.BaseStream.Position = 0
-                $reader.DiscardBufferedData()
-                $responseBody = $reader.ReadToEnd();
-                Write-Host "Response content:`n$responseBody" -f Red
-                Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-                write-host
-                break
+        $ex = $_.Exception
+        $errorResponse = $ex.Response.GetResponseStream()
+        $reader = New-Object System.IO.StreamReader($errorResponse)
+        $reader.BaseStream.Position = 0
+        $reader.DiscardBufferedData()
+        $responseBody = $reader.ReadToEnd();
+        Write-Host "Response content:`n$responseBody" -f Red
+        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+        write-host
+        break
             
-                }
+    }
         
 }
 
 ####################################################
 
-function Export-DeviceConfigurationPolicies(){
+function Export-DeviceConfigurationPolicies() {
 
     [cmdletbinding()]
     
@@ -417,134 +404,134 @@ function Export-DeviceConfigurationPolicies(){
         $Path
     )
 
-# Checking if authToken exists before running authentication
-if($global:authToken){
+    # Checking if authToken exists before running authentication
+    if ($global:authToken) {
 
-    # Setting DateTime to Universal time to work in all timezones
-    $DateTime = (Get-Date).ToUniversalTime()
+        # Setting DateTime to Universal time to work in all timezones
+        $DateTime = (Get-Date).ToUniversalTime()
 
-    # If the authToken exists checking when it expires
-    $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
+        # If the authToken exists checking when it expires
+        $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
 
-        if($TokenExpires -le 0){
+        if ($TokenExpires -le 0) {
 
-        write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
-        write-host
+            write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
+            write-host
 
             # Defining User Principal Name if not present
 
-            if($null -eq $User -or $User -eq ""){
+            if ($null -eq $User -or $User -eq "") {
+
+                $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
+                Write-Host
+
+            }
+
+            $global:authToken = Get-AuthToken -User $User
+
+        }
+    }
+
+    # Authentication doesn't exist, calling Get-AuthToken function
+
+    else {
+
+        if ($null -eq $User -or $User -eq "") {
 
             $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
             Write-Host
 
-            }
-
-        $global:authToken = Get-AuthToken -User $User
-
         }
-}
 
-# Authentication doesn't exist, calling Get-AuthToken function
-
-else {
-
-    if($null -eq $User -or $User -eq ""){
-
-    $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-    Write-Host
+        # Getting the authorization token
+        $global:authToken = Get-AuthToken -User $User
 
     }
 
-# Getting the authorization token
-$global:authToken = Get-AuthToken -User $User
+    #endregion
 
-}
+    ####################################################
 
-#endregion
-
-####################################################
-
-$ExportPath = $Path
+    $ExportPath = $Path
 
     # If the directory path doesn't exist prompt user to create the directory
-    $ExportPath = $ExportPath.replace('"','')
+    $ExportPath = $ExportPath.replace('"', '')
     
-    if(!(Test-Path "$ExportPath")){
+    if (!(Test-Path "$ExportPath")) {
 
         Write-Host
         Write-Host "Path '$ExportPath' doesn't exist, do you want to create this directory? Y or N?" -ForegroundColor Yellow
     
         $Confirm = read-host
     
-            if($Confirm -eq "y" -or $Confirm -eq "Y"){
+        if ($Confirm -eq "y" -or $Confirm -eq "Y") {
     
             new-item -ItemType Directory -Path "$ExportPath" | Out-Null
             Write-Host
     
-            }
+        }
 
-    else {
+        else {
 
-    Write-Host "Creation of directory path was cancelled..." -ForegroundColor Red
+            Write-Host "Creation of directory path was cancelled..." -ForegroundColor Red
+            Write-Host
+            break
+
+        }
+
+    }
+
+    ####################################################
+
+    if (-not (Test-Path "$ExportPath\DeviceConfigurationPolicies")) {
+        $null = New-Item -Path "$ExportPath\DeviceConfigurationPolicies" -ItemType Directory
+    }
+
+    # Filtering out iOS and Windows Software Update Policies
+    $GDCs = Get-GeneralDeviceConfigurationPolicy | Where-Object { ($_.'@odata.type' -ne "#microsoft.graph.iosUpdateConfiguration") -and ($_.'@odata.type' -ne "#microsoft.graph.windowsUpdateForBusinessConfiguration") }
     Write-Host
-    break
+    write-host "Exporting Device Configuration Policies..." -ForegroundColor cyan
+    foreach ($GDC in $GDCs) {
+        Get-GeneralDeviceConfigurationPolicyJSON -Policies $GDC -ExportPath "$ExportPath"
+
+        [PSCustomObject]@{
+            "Action" = "Export"
+            "Type"   = "General Device Configuration Policy"  
+            "Name"   = $GDC.DisplayName
+            "Path"   = $ExportPath
+        }
 
     }
 
-}
+    Write-Host
 
-####################################################
+    $DSCs = Get-DeviceSettingsCatalogPolicy
+    write-host "Exporting Device Settings Catalog Policies..." -ForegroundColor cyan
+    foreach ($DSC in $DSCs) {
+        Get-DeviceSettingsCatalogPolicyJSON -Policies $DSC -ExportPath "$ExportPath"
 
-if (-not (Test-Path "$ExportPath\DeviceConfigurationPolicies")) {
-    $null = New-Item -Path "$ExportPath\DeviceConfigurationPolicies" -ItemType Directory
-}
-
-# Filtering out iOS and Windows Software Update Policies
-$GDCs = Get-GeneralDeviceConfigurationPolicy | Where-Object { ($_.'@odata.type' -ne "#microsoft.graph.iosUpdateConfiguration") -and ($_.'@odata.type' -ne "#microsoft.graph.windowsUpdateForBusinessConfiguration") }
-Write-Host
-write-host "Exporting Device Configuration Policies..." -ForegroundColor cyan
-foreach($GDC in $GDCs){
-Get-GeneralDeviceConfigurationPolicyJSON -Policies $GDC -ExportPath "$ExportPath"
-
-    [PSCustomObject]@{
-        "Action" = "Export"
-        "Type"   = "General Device Configuration Policy"  
-        "Name"   = $GDC.DisplayName
-        "Path"   = $ExportPath
-}
-
-}
-
-Write-Host
-
-$DSCs = Get-DeviceSettingsCatalogPolicy
-write-host "Exporting Device Settings Catalog Policies..." -ForegroundColor cyan
-foreach($DSC in $DSCs){
-    Get-DeviceSettingsCatalogPolicyJSON -Policies $DSC -ExportPath "$ExportPath"
-
-    [PSCustomObject]@{
-        "Action" = "Export"
-        "Type"   = "Settings Catalog Policy"
-        "Name"   = $DSC.name
-        "Path"   = $ExportPath
+        [PSCustomObject]@{
+            "Action" = "Export"
+            "Type"   = "Settings Catalog Policy"
+            "Name"   = $DSC.name
+            "Path"   = $ExportPath
+        }
     }
-}
 
-Write-Host
+    Write-Host
 
-$DATs = Get-DeviceAdministrativeTemplates
-write-host "Exporting Device Administrative Template Policies..." -ForegroundColor cyan
-foreach($DAT in $DATs){
-    Get-DeviceAdministrativeTemplatesJSON -Policies $DAT -ExportPath "$ExportPath"
+    $DATs = Get-DeviceAdministrativeTemplates
+    write-host "Exporting Device Administrative Template Policies..." -ForegroundColor cyan
+    foreach ($DAT in $DATs) {
+        Get-DeviceAdministrativeTemplatesJSON -Policies $DAT -ExportPath "$ExportPath"
 
-    [PSCustomObject]@{
-        "Action" = "Export"
-        "Type"   = "Administrative Template"
-        "Name"   = $DAT.DisplayName
-        "Path"   = $ExportPath
+        [PSCustomObject]@{
+            "Action" = "Export"
+            "Type"   = "Administrative Template"
+            "Name"   = $DAT.DisplayName
+            "Path"   = $ExportPath
+        }
     }
-}
 
-Write-Host
+    Write-Host
 }

@@ -1,33 +1,8 @@
-
-<#
-
-.COPYRIGHT
-Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-See LICENSE in the project root for license information.
-
-#>
-
-####################################################
-
-function Get-AuthToken {
-
-    <#
-    .SYNOPSIS
-    This function is used to authenticate with the Graph API REST interface
-    .DESCRIPTION
-    The function authenticate with the Graph API Interface with the tenant name
-    .EXAMPLE
-    Get-AuthToken
-    Authenticates you with the Graph API interface
-    .NOTES
-    NAME: Get-AuthToken
-    #>
-    
+function Get-AuthToken {    
     [cmdletbinding()]
-    
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         $User
     )
     
@@ -37,52 +12,52 @@ function Get-AuthToken {
     
     Write-Host "Checking for AzureAD module..."
     
-        $AadModule = Get-Module -Name "AzureAD" -ListAvailable
+    $AadModule = Get-Module -Name "AzureAD" -ListAvailable
     
-        if ($null -eq $AadModule) {
+    if ($null -eq $AadModule) {
     
-            Write-Host "AzureAD PowerShell module not found, looking for AzureADPreview"
-            $AadModule = Get-Module -Name "AzureADPreview" -ListAvailable
+        Write-Host "AzureAD PowerShell module not found, looking for AzureADPreview"
+        $AadModule = Get-Module -Name "AzureADPreview" -ListAvailable
     
-        }
+    }
     
-        if ($null -eq $AadModule) {
-            write-host
-            write-host "AzureAD Powershell module not installed..." -f Red
-            write-host "Install by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt" -f Yellow
-            write-host "Script can't continue..." -f Red
-            write-host
-            exit
-        }
+    if ($null -eq $AadModule) {
+        write-host
+        write-host "AzureAD Powershell module not installed..." -f Red
+        write-host "Install by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt" -f Yellow
+        write-host "Script can't continue..." -f Red
+        write-host
+        exit
+    }
     
     # Getting path to ActiveDirectory Assemblies
     # If the module count is greater than 1 find the latest version
     
-        if($AadModule.count -gt 1){
+    if ($AadModule.count -gt 1) {
     
-            $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
+        $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
     
-            $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
+        $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
     
-                # Checking if there are multiple versions of the same module found
+        # Checking if there are multiple versions of the same module found
     
-                if($AadModule.count -gt 1){
+        if ($AadModule.count -gt 1) {
     
-                $aadModule = $AadModule | Select-Object -Unique
-    
-                }
-    
-            $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
-            $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+            $aadModule = $AadModule | Select-Object -Unique
     
         }
     
-        else {
+        $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
+        $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
     
-            $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
-            $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+    }
     
-        }
+    else {
+    
+        $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
+        $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+    
+    }
     
     [System.Reflection.Assembly]::LoadFrom($adal) | Out-Null
     
@@ -96,7 +71,7 @@ function Get-AuthToken {
     
     $authority = "https://login.microsoftonline.com/$Tenant"
     
-        try {
+    try {
     
         $authContext = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" -ArgumentList $authority
     
@@ -107,49 +82,49 @@ function Get-AuthToken {
     
         $userId = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifier" -ArgumentList ($User, "OptionalDisplayableId")
     
-        $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI,$clientId,$redirectUri,$platformParameters,$userId).Result
+        $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI, $clientId, $redirectUri, $platformParameters, $userId).Result
     
-            # If the accesstoken is valid then create the authentication header
+        # If the accesstoken is valid then create the authentication header
     
-            if($authResult.AccessToken){
+        if ($authResult.AccessToken) {
     
             # Creating header for Authorization token
     
             $authHeader = @{
-                'Content-Type'='application/json'
-                'Authorization'="Bearer " + $authResult.AccessToken
-                'ExpiresOn'=$authResult.ExpiresOn
-                }
+                'Content-Type'  = 'application/json'
+                'Authorization' = "Bearer " + $authResult.AccessToken
+                'ExpiresOn'     = $authResult.ExpiresOn
+            }
     
             return $authHeader
     
-            }
+        }
     
-            else {
+        else {
     
             Write-Host
             Write-Host "Authorization Access Token is null, please re-run authentication..." -ForegroundColor Red
             Write-Host
             break
     
-            }
-    
         }
     
-        catch {
+    }
+    
+    catch {
     
         write-host $_.Exception.Message -f Red
         write-host $_.Exception.ItemName -f Red
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Get-SoftwareUpdatePolicy(){
+####################################################
+    
+Function Get-SoftwareUpdatePolicy() {
     
     <#
     .SYNOPSIS
@@ -176,48 +151,48 @@ function Get-AuthToken {
     
     $graphApiVersion = "Beta"
     
-        try {
+    try {
     
-            $Count_Params = 0
+        $Count_Params = 0
     
-            if($iOS.IsPresent){ $Count_Params++ }
-            if($Windows10.IsPresent){ $Count_Params++ }
+        if ($iOS.IsPresent) { $Count_Params++ }
+        if ($Windows10.IsPresent) { $Count_Params++ }
     
-            if($Count_Params -gt 1){
+        if ($Count_Params -gt 1) {
     
             write-host "Multiple parameters set, specify a single parameter -iOS or -Windows10 against the function" -f Red
     
-            }
+        }
     
-            elseif($Count_Params -eq 0){
+        elseif ($Count_Params -eq 0) {
     
             Write-Host "Parameter -iOS or -Windows10 required against the function..." -ForegroundColor Red
             Write-Host
             break
     
-            }
+        }
     
-            elseif($Windows10){
+        elseif ($Windows10) {
     
             $Resource = "deviceManagement/deviceConfigurations?`$filter=isof('microsoft.graph.windowsUpdateForBusinessConfiguration')&`$expand=groupAssignments"
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value
     
-            }
+        }
     
-            elseif($iOS){
+        elseif ($iOS) {
     
             $Resource = "deviceManagement/deviceConfigurations?`$filter=isof('microsoft.graph.iosUpdateConfiguration')&`$expand=groupAssignments"
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-            }
-    
         }
     
-        catch {
+    }
+    
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -230,13 +205,13 @@ function Get-AuthToken {
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Get-AADGroup(){
+####################################################
+    
+Function Get-AADGroup() {
     
     <#
     .SYNOPSIS
@@ -263,37 +238,37 @@ function Get-AuthToken {
     $graphApiVersion = "v1.0"
     $Group_resource = "groups"
     
-        try {
+    try {
     
-            if($id){
+        if ($id) {
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)?`$filter=id eq '$id'"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-            }
+        }
     
-            elseif($GroupName -eq "" -or $null -eq $GroupName){
+        elseif ($GroupName -eq "" -or $null -eq $GroupName) {
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-            }
+        }
     
-            else {
+        else {
     
-                if(!$Members){
+            if (!$Members) {
     
                 $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)?`$filter=displayname eq '$GroupName'"
                 (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-                }
+            }
     
-                elseif($Members){
+            elseif ($Members) {
     
                 $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)?`$filter=displayname eq '$GroupName'"
                 $Group = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-                    if($Group){
+                if ($Group) {
     
                     $GID = $Group.id
     
@@ -303,15 +278,15 @@ function Get-AuthToken {
                     $uri = "https://graph.microsoft.com/$graphApiVersion/$($Group_resource)/$GID/Members"
                     (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-                    }
-    
                 }
     
             }
     
         }
     
-        catch {
+    }
+    
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -324,16 +299,16 @@ function Get-AuthToken {
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-function Get-UpdatePolicies(){
+####################################################
+    
+function Get-UpdatePolicies() {
     
     # Checking if authToken exists before running authentication
-    if($global:authToken){
+    if ($global:authToken) {
     
         # Setting DateTime to Universal time to work in all timezones
         $DateTime = (Get-Date).ToUniversalTime()
@@ -341,38 +316,38 @@ function Get-UpdatePolicies(){
         # If the authToken exists checking when it expires
         $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
     
-            if($TokenExpires -le 0){
+        if ($TokenExpires -le 0) {
     
             write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
             write-host
     
-                # Defining User Principal Name if not present
+            # Defining User Principal Name if not present
     
-                if($null -eq $User -or $User -eq ""){
+            if ($null -eq $User -or $User -eq "") {
     
                 $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
                 Write-Host
     
-                }
+            }
     
             $global:authToken = Get-AuthToken -User $User
     
-            }
+        }
     }
     
     # Authentication doesn't exist, calling Get-AuthToken function
     
     else {
     
-        if($null -eq $User -or $User -eq ""){
+        if ($null -eq $User -or $User -eq "") {
     
-        $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-        Write-Host
+            $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
+            Write-Host
     
         }
     
-    # Getting the authorization token
-    $global:authToken = Get-AuthToken -User $User
+        # Getting the authorization token
+        $global:authToken = Get-AuthToken -User $User
     
     }
     
@@ -385,9 +360,9 @@ function Get-UpdatePolicies(){
     Write-Host "Software updates - Windows 10 Update Rings" -ForegroundColor Cyan
     Write-Host
     
-        if($WSUPs){
+    if ($WSUPs) {
     
-            foreach($WSUP in $WSUPs){
+        foreach ($WSUP in $WSUPs) {
     
             write-host "Software Update Policy:"$WSUP.displayName -f Yellow
             $WSUP
@@ -397,32 +372,32 @@ function Get-UpdatePolicies(){
     
             write-host "Getting SoftwareUpdate Policy assignment..." -f Cyan
     
-                if($TargetGroupIds){
+            if ($TargetGroupIds) {
     
-                    foreach($group in $TargetGroupIds){
+                foreach ($group in $TargetGroupIds) {
     
                     (Get-AADGroup -id $group).displayName
-    
-                    }
-    
-                }
-    
-                else {
-    
-                Write-Host "No Software Update Policy Assignments found..." -ForegroundColor Red
     
                 }
     
             }
     
+            else {
+    
+                Write-Host "No Software Update Policy Assignments found..." -ForegroundColor Red
+    
+            }
+    
         }
     
-        else {
+    }
+    
+    else {
     
         Write-Host
         Write-Host "No Windows 10 Update Rings defined..." -ForegroundColor Red
     
-        }
+    }
     
     write-host
     
@@ -433,9 +408,9 @@ function Get-UpdatePolicies(){
     Write-Host "Software updates - iOS Update Policies" -ForegroundColor Cyan
     Write-Host
     
-        if($ISUPs){
+    if ($ISUPs) {
     
-            foreach($ISUP in $ISUPs){
+        foreach ($ISUP in $ISUPs) {
     
             write-host "Software Update Policy:"$ISUP.displayName -f Yellow
             $ISUP
@@ -444,32 +419,32 @@ function Get-UpdatePolicies(){
     
             write-host "Getting SoftwareUpdate Policy assignment..." -f Cyan
     
-                if($TargetGroupIds){
+            if ($TargetGroupIds) {
     
-                    foreach($group in $TargetGroupIds){
+                foreach ($group in $TargetGroupIds) {
     
                     (Get-AADGroup -id $group).displayName
-    
-                    }
-    
-                }
-    
-                else {
-    
-                Write-Host "No Software Update Policy Assignments found..." -ForegroundColor Red
     
                 }
     
             }
     
+            else {
+    
+                Write-Host "No Software Update Policy Assignments found..." -ForegroundColor Red
+    
+            }
+    
         }
     
-        else {
+    }
+    
+    else {
     
         Write-Host
         Write-Host "No iOS Software Update Rings defined..." -ForegroundColor Red
     
-        }
+    }
     
     Write-Host
 

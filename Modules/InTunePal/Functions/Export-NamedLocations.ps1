@@ -1,4 +1,4 @@
-Function Export-NamedLocations(){
+Function Export-NamedLocations() {
 
     [cmdletbinding()]
 
@@ -7,10 +7,11 @@ Function Export-NamedLocations(){
         $azureADToken
     )
 
-    if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens){
+    if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens) {
         Write-Host "Getting AzureAD authToken"
         Connect-AzureAD
-    } else {
+    }
+    else {
         $global:azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
         
     }
@@ -24,7 +25,7 @@ Function Export-NamedLocations(){
     Write-Host
     Write-Host "Exporting Named Location Policies..." -ForegroundColor Cyan
 
-    foreach($Loc in $NamedLocations){
+    foreach ($Loc in $NamedLocations) {
 
         $PolicyJSON = $Loc | ConvertTo-Json -Depth 6
 

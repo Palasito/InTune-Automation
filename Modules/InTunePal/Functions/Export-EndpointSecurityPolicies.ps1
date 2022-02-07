@@ -1,33 +1,9 @@
-
-<#
-
-.COPYRIGHT
-Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-See LICENSE in the project root for license information.
-
-#>
-
-####################################################
-
 function Get-AuthToken {
-
-    <#
-    .SYNOPSIS
-    This function is used to authenticate with the Graph API REST interface
-    .DESCRIPTION
-    The function authenticate with the Graph API Interface with the tenant name
-    .EXAMPLE
-    Get-AuthToken
-    Authenticates you with the Graph API interface
-    .NOTES
-    NAME: Get-AuthToken
-    #>
-    
     [cmdletbinding()]
     
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         $User
     )
     
@@ -37,52 +13,52 @@ function Get-AuthToken {
     
     Write-Host "Checking for AzureAD module..."
     
-        $AadModule = Get-Module -Name "AzureAD" -ListAvailable
+    $AadModule = Get-Module -Name "AzureAD" -ListAvailable
     
-        if ($null -eq $AadModule) {
+    if ($null -eq $AadModule) {
     
-            Write-Host "AzureAD PowerShell module not found, looking for AzureADPreview"
-            $AadModule = Get-Module -Name "AzureADPreview" -ListAvailable
+        Write-Host "AzureAD PowerShell module not found, looking for AzureADPreview"
+        $AadModule = Get-Module -Name "AzureADPreview" -ListAvailable
     
-        }
+    }
     
-        if ($null -eq $AadModule) {
-            write-host
-            write-host "AzureAD Powershell module not installed..." -f Red
-            write-host "Install by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt" -f Yellow
-            write-host "Script can't continue..." -f Red
-            write-host
-            exit
-        }
+    if ($null -eq $AadModule) {
+        write-host
+        write-host "AzureAD Powershell module not installed..." -f Red
+        write-host "Install by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt" -f Yellow
+        write-host "Script can't continue..." -f Red
+        write-host
+        exit
+    }
     
     # Getting path to ActiveDirectory Assemblies
     # If the module count is greater than 1 find the latest version
     
-        if($AadModule.count -gt 1){
+    if ($AadModule.count -gt 1) {
     
-            $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
+        $Latest_Version = ($AadModule | Select-Object version | Sort-Object)[-1]
     
-            $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
+        $aadModule = $AadModule | Where-Object { $_.version -eq $Latest_Version.version }
     
-                # Checking if there are multiple versions of the same module found
+        # Checking if there are multiple versions of the same module found
     
-                if($AadModule.count -gt 1){
+        if ($AadModule.count -gt 1) {
     
-                $aadModule = $AadModule | Select-Object -Unique
-    
-                }
-    
-            $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
-            $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+            $aadModule = $AadModule | Select-Object -Unique
     
         }
     
-        else {
+        $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
+        $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
     
-            $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
-            $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+    }
     
-        }
+    else {
+    
+        $adal = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
+        $adalforms = Join-Path $AadModule.ModuleBase "Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll"
+    
+    }
     
     [System.Reflection.Assembly]::LoadFrom($adal) | Out-Null
     
@@ -96,7 +72,7 @@ function Get-AuthToken {
     
     $authority = "https://login.microsoftonline.com/$Tenant"
     
-        try {
+    try {
     
         $authContext = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" -ArgumentList $authority
     
@@ -107,49 +83,49 @@ function Get-AuthToken {
     
         $userId = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.UserIdentifier" -ArgumentList ($User, "OptionalDisplayableId")
     
-        $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI,$clientId,$redirectUri,$platformParameters,$userId).Result
+        $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI, $clientId, $redirectUri, $platformParameters, $userId).Result
     
-            # If the accesstoken is valid then create the authentication header
+        # If the accesstoken is valid then create the authentication header
     
-            if($authResult.AccessToken){
+        if ($authResult.AccessToken) {
     
             # Creating header for Authorization token
     
             $authHeader = @{
-                'Content-Type'='application/json'
-                'Authorization'="Bearer " + $authResult.AccessToken
-                'ExpiresOn'=$authResult.ExpiresOn
-                }
+                'Content-Type'  = 'application/json'
+                'Authorization' = "Bearer " + $authResult.AccessToken
+                'ExpiresOn'     = $authResult.ExpiresOn
+            }
     
             return $authHeader
     
-            }
+        }
     
-            else {
+        else {
     
             Write-Host
             Write-Host "Authorization Access Token is null, please re-run authentication..." -ForegroundColor Red
             Write-Host
             break
     
-            }
-    
         }
     
-        catch {
+    }
+    
+    catch {
     
         write-host $_.Exception.Message -f Red
         write-host $_.Exception.ItemName -f Red
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Get-EndpointSecurityTemplate(){
+####################################################
+    
+Function Get-EndpointSecurityTemplate() {
     
     <#
     .SYNOPSIS
@@ -167,14 +143,14 @@ function Get-AuthToken {
     $graphApiVersion = "Beta"
     $ESP_resource = "deviceManagement/templates?`$filter=(isof(%27microsoft.graph.securityBaselineTemplate%27))"
     
-        try {
+    try {
     
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
             (Invoke-RestMethod -Method Get -Uri $uri -Headers $authToken).value
     
-        }
+    }
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -187,13 +163,13 @@ function Get-AuthToken {
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Get-EndpointSecurityPolicy(){
+####################################################
+    
+Function Get-EndpointSecurityPolicy() {
     
     <#
     .SYNOPSIS
@@ -211,14 +187,14 @@ function Get-AuthToken {
     $graphApiVersion = "Beta"
     $ESP_resource = "deviceManagement/intents"
     
-        try {
+    try {
     
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
             (Invoke-RestMethod -Method Get -Uri $uri -Headers $authToken).value
     
-        }
+    }
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -231,13 +207,13 @@ function Get-AuthToken {
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Get-EndpointSecurityTemplateCategory(){
+####################################################
+    
+Function Get-EndpointSecurityTemplateCategory() {
     
     <#
     .SYNOPSIS
@@ -255,7 +231,7 @@ function Get-AuthToken {
     
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         $TemplateId
     )
@@ -263,14 +239,14 @@ function Get-AuthToken {
     $graphApiVersion = "Beta"
     $ESP_resource = "deviceManagement/templates/$TemplateId/categories"
     
-        try {
+    try {
     
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
             (Invoke-RestMethod -Method Get -Uri $uri -Headers $authToken).value
     
-        }
+    }
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -283,13 +259,13 @@ function Get-AuthToken {
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Get-EndpointSecurityCategorySetting(){
+####################################################
+    
+Function Get-EndpointSecurityCategorySetting() {
     
     <#
     .SYNOPSIS
@@ -307,10 +283,10 @@ function Get-AuthToken {
     
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         $PolicyId,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         $categoryId
     )
@@ -318,14 +294,14 @@ function Get-AuthToken {
     $graphApiVersion = "Beta"
     $ESP_resource = "deviceManagement/intents/$policyId/categories/$categoryId/settings?`$expand=Microsoft.Graph.DeviceManagementComplexSettingInstance/Value"
     
-        try {
+    try {
     
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
             (Invoke-RestMethod -Method Get -Uri $uri -Headers $authToken).value
     
-        }
+    }
         
-        catch {
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -338,13 +314,13 @@ function Get-AuthToken {
         write-host
         break
     
-        }
-    
     }
     
-    ####################################################
+}
     
-    Function Export-JSONData(){
+####################################################
+    
+Function Export-JSONData() {
     
     <#
     .SYNOPSIS
@@ -360,32 +336,32 @@ function Get-AuthToken {
     
     param (
     
-    $JSON,
-    $ExportPath
+        $JSON,
+        $ExportPath
     
     )
     
-        try {
+    try {
     
-            if($JSON -eq "" -or $null -eq $JSON){
+        if ($JSON -eq "" -or $null -eq $JSON) {
     
             write-host "No JSON specified, please specify valid JSON..." -f Red
     
-            }
+        }
     
-            elseif(!$ExportPath){
+        elseif (!$ExportPath) {
     
             write-host "No export path parameter set, please provide a path to export the file" -f Red
     
-            }
+        }
     
-            elseif(!(Test-Path $ExportPath)){
+        elseif (!(Test-Path $ExportPath)) {
     
             write-host "$ExportPath doesn't exist, can't export JSON Data" -f Red
     
-            }
+        }
     
-            else {
+        else {
     
             $JSON1 = ConvertTo-Json $JSON -Depth 10
     
@@ -396,24 +372,24 @@ function Get-AuthToken {
             # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
             $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
     
-                # Added milliseconds to date format due to duplicate policy name
-                $FileName_JSON = "$DisplayName" + ".json"
+            # Added milliseconds to date format due to duplicate policy name
+            $FileName_JSON = "$DisplayName" + ".json"
     
-                $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+            $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
                 
-            }
-    
-        }
-    
-        catch {
-    
-        $_.Exception
-    
         }
     
     }
     
-function Export-EndpointSecurityPolicies(){
+    catch {
+    
+        $_.Exception
+    
+    }
+    
+}
+    
+function Export-EndpointSecurityPolicies() {
     
     [cmdletbinding()]
 
@@ -421,14 +397,14 @@ function Export-EndpointSecurityPolicies(){
         $Path
     )
 
-        ####################################################
+    ####################################################
     
     #region Authentication
     
     write-host
     
     # Checking if authToken exists before running authentication
-    if($global:authToken){
+    if ($global:authToken) {
     
         # Setting DateTime to Universal time to work in all timezones
         $DateTime = (Get-Date).ToUniversalTime()
@@ -436,38 +412,38 @@ function Export-EndpointSecurityPolicies(){
         # If the authToken exists checking when it expires
         $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
     
-            if($TokenExpires -le 0){
+        if ($TokenExpires -le 0) {
     
             write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
             write-host
     
-                # Defining User Principal Name if not present
+            # Defining User Principal Name if not present
     
-                if($null -eq $User -or $User -eq ""){
+            if ($null -eq $User -or $User -eq "") {
     
                 $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
                 Write-Host
     
-                }
+            }
     
             $global:authToken = Get-AuthToken -User $User
     
-            }
+        }
     }
     
     # Authentication doesn't exist, calling Get-AuthToken function
     
     else {
     
-        if($null -eq $User -or $User -eq ""){
+        if ($null -eq $User -or $User -eq "") {
     
-        $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-        Write-Host
+            $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
+            Write-Host
     
         }
     
-    # Getting the authorization token
-    $global:authToken = Get-AuthToken -User $User
+        # Getting the authorization token
+        $global:authToken = Get-AuthToken -User $User
     
     }
     
@@ -477,32 +453,32 @@ function Export-EndpointSecurityPolicies(){
     
     $ExportPath = $Path
     
-        # If the directory path doesn't exist prompt user to create the directory
-        $ExportPath = $ExportPath.replace('"','')
+    # If the directory path doesn't exist prompt user to create the directory
+    $ExportPath = $ExportPath.replace('"', '')
     
-        if(!(Test-Path "$ExportPath")){
+    if (!(Test-Path "$ExportPath")) {
     
         Write-Host
         Write-Host "Path '$ExportPath' doesn't exist, do you want to create this directory? Y or N?" -ForegroundColor Yellow
     
         $Confirm = read-host
     
-            if($Confirm -eq "y" -or $Confirm -eq "Y"){
+        if ($Confirm -eq "y" -or $Confirm -eq "Y") {
     
             new-item -ItemType Directory -Path "$ExportPath" | Out-Null
             Write-Host
     
-            }
+        }
     
-            else {
+        else {
     
             Write-Host "Creation of directory path was cancelled..." -ForegroundColor Red
             Write-Host
             break
     
-            }
-    
         }
+    
+    }
     
     Write-Host
     
@@ -527,7 +503,7 @@ function Export-EndpointSecurityPolicies(){
     Write-Host "Exporting Endpoint Security Policies..." -ForegroundColor Cyan
 
     # Looping through all policies configured
-    foreach($policy in $ESPolicies){
+    foreach ($policy in $ESPolicies) {
     
         $PolicyName = $policy.displayName
         $PolicyDescription = $policy.description
@@ -535,13 +511,13 @@ function Export-EndpointSecurityPolicies(){
         $TemplateId = $policy.templateId
         $roleScopeTagIds = $policy.roleScopeTagIds
     
-        $ES_Template = $Templates | Where-Object  { $_.id -eq $policy.templateId }
+        $ES_Template = $Templates | Where-Object { $_.id -eq $policy.templateId }
     
         $TemplateDisplayName = $ES_Template.displayName
         $TemplateId = $ES_Template.id
         $versionInfo = $ES_Template.versionInfo
     
-        if($TemplateDisplayName -eq "Endpoint detection and response"){
+        if ($TemplateDisplayName -eq "Endpoint detection and response") {
     
             Write-Host "Export of 'Endpoint detection and response' policy not included in sample script..." -ForegroundColor Magenta
             Write-Host
@@ -569,7 +545,7 @@ function Export-EndpointSecurityPolicies(){
     
             # Looping through all categories within the Template
     
-            foreach($category in $Categories){
+            foreach ($category in $Categories) {
     
                 $categoryId = $category.id
     

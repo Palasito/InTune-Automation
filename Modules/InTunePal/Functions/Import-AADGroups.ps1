@@ -1,22 +1,22 @@
-Function Import-AADGroups(){
+Function Import-AADGroups() {
 
-param(
-    [parameter()]
-    [String]$Path
-)
+    param(
+        [parameter()]
+        [String]$Path
+    )
 
     Write-Host
     Write-Host "Creating specified security groups" -ForegroundColor Cyan
 
     $Groups = Import-Csv -Path $Path\CSVs\AADGroups\*.csv
 
-    foreach($Group in $Groups){
+    foreach ($Group in $Groups) {
 
-    $check = Get-AzureADMSGroup | Where-Object DisplayName -eq $Group.DisplayName
+        $check = Get-AzureADMSGroup | Where-Object DisplayName -eq $Group.DisplayName
 
         if ($null -eq $check) {
 
-        $null = New-AzureADMSGroup -DisplayName $Group.DisplayName -Description $Group.Description -MailEnabled $False -MailNickName "group" -SecurityEnabled $True
+            $null = New-AzureADMSGroup -DisplayName $Group.DisplayName -Description $Group.Description -MailEnabled $False -MailNickName "group" -SecurityEnabled $True
 
             [PSCustomObject]@{
                 "Action" = "Import"

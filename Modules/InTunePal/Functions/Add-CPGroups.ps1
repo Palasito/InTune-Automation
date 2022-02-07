@@ -1,4 +1,4 @@
-Function Get-DeviceCompliancePolicy(){
+Function Get-DeviceCompliancePolicy() {
     
     [cmdletbinding()]
     
@@ -13,59 +13,59 @@ Function Get-DeviceCompliancePolicy(){
     $graphApiVersion = "Beta"
     $Resource = "deviceManagement/deviceCompliancePolicies"
     
-        try {
+    try {
     
-            $Count_Params = 0
+        $Count_Params = 0
     
-            if($Android.IsPresent){ $Count_Params++ }
-            if($iOS.IsPresent){ $Count_Params++ }
-            if($Win10.IsPresent){ $Count_Params++ }
-            if($Name.IsPresent){ $Count_Params++ }
+        if ($Android.IsPresent) { $Count_Params++ }
+        if ($iOS.IsPresent) { $Count_Params++ }
+        if ($Win10.IsPresent) { $Count_Params++ }
+        if ($Name.IsPresent) { $Count_Params++ }
     
-            if($Count_Params -gt 1){
+        if ($Count_Params -gt 1) {
     
             write-host "Multiple parameters set, specify a single parameter -Android -iOS or -Win10 against the function" -f Red
     
-            }
+        }
     
-            elseif($Android){
+        elseif ($Android) {
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'@odata.type').contains("android") }
     
-            }
+        }
     
-            elseif($iOS){
+        elseif ($iOS) {
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'@odata.type').contains("ios") }
     
-            }
+        }
     
-            elseif($Win10){
+        elseif ($Win10) {
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'@odata.type').contains("windows10CompliancePolicy") }
     
-            }
+        }
     
-            elseif($Name){
+        elseif ($Name) {
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayName').contains("$Name") }
     
-            }
+        }
     
-            else {
+        else {
     
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
             (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
-            }
-    
         }
     
-        catch {
+    }
+    
+    catch {
     
         $ex = $_.Exception
         $errorResponse = $ex.Response.GetResponseStream()
@@ -78,12 +78,12 @@ Function Get-DeviceCompliancePolicy(){
         write-host
         break
     
-        }
+    }
     
-    }    
+}    
 
 
-function Add-CPGroups(){
+function Add-CPGroups() {
     
     [cmdletbinding()]
 
@@ -96,7 +96,7 @@ function Add-CPGroups(){
     Write-Host "Adding specified groups to Device Compliance Policies..." -ForegroundColor Cyan
     Write-Host
     
-    foreach($Pol in $DCPGroups){
+    foreach ($Pol in $DCPGroups) {
         $Policy = Get-DeviceCompliancePolicy | Where-Object displayName -match $pol.DisplayName
         $InclGrps = $pol.IncludeGroups -split ";"
         $ExclGrps = $pol.ExcludeGroups -split ";"
@@ -104,21 +104,21 @@ function Add-CPGroups(){
             assignments = @()
         }
 
-            foreach ($grp in $InclGrps){
-                $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
-                $targetmember = @{}
-                $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
-                $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-                $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-                $targetmember.groupId = $g.id
+        foreach ($grp in $InclGrps) {
+            $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+            $targetmember = @{}
+            $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+            $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+            $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+            $targetmember.groupId = $g.id
 
-                $body.assignments += @{
-                    "target" = $targetmember
-                }
+            $body.assignments += @{
+                "target" = $targetmember
             }
+        }
 
-        if ($null -eq $ExclGrps[0]){
-            foreach($grp in $ExclGrps){
+        if ($null -eq $ExclGrps[0]) {
+            foreach ($grp in $ExclGrps) {
                 $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
                 $targetmember = @{}
                 $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
@@ -140,11 +140,11 @@ function Add-CPGroups(){
         Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/deviceManagement/deviceCompliancePolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
     
         [PSCustomObject]@{
-            "Action" = "Assign"
-            "Type"   = "Compliance Policies"
-            "Name"   = $Policy.displayName
-            "Included Groups"   = $InclGrps
-            "Excluded Groups"   = $ExclGrps
+            "Action"          = "Assign"
+            "Type"            = "Compliance Policies"
+            "Name"            = $Policy.displayName
+            "Included Groups" = $InclGrps
+            "Excluded Groups" = $ExclGrps
         }
     }
 

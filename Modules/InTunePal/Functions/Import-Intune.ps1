@@ -1,4 +1,4 @@
-function Import-Intune(){
+function Import-Intune() {
     
     Import-Module AzureAD
 
@@ -6,11 +6,11 @@ function Import-Intune(){
 
     $Path = Read-host -Prompt "Specify the root path to import"
 
-    if(-not (Test-Path "$Path")){
-    Write-Host "Invalid Path specified!!!" -ForegroundColor Red
+    if (-not (Test-Path "$Path")) {
+        Write-Host "Invalid Path specified!!!" -ForegroundColor Red
     }
 
-    else{
+    else {
 
         Get-Tokens
 

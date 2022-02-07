@@ -1,4 +1,4 @@
-function Export-Intune(){
+function Export-Intune() {
     
     Write-Host "Starting InTune Configuration export....."
 
