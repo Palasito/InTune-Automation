@@ -82,6 +82,11 @@ Function Get-DeviceCompliancePolicy() {
     
 }    
 
+# $DCPGroups = Import-Csv -Path C:\script_output\CSVs\CompliancePolicies\*.csv -Delimiter ','
+# foreach ($Pol in $DCPGroups) {
+# $policy = Get-DeviceCompliancePolicy -Name $pol.DisplayName
+# Write-Host $policy.displayName
+# }
 
 function Add-CPGroups() {
     
@@ -97,7 +102,8 @@ function Add-CPGroups() {
     Write-Host
     
     foreach ($Pol in $DCPGroups) {
-        $Policy = Get-DeviceCompliancePolicy | Where-Object displayName -match $pol.DisplayName
+        Write-Host $pol.DisplayName
+        $Policy = Get-DeviceCompliancePolicy -Name $pol.DisplayName
         $InclGrps = $pol.IncludeGroups -split ";"
         $ExclGrps = $pol.ExcludeGroups -split ";"
         $Body = @{
@@ -105,7 +111,7 @@ function Add-CPGroups() {
         }
 
         foreach ($grp in $InclGrps) {
-            $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+            $g = Get-AzureADMSGroup -SearchString $grp
             $targetmember = @{}
             $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
             $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -117,9 +123,9 @@ function Add-CPGroups() {
             }
         }
 
-        if ($null -eq $ExclGrps[0]) {
+        if ($null -ne $ExclGrps[0]) {
             foreach ($grp in $ExclGrps) {
-                $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                $g = Get-AzureADMSGroup -SearchString $grp
                 $targetmember = @{}
                 $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
                 $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -147,5 +153,4 @@ function Add-CPGroups() {
             "Excluded Groups" = $ExclGrps
         }
     }
-
 }

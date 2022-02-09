@@ -12,7 +12,7 @@ Function Import-AADGroups() {
 
     foreach ($Group in $Groups) {
 
-        $check = Get-AzureADMSGroup | Where-Object DisplayName -eq $Group.DisplayName
+        $check = Get-AzureADMSGroup -SearchString $Group.DisplayName
 
         if ($null -eq $check) {
 

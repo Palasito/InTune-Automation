@@ -15,7 +15,7 @@ function Import-ConditionalAccessPolicies() {
     
     }
 
-    $CAPGroups = Import-Csv -Path $Path\CSVs\ConditionalAccess\*.csv -Delimiter ','
+    # $CAPGroups = Import-Csv -Path $Path\CSVs\ConditionalAccess\*.csv -Delimiter ','
     $BackupJsons = Get-ChildItem "$Path\ConditionalAccessPolicies" -Recurse -Include *.json
 
     Write-Host
@@ -33,29 +33,40 @@ function Import-ConditionalAccessPolicies() {
             [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
             [Microsoft.Open.MSGraph.Model.ConditionalAccessGrantControls]$GrantControls = $Policy.GrantControls
             [Microsoft.Open.MSGraph.Model.ConditionalAccessSessionControls]$SessionControls = $Policy.SessionControls
-            $BreakGlass = Get-AzureADUser | where-object { $_.UserPrincipalName -match "breakuser@" }
-            $incluser = Get-AzureADUser | where-object { $_.UserPrincipalName -match "testuser@" }
-            $OLUser = Get-AzureADUser | where-object { $_.UserPrincipalName -match "officeline@" }
+            $BreakGlass = Get-AzureADUser -SearchString "breakuser"
+            $OLUser = Get-AzureADUser -SearchString "officeline"
+            $TestUser = Get-AzureADUser -SearchString "testuser"
 
             $Users = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessUserCondition
 
-            if ($null -ne ($CAPGroups | Where-Object displayname -eq $policy.DisplayName)) {
-                $InclGrps = $CAPGroups.IncludeGroups -split ";"
-                $ExclGrps = $CAPGroups.ExcludeGroups -split ";"
+            # if ($null -ne ($CAPGroups | Where-Object $CAPGroups.DisplayName -eq $policy.DisplayName)) {
+            #     $InclGrps = $CAPGroups.IncludeGroups -split ";"
+            #     $ExclGrps = $CAPGroups.ExcludeGroups -split ";"
 
-                foreach ($grp in $InclGrps) {
-                    $inclgrpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp"
-                    $Users.IncludeGroups += $inclgrpid.id
-                }
+            #     foreach ($grp in $InclGrps) {
+            #         $inclgrpid = Get-AzureADMSGroup -SearchString "$grp"
+            #         if ($null -ne $inclgrpid) {
+            #             $Users.IncludeGroups += $inclgrpid.id
+            #         }
+            #         else {
 
-                foreach ($grp in $ExclGrps) {
-                    $exclgrpid = Get-AzureADMSGroup | Where-object displayname -eq "$grp" 
-                    $Users.ExcludeGroups += $exclgrpid.Id
-                }
+            #         }
+            #     }
 
-            }
+            #     foreach ($grp in $ExclGrps) {
+            #         $exclgrpid = Get-AzureADMSGroup -SearchString "$grp"
+            #         if ($null -ne $exclgrpid) {
+            #             $Users.ExcludeGroups += $exclgrpid.Id
+            #         }
+            #         else {
+                        
+            #         }
+            #     }
 
-            $Users.IncludeUsers = $incluser.ObjectId
+            # }
+
+            $Users.IncludeUsers = $Users.IncludeUsers + $Conditions.Users.IncludeUsers
+            $Users.IncludeUsers += $TestUser.ObjectId
             $Users.ExcludeUsers += $BreakGlass.ObjectId
             $Users.ExcludeUsers += $OLUser.ObjectId
             $Conditions.Users = $Users
@@ -111,8 +122,8 @@ function Import-ConditionalAccessPolicies() {
 
             $null = New-AzureADMSConditionalAccessPolicy @Parameters
         }
-    }
-    else {
-        Write-Host "Conditional Access policy $($policy.DisplayName) already exists and will not be imported" -ForegroundColor Red
+        else {
+            Write-Host "Conditional Access policy $($policy.DisplayName) already exists and will not be imported" -ForegroundColor Red
+        }
     }
 }
