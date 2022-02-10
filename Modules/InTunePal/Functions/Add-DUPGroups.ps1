@@ -44,7 +44,7 @@ function Add-DUPGroups() {
     $DCPGroups = Import-Csv -Path $Path\CSVs\UpdatePolicies\*.csv -Delimiter ','
     
     foreach ($Pol in $DCPGroups) {
-        $Policy = Get-SoftwareUpdatePolicyAssignments | Where-Object displayName -match $pol.DisplayName
+        $Policy = Get-SoftwareUpdatePolicyAssignments | Where-Object ($_.'displayName').equals("$pol.DisplayName")
         $InclGrps = $pol.IncludeGroups -split ";"
         $ExclGrps = $pol.ExcludeGroups -split ";"
         $Body = @{
@@ -52,28 +52,44 @@ function Add-DUPGroups() {
         }
     
         foreach ($grp in $InclGrps) {
-            $g = Get-AzureADMSGroup -SearchString $grp
-            $targetmember = @{}
-            $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
-            $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-            $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-            $targetmember.groupId = $g.id
-    
-            $body.assignments += @{
-                "target" = $targetmember
+            if (-not([string]::IsNullOrEmpty($grp))) {
+                $g = Get-AzureADMSGroup -SearchString $grp
+                $targetmember = @{}
+                $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+                $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                $targetmember.groupId = $g.id
+        
+                $body.assignments += @{
+                    "target" = $targetmember
+                }
+            }
+            elseif ([string]::IsNullOrEmpty($grp)){
+
+            }
+            else {
+                Write-Host "Group $grp does not exist, please check the CSV mapping" -ForegroundColor Yellow
             }
         }
     
         foreach ($grp in $ExclGrps) {
-            $g = Get-AzureADMSGroup -SearchString $grp
-            $targetmember = @{}
-            $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
-            $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-            $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-            $targetmember.groupId = $g.id
-    
-            $body.assignments += @{
-                "target" = $targetmember
+            if (-not([string]::IsNullOrEmpty($grp))) {
+                $g = Get-AzureADMSGroup -SearchString "$($grp)"
+                $targetmember = @{}
+                $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                $targetmember.groupId = $g.id
+
+                $body.assignments += @{
+                    "target" = $targetmember
+                }
+            }
+            elseif ([string]::IsNullOrEmpty($grp)){
+
+            }
+            else {
+                Write-Host "Group $grp does not exist, please check the CSV mapping" -ForegroundColor Yellow
             }
         }
             

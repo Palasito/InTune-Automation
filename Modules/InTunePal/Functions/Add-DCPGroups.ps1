@@ -1,100 +1,3 @@
-Function Get-DeviceSettingsCatalogPolicy() {
-    <#Explanation of function to be added#>
-    
-    [cmdletbinding()]
-    
-    $graphApiVersion = "Beta"
-    $DSC_Resource = "deviceManagement/configurationPolicies"
-        
-    try {
-        
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)"
-        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
-    
-    }
-        
-    
-        
-    catch {
-    
-        $ex = $_.Exception
-        $errorResponse = $ex.Response.GetResponseStream()
-        $reader = New-Object System.IO.StreamReader($errorResponse)
-        $reader.BaseStream.Position = 0
-        $reader.DiscardBufferedData()
-        $responseBody = $reader.ReadToEnd();
-        Write-Host "Response content:`n$responseBody" -f Red
-        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-        write-host
-        break
-    
-    }
-    
-}
-
-Function Get-DeviceAdministrativeTemplates() {
-    <#Explanation of function to be added#>
-    
-    [cmdletbinding()]
-    
-    $graphApiVersion = "Beta"
-    $DAT_Resource = "deviceManagement/groupPolicyConfigurations"
-        
-    try {
-        
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($DAT_Resource)"
-        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
-        
-    }
-        
-    catch {
-    
-        $ex = $_.Exception
-        $errorResponse = $ex.Response.GetResponseStream()
-        $reader = New-Object System.IO.StreamReader($errorResponse)
-        $reader.BaseStream.Position = 0
-        $reader.DiscardBufferedData()
-        $responseBody = $reader.ReadToEnd();
-        Write-Host "Response content:`n$responseBody" -f Red
-        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-        write-host
-        break
-    
-    }
-    
-}
-
-Function Get-GeneralDeviceConfigurationPolicy() {
-
-    [cmdletbinding()]
-    
-    $graphApiVersion = "Beta"
-    $GDC_resource = "deviceManagement/deviceConfigurations"
-        
-    try {
-        
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($GDC_resource)"
-        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
-        
-    }
-        
-    catch {
-    
-        $ex = $_.Exception
-        $errorResponse = $ex.Response.GetResponseStream()
-        $reader = New-Object System.IO.StreamReader($errorResponse)
-        $reader.BaseStream.Position = 0
-        $reader.DiscardBufferedData()
-        $responseBody = $reader.ReadToEnd();
-        Write-Host "Response content:`n$responseBody" -f Red
-        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-        write-host
-        break
-    
-    }
-    
-}
-
 function Add-DCPGroups() {
     
     [cmdletbinding()]
@@ -121,23 +24,10 @@ function Add-DCPGroups() {
                 }
             
                 foreach ($grp in $InclGrps) {
-                    $g = Get-AzureADMSGroup -SearchString $grp
-                    $targetmember = @{}
-                    $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
-                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-                    $targetmember.groupId = $g.id
-            
-                    $body.assignments += @{
-                        "target" = $targetmember
-                    }
-                }
-            
-                if ($ExclGrps -gt 1) {
-                    foreach ($grp in $ExclGrps) {
+                    if (-not([string]::IsNullOrEmpty($grp))) {
                         $g = Get-AzureADMSGroup -SearchString $grp
                         $targetmember = @{}
-                        $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                        $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
                         $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
                         $targetmember.groupId = $g.id
@@ -145,6 +35,33 @@ function Add-DCPGroups() {
                         $body.assignments += @{
                             "target" = $targetmember
                         }
+                    }
+                    elseif ([string]::IsNullOrEmpty($grp)) {
+        
+                    }
+                    else {
+                        Write-Host "Group $grp does not exist, please check the CSV mapping" -ForegroundColor Yellow
+                    }
+                }
+            
+                foreach ($grp in $ExclGrps) {
+                    if (-not([string]::IsNullOrEmpty($grp))) {
+                        $g = Get-AzureADMSGroup -SearchString "$($grp)"
+                        $targetmember = @{}
+                        $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                        $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                        $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                        $targetmember.groupId = $g.id
+        
+                        $body.assignments += @{
+                            "target" = $targetmember
+                        }
+                    }
+                    elseif ([string]::IsNullOrEmpty($grp)) {
+        
+                    }
+                    else {
+                        Write-Host "Group $grp does not exist, please check the CSV mapping" -ForegroundColor Yellow
                     }
                 }
             
@@ -172,23 +89,10 @@ function Add-DCPGroups() {
                 }
             
                 foreach ($grp in $InclGrps) {
-                    $g = Get-AzureADMSGroup -SearchString $grp
-                    $targetmember = @{}
-                    $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
-                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-                    $targetmember.groupId = $g.id
-            
-                    $body.assignments += @{
-                        "target" = $targetmember
-                    }
-                }
-            
-                if ($ExclGrps -gt 1) {
-                    foreach ($grp in $ExclGrps) {
+                    if (-not([string]::IsNullOrEmpty($grp))) {
                         $g = Get-AzureADMSGroup -SearchString $grp
                         $targetmember = @{}
-                        $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                        $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
                         $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
                         $targetmember.groupId = $g.id
@@ -196,6 +100,33 @@ function Add-DCPGroups() {
                         $body.assignments += @{
                             "target" = $targetmember
                         }
+                    }
+                    elseif ([string]::IsNullOrEmpty($grp)) {
+        
+                    }
+                    else {
+                        Write-Host "Group $grp does not exist, please check the CSV mapping" -ForegroundColor Yellow
+                    }
+                }
+            
+                foreach ($grp in $ExclGrps) {
+                    if (-not([string]::IsNullOrEmpty($grp))) {
+                        $g = Get-AzureADMSGroup -SearchString "$($grp)"
+                        $targetmember = @{}
+                        $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                        $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                        $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                        $targetmember.groupId = $g.id
+        
+                        $body.assignments += @{
+                            "target" = $targetmember
+                        }
+                    }
+                    elseif ([string]::IsNullOrEmpty($grp)) {
+        
+                    }
+                    else {
+                        Write-Host "Group $grp does not exist, please check the CSV mapping" -ForegroundColor Yellow
                     }
                 }
             
@@ -222,33 +153,47 @@ function Add-DCPGroups() {
                 }
 
                 foreach ($grp in $InclGrps) {
-                    $g = Get-AzureADMSGroup -SearchString $grp
-                    $targetmember = @{}
-                    $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
-                    $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-                    $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-                    $targetmember.groupId = $g.id
-            
-                    $body.assignments += @{
-                        "target" = $targetmember
+                    if (-not([string]::IsNullOrEmpty($grp))) {
+                        $g = Get-AzureADMSGroup -SearchString $grp
+                        $targetmember = @{}
+                        $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+                        $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                        $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                        $targetmember.groupId = $g.id
+        
+                        $body.assignments += @{
+                            "target" = $targetmember
+                        }
+                    }
+                    elseif ([string]::IsNullOrEmpty($grp)) {
+
+                    }
+                    else {
+                        Write-Host "Group $grp does not exist, please check the CSV mapping" -ForegroundColor Yellow
                     }
                 }
             
-                if ($ExclGrps -gt 1) {
-                    foreach ($grp in $ExclGrps) {
-                        $g = Get-AzureADMSGroup -SearchString $grp
+                foreach ($grp in $ExclGrps) {
+                    if (-not([string]::IsNullOrEmpty($grp))) {
+                        $g = Get-AzureADMSGroup -SearchString "$($grp)"
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
                         $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
                         $targetmember.groupId = $g.id
-                
+        
                         $body.assignments += @{
                             "target" = $targetmember
                         }
                     }
+                    elseif ([string]::IsNullOrEmpty($grp)) {
+        
+                    }
+                    else {
+                        Write-Host "Group $grp does not exist, please check the CSV mapping" -ForegroundColor Yellow
+                    }
                 }
-            
+
                 $Body = $Body | ConvertTo-Json -Depth 100
 
                 $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/configurationPolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"

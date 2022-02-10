@@ -70,6 +70,7 @@ function Import-DeviceConfigurationPolicies() {
 
     ####################################################
 
+    Write-Host
     Write-Host "Importing Device Configuration Profiles..." -ForegroundColor cyan
 
     $AvailableJsonsGDC = Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include GDC_*.json
@@ -102,7 +103,6 @@ function Import-DeviceConfigurationPolicies() {
 
     Write-Host
     Write-Host "Importing Settings Catalog Profiles..." -ForegroundColor cyan
-    Write-Host
 
     $AvailableJsonsSCP = Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include SC_*.json
     foreach ($json in $AvailableJsonsSCP) {
@@ -134,7 +134,6 @@ function Import-DeviceConfigurationPolicies() {
 
     Write-Host
     Write-Host "Importing Administrative Templates..." -ForegroundColor cyan
-    Write-Host
 
     $AvailableJsonsAT = Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include AT_*.json
     foreach ($json in $AvailableJsonsAT) {

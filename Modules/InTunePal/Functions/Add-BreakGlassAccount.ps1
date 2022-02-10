@@ -4,6 +4,8 @@ Function Add-BreakGlassAccount() {
         $tenantforbreak
     )
 
+    Write-Host
+    Write-Host "Will be creating User Accounts" -ForegroundColor Cyan
     $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
     $PasswordProfile.Password = "P@55w.rd"
     $UserPrincipalName = 'breakuser@' + $tenantforbreak

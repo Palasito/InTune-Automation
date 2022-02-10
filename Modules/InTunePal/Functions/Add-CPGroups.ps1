@@ -20,21 +20,29 @@ function Add-CPGroups() {
         }
 
         foreach ($grp in $InclGrps) {
-            $g = Get-AzureADMSGroup -SearchString $grp
-            $targetmember = @{}
-            $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
-            $targetmember.deviceAndAppManagementAssignmentFilterId = $null
-            $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
-            $targetmember.groupId = $g.id
+            if (-not([string]::IsNullOrEmpty($grp))) {
+                $g = Get-AzureADMSGroup -SearchString $grp
+                $targetmember = @{}
+                $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
+                $targetmember.deviceAndAppManagementAssignmentFilterId = $null
+                $targetmember.deviceAndAppManagementAssignmentFilterType = "none"
+                $targetmember.groupId = $g.id
+        
+                $body.assignments += @{
+                    "target" = $targetmember
+                }
+            }
+            elseif ([string]::IsNullOrEmpty($grp)) {
 
-            $body.assignments += @{
-                "target" = $targetmember
+            }
+            else {
+                Write-Host "Group $grp does not exist, please check the CSV mapping" -ForegroundColor Yellow
             }
         }
 
-        if ($null -eq $ExclGrps[0]) {
-            foreach ($grp in $ExclGrps) {
-                $g = Get-AzureADMSGroup -SearchString $grp
+        foreach ($grp in $ExclGrps) {
+            if (-not([string]::IsNullOrEmpty($grp))) {
+                $g = Get-AzureADMSGroup -SearchString "$($grp)"
                 $targetmember = @{}
                 $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
                 $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -45,9 +53,12 @@ function Add-CPGroups() {
                     "target" = $targetmember
                 }
             }
-        }
-        else {
+            elseif ([string]::IsNullOrEmpty($grp)) {
 
+            }
+            else {
+                Write-Host "Group $grp does not exist, please check the CSV mapping" -ForegroundColor Yellow
+            }
         }
         
         $Body = $Body | ConvertTo-Json -Depth 100

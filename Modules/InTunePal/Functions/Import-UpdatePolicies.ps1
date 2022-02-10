@@ -61,8 +61,9 @@ function Import-UpdatePolicies() {
     }
 
     ####################################################
-    Write-Host "Importing Software Update Policies..." -ForegroundColor Cyan
+    
     Write-Host
+    Write-Host "Importing Software Update Policies..." -ForegroundColor Cyan
 
     $AvailableJsonsiOS = Get-ChildItem "$ImportPath\iOSUpdatePolicies" -Recurse -Include *.json
 

@@ -8,8 +8,6 @@ function Import-AppProtectionPolicies() {
     )
 
     #region AuthenticationW
-
-    write-host
     
     # Checking if authToken exists before running authentication
     if ($global:authToken) {
@@ -77,8 +75,8 @@ function Import-AppProtectionPolicies() {
     
     $JSON_Data = Get-ChildItem "$ImportPath\AppProtectionPolicies" -Recurse -Include *.json
 
+    write-host
     write-host "Importing App Protection Policies..." -ForegroundColor Cyan
-    Write-Host
 
     foreach ($json in $JSON_Data) {
 

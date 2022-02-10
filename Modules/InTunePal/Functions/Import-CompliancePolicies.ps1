@@ -69,8 +69,8 @@ Function Import-CompliancePolicies() {
 
     }
 
-    Write-Host "Importing Device Compliance Policies..." -ForegroundColor Cyan
     Write-Host
+    Write-Host "Importing Device Compliance Policies..." -ForegroundColor Cyan
 
     $AvailableJsons = Get-ChildItem "$ImportPath\DeviceCompliancePolicies" -Recurse -Include *.json
 
@@ -106,8 +106,7 @@ Function Import-CompliancePolicies() {
             }
         }    
         else {
-            Write-Host
-            Write-Host "Policy '$DisplayName' already exists and will not be imported!" -ForegroundColor Yellow
+            Write-Host "Policy '$DisplayName' already exists and will not be imported!" -ForegroundColor Red
         }
 
     }

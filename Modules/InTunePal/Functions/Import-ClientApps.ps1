@@ -62,8 +62,8 @@
 
     ####################################################
 
-    Write-Host "Importing Client Apps..." -ForegroundColor Cyan
     Write-Host
+    Write-Host "Importing Client Apps..." -ForegroundColor Cyan
 
     $AvailableJSONS = Get-ChildItem "$ImportPath\ClientApps" -Recurse -Include *.json
 

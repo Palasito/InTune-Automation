@@ -47,7 +47,8 @@ Function Import-NamedLocations() {
         }
     }
 
-    Write-Host "Creating Trusted IP Range Policy..."
+    Write-Host
+    Write-Host "Creating Trusted IP Range Policy..." -ForegroundColor Cyan
 
     $check = Get-AzureADMSNamedLocationPolicy | Where-Object { $_.DisplayName -eq "Trusted Networks" }
     if ( $null -eq $check ) {
