@@ -201,7 +201,7 @@ function Add-DCPGroups() {
                 [PSCustomObject]@{
                     "Action"          = "Assign"
                     "Type"            = "Configuration Profiles"
-                    "Name"            = $Policy.displayName
+                    "Name"            = $Policy.name
                     "Included Groups" = $InclGrps
                     "Excluded Groups" = $ExclGrps
                 }

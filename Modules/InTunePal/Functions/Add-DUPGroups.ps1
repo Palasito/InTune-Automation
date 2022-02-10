@@ -44,7 +44,7 @@ function Add-DUPGroups() {
     $DCPGroups = Import-Csv -Path $Path\CSVs\UpdatePolicies\*.csv -Delimiter ','
     
     foreach ($Pol in $DCPGroups) {
-        $Policy = Get-SoftwareUpdatePolicyAssignments | Where-Object ($_.'displayName').equals("$pol.DisplayName")
+        $Policy = Get-SoftwareUpdatePolicyAssignments | Where-Object displayName -eq $pol.DisplayName
         $InclGrps = $pol.IncludeGroups -split ";"
         $ExclGrps = $pol.ExcludeGroups -split ";"
         $Body = @{
