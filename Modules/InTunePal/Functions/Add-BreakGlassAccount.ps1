@@ -12,7 +12,7 @@ Function Add-BreakGlassAccount() {
     $checktest = Get-AzureADUser -SearchString "testuser"
     $checkOL = Get-AzureADUser -SearchString "officeline"
     
-    if ($null -eq $checkbreak){
+    if ($null -eq $checkbreak) {
         Write-Host "Will be creating the following user:" -ForegroundColor Cyan
         write-host "Break-Glass account with username: $UserPrincipalName and password: "$PasswordProfile.Password -ForegroundColor Cyan
         Start-Sleep -Seconds 5
