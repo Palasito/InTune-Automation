@@ -121,7 +121,7 @@ function Add-DCPGroups() {
                 }
             
                 foreach ($grp in $InclGrps) {
-                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $g = Get-AzureADMSGroup -SearchString $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
                     $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -135,7 +135,7 @@ function Add-DCPGroups() {
             
                 if ($ExclGrps -gt 1) {
                     foreach ($grp in $ExclGrps) {
-                        $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                        $g = Get-AzureADMSGroup -SearchString $grp
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -172,7 +172,7 @@ function Add-DCPGroups() {
                 }
             
                 foreach ($grp in $InclGrps) {
-                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $g = Get-AzureADMSGroup -SearchString $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
                     $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -186,7 +186,7 @@ function Add-DCPGroups() {
             
                 if ($ExclGrps -gt 1) {
                     foreach ($grp in $ExclGrps) {
-                        $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                        $g = Get-AzureADMSGroup -SearchString $grp
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -222,7 +222,7 @@ function Add-DCPGroups() {
                 }
 
                 foreach ($grp in $InclGrps) {
-                    $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                    $g = Get-AzureADMSGroup -SearchString $grp
                     $targetmember = @{}
                     $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
                     $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -236,7 +236,7 @@ function Add-DCPGroups() {
             
                 if ($ExclGrps -gt 1) {
                     foreach ($grp in $ExclGrps) {
-                        $g = Get-AzureADMSGroup | Where-Object displayname -eq $grp
+                        $g = Get-AzureADMSGroup -SearchString $grp
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
