@@ -35,7 +35,7 @@ Function Add-BreakGlassAccount() {
     
         $userassignment = Get-AzureADUser -SearchString "breakuser"
     
-        $roleDefinition = Get-AzureADMSRoleDefinition -SearchString "Global Administrator"
+        $roleDefinition = Get-AzureADMSRoleDefinition -Filter "startswith(displayname, 'Global Administrator')"
     
         $null = New-AzureADMSRoleAssignment -DirectoryScopeId '/' -RoleDefinitionId $roleDefinition.Id -PrincipalId $userassignment.objectId
     }
