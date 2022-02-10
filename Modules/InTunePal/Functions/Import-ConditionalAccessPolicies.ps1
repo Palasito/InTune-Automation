@@ -39,32 +39,6 @@ function Import-ConditionalAccessPolicies() {
 
             $Users = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessUserCondition
 
-            # if ($null -ne ($CAPGroups | Where-Object $CAPGroups.DisplayName -eq $policy.DisplayName)) {
-            #     $InclGrps = $CAPGroups.IncludeGroups -split ";"
-            #     $ExclGrps = $CAPGroups.ExcludeGroups -split ";"
-
-            #     foreach ($grp in $InclGrps) {
-            #         $inclgrpid = Get-AzureADMSGroup -SearchString "$grp"
-            #         if ($null -ne $inclgrpid) {
-            #             $Users.IncludeGroups += $inclgrpid.id
-            #         }
-            #         else {
-
-            #         }
-            #     }
-
-            #     foreach ($grp in $ExclGrps) {
-            #         $exclgrpid = Get-AzureADMSGroup -SearchString "$grp"
-            #         if ($null -ne $exclgrpid) {
-            #             $Users.ExcludeGroups += $exclgrpid.Id
-            #         }
-            #         else {
-                        
-            #         }
-            #     }
-
-            # }
-
             $Users.IncludeUsers = $Users.IncludeUsers + $Conditions.Users.IncludeUsers
             $Users.IncludeUsers += $TestUser.ObjectId
             $Users.ExcludeUsers += $BreakGlass.ObjectId
