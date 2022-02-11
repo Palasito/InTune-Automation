@@ -1,0 +1,27 @@
+{
+    "@odata.type":  "#microsoft.graph.windows10CustomConfiguration",
+    "id":  "4d2762f4-4960-4ea0-bd2a-4a7456e92b82",
+    "lastModifiedDateTime":  "2021-07-14T10:47:49.2062179Z",
+    "roleScopeTagIds":  [
+                            "0"
+                        ],
+    "supportsScopeTags":  true,
+    "deviceManagementApplicabilityRuleOsEdition":  null,
+    "deviceManagementApplicabilityRuleOsVersion":  null,
+    "deviceManagementApplicabilityRuleDeviceMode":  null,
+    "createdDateTime":  "2021-07-14T10:47:49.2062179Z",
+    "description":  null,
+    "displayName":  "Azure AD join - local admins",
+    "version":  1,
+    "omaSettings":  [
+                        {
+                            "@odata.type":  "#microsoft.graph.omaSettingString",
+                            "description":  "Azure AD Join -  Add local administrators the group \"Azure AD Joined Devices Admins\"",
+                            "omaUri":  "./Vendor/MSFT/Policy/Config/LocalUsersAndGroups/Configure",
+                            "secretReferenceValueId":  null,
+                            "value":  "\u003cGroupConfiguration\u003e\n    \u003caccessgroup desc = \"Administrators\"\u003e\n        \u003cgroup action = \"U\"/\u003e\n            \u003cadd member = \"AzureAD\\$tsevasf@attica-group.com\"/\u003e\n\t    \u003cadd member = \"S-1-12-1-2558138529-1252419033-661727664-3728381191\"/\u003e            \n    \u003c/accessgroup\u003e\n\u003c/GroupConfiguration\u003e",
+                            "isEncrypted":  false,
+                            "displayName":  "Azure AD Join -  Add local administrators"
+                        }
+                    ]
+}

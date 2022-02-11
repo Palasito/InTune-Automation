@@ -1,0 +1,5 @@
+DisplayName,IncludeGroups,ExcludeGroups
+iOS,Modern Workplace iOS Devices,
+Macos,Modern Workplace macOS Devices,
+Users,Modern Workplace Android Devices,
+Windows,Modern Workplace Windows Devices,

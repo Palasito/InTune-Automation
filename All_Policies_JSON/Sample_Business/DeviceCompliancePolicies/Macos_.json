@@ -1,0 +1,33 @@
+{
+    "@odata.type":  "#microsoft.graph.macOSCompliancePolicy",
+    "roleScopeTagIds":  [
+                            "0"
+                        ],
+    "id":  "005c86ff-0e86-491a-84da-3a6bfc21f88f",
+    "createdDateTime":  "2019-11-01T15:10:35.2386248Z",
+    "description":  "",
+    "lastModifiedDateTime":  "2019-11-01T15:10:35.2386248Z",
+    "displayName":  "Macos",
+    "version":  1,
+    "passwordRequired":  true,
+    "passwordBlockSimple":  true,
+    "passwordExpirationDays":  null,
+    "passwordMinimumLength":  null,
+    "passwordMinutesOfInactivityBeforeLock":  null,
+    "passwordPreviousPasswordBlockCount":  null,
+    "passwordMinimumCharacterSetCount":  null,
+    "passwordRequiredType":  "deviceDefault",
+    "osMinimumVersion":  null,
+    "osMaximumVersion":  null,
+    "osMinimumBuildVersion":  null,
+    "osMaximumBuildVersion":  null,
+    "systemIntegrityProtectionEnabled":  false,
+    "deviceThreatProtectionEnabled":  false,
+    "deviceThreatProtectionRequiredSecurityLevel":  "unavailable",
+    "advancedThreatProtectionRequiredSecurityLevel":  "unavailable",
+    "storageRequireEncryption":  false,
+    "gatekeeperAllowedAppSource":  "notConfigured",
+    "firewallEnabled":  false,
+    "firewallBlockAllIncoming":  false,
+    "firewallEnableStealthMode":  false
+}

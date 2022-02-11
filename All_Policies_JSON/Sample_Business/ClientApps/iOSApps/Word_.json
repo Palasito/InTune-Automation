@@ -1,0 +1,44 @@
+{
+    "@odata.context":  "https://graph.microsoft.com/beta/$metadata#deviceAppManagement/mobileApps/$entity",
+    "@odata.type":  "#microsoft.graph.iosStoreApp",
+    "id":  "81bd69ea-d004-4495-a4ca-c8f16064be1b",
+    "displayName":  "Word",
+    "description":  "*** Word is ready for iPad Pro and looks amazing on the 12.9-inch screen. Read Word documents on iPad Pro for free. To create and edit docs, you need a qualifying Office 365 subscription. Try it for free for 30 days. *** \nThe real Microsoft Word app designed for iPad, iPhone and iPod touch. \nNow Word documents look better than ever on your tablet and phone. When you edit or create documents, you can be confident they will look exactly how you want across PC, Mac, tablet and phone. Word has the familiar Office look and feel along with an intuitive touch experience, so you’ll be up and running in no time. \nOn iPhone, iPad Air, and iPad mini, the core Word experience, including viewing, creating, and editing documents, is free. Or unlock the full Word experience with a qualifying Office 365 subscription. On iPad Pro, you need Office 365 to create and edit documents. \n\nWORD DOCUMENTS LOOK BEAUTIFUL \n•Images, tables, charts, SmartArt, footnotes, equations are all there, nicely formatted. \n•On your phone, choose between the real document layout or an easy-to-read layout.\n•View email attachments and access Word documents from OneDrive, Dropbox, iCloud, OneDrive for Business, or SharePoint.\n•Print Word documents to an AirPrint printer, with or without markup.\n\nCREATE AND EDIT WITH CONFIDENCE\n•When you edit a document, your content and formatting are maintained across all your devices – PC, Mac, tablet and phone.\n•Express your ideas exactly the way you want, with rich formatting including fonts, pictures, tables, charts, textboxes, shapes, footnotes, page layout and more. \n•Track changes, add comments and work simultaneously with others on the same document.\n•Get tasks done faster, with multitasking. Run Word for iPad side by side with other apps (requires iOS 9).\n\n\nREQUIREMENTS\n\niPad Pro: To create or edit documents, you need a qualifying Office 365 subscription* , which also gives you access to the full Office experience.\n\niPad, iPhone, iPod Touch: To create or edit documents, sign in with a free Microsoft account. To unlock the full Office experience and to access and save documents in OneDrive for Business or on SharePoint, you need a qualifying Office 365 subscription* .\n\n*To make an in-app purchase of an Office 365 Home or Personal subscription, open the app. In the document picker screen, tap Upgrade. Subscriptions begin at from $6.99 a month in the US, and can vary by region. With an Office 365 subscription, you get access to all features in Word, Excel, and PowerPoint on iPad, iPhone, and iPod touch, and you can install Word, Excel, PowerPoint, Outlook, and OneNote on PCs or Macs.\n\nOffice 365 subscriptions purchased from the app will be charged to your iTunes account and will automatically renew within 24 hours prior to the end of the current subscription period, unless auto-renewal is disabled beforehand. To manage your subscriptions or to disable auto-renewal, after purchase, go to your iTunes account settings. A subscription cannot be cancelled during the active subscription period.\n\nPrivacy Policy: http://go.microsoft.com/fwlink/?LinkID=507539. Terms of Use: http://go.microsoft.com/fwlink/?LinkID=390698.",
+    "publisher":  "Microsoft Corporation",
+    "createdDateTime":  "2022-01-04T15:37:28.8817035Z",
+    "lastModifiedDateTime":  "2022-01-04T15:37:28.8817035Z",
+    "isFeatured":  false,
+    "privacyInformationUrl":  "",
+    "informationUrl":  null,
+    "owner":  "",
+    "developer":  "",
+    "notes":  "",
+    "uploadState":  1,
+    "publishingState":  "published",
+    "isAssigned":  false,
+    "roleScopeTagIds":  [
+                            "0"
+                        ],
+    "dependentAppCount":  0,
+    "supersedingAppCount":  0,
+    "supersededAppCount":  0,
+    "bundleId":  "com.microsoft.Office.Word",
+    "appStoreUrl":  "https://itunes.apple.com/us/app/microsoft-word/id586447913?mt=8\u0026uo=4",
+    "largeIcon":  {
+                      "type":  "image/jpeg",
+                      "value":  "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAA8ADwDAREAAhEBAxEB/8QAGwAAAgMBAQEAAAAAAAAAAAAAAAYCBQcDBAj/xAA+EAACAAYAAgUFDAsAAAAAAAABAgADBAUGERIhBxMiMTIUQXF0kQgkJic1UWGBsbLD4RUjMzRSVJOhwdHw/8QAGgEBAAMBAQEAAAAAAAAAAAAAAAMEBQECBv/EACgRAAEDAgMJAQEBAAAAAAAAAAABAgMEESExcQUSEzIzQUJRgSKhI//aAAwDAQACEQMRAD8AStx9gfOhuADcAG4ANwAbgA3ABuAI7gdGjEcHvWVyZs+1JT+TypnVvMnTggDaB1rmTyPzRWnqo4Fs/MligfLi0e7b0G1rkG43umlDzrTyWmH2sR9kU3bUb4tLLaFfJRptvQnjsgA1lTcKtvODMEtT9Sjf94rP2nKuSIhM2ijTO6mb9MWMUljyelo7Bb5sumNGsxhLDzNsXYEknfPQEX6Gd0kaukXG5VqokY9EYnYRfIK3+Tq/6D/6i7vt9lbdX0ed1aW5R1ZXU6KsNEekR6vc5YjuAIbgdN/9zqfgvdPXvw1jE2n1E0NKi5F1NaDcPNjr08ozC6TM+UkxJbzEV38KlgC3oHnhZVxFxJyu8XC3ZYEobtjlEjUiMUukxlcnibmNMOX5xahja6P9NVcexBI5zXYKianXHr9da28U9PVXvEKqS/FxSqCc7T20pPZBc/Xy7twliY1qqjXJrkGPcrrKqfD586UT8YmQ+tH7qxt0fQboZtR1XCvuLJCQ3HDpv3udtNi90DeE1uj6OrWMXaXUTQ0aPkXUVbgKyuxBMPlzXarpbnXs/ExLdXIRpi79JcARZbutl465Kif3AhW6s4XpV/g3YhWjLOkPHrgdOltsEucxPPU6b2T9ff7IqzN4MLm+3fxCaNeJI13pC7zcsMuXhbEAPI0+Wv2nibw/R+cQwdPyz7EsvN2+ksUZzf6XbYGR2vkz948J8H+fo3HZuRef7kcj5vH5mYT0pH4xch9bP3VjXo+g3Qz6jqOFbcWSIhuOA373Ox+C909e/DWMbaXUTQ0aPkXUb7ZhdLSZ1cck8oaY1ZLKGmKAKhYKGYHfPYX5vPFZ1Q50SRWyJmwokiv9kejTBkwz9JHywVbVbrwN1fB1ctd6XvO/FCqqePbC1hBDwr45nizZGfL1KycQme8053o/rPE3h5d35x6gX/Pyz7HJebt9J4pKdb/SlpGBIO1ztZ98Dsnwcvb9G4TL+Fxd9yEafrx+ZmD9KZ+MbIvWz91Y2KPot0M+o6jhW3FghOe4HTZ+gzJ7LZ7JX0l1udNR1E2r6xFnEqGXgUb3rXePnjLr4ZHvRzUuli7SyNa1UcptFvuVDXqGoa2lqVPnkzlf7DGW5rm8yWLqORclLJSV7wR6Y8HoybpRyux49mMpLzjUi8THokZZkxZZ4Rxvy7QP/GL9LDJJH+HWxKs0jGP/AElxeoulzF6CpSpocFk01Qm+CbJElGXY0dELscjEzqGZyWdJdPpGlTGi3Rpl2W3hb9k1yuqSWkLVzjNEtm4io0BokeiNGGPhxoxexUkdvuVxU7iU8EdwOhuABey3EnZb+JeR9scVL5gu7bl2R2zQt9+uUlR3L15dfY2xED6aJ+bUJGyvbkpwyLIbpklZKq73UipqZcoSVmdWqHhBJG+EAHvPOPcULYk3WnHvV63cVe4lPAbgA3AEY4AgAgAgAgAgAgAgD//Z"
+                  },
+    "applicableDeviceType":  {
+                                 "iPad":  true,
+                                 "iPhoneAndIPod":  true
+                             },
+    "minimumSupportedOperatingSystem":  {
+                                            "v8_0":  true,
+                                            "v9_0":  false,
+                                            "v10_0":  false,
+                                            "v11_0":  false,
+                                            "v12_0":  false,
+                                            "v13_0":  false,
+                                            "v14_0":  false
+                                        }
+}

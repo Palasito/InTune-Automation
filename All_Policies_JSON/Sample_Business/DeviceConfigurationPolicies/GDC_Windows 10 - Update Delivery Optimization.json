@@ -1,0 +1,52 @@
+{
+    "@odata.type":  "#microsoft.graph.windowsDeliveryOptimizationConfiguration",
+    "id":  "c46753ed-4926-47a4-a7e0-2e6ea6dcde88",
+    "lastModifiedDateTime":  "2021-04-09T10:51:06.1041796Z",
+    "roleScopeTagIds":  [
+                            "0"
+                        ],
+    "supportsScopeTags":  true,
+    "deviceManagementApplicabilityRuleOsEdition":  null,
+    "deviceManagementApplicabilityRuleOsVersion":  null,
+    "deviceManagementApplicabilityRuleDeviceMode":  null,
+    "createdDateTime":  "2021-04-06T09:29:10.7913046Z",
+    "description":  null,
+    "displayName":  "Windows 10 - Update Delivery Optimization",
+    "version":  2,
+    "deliveryOptimizationMode":  "httpWithPeeringNat",
+    "restrictPeerSelectionBy":  "notConfigured",
+    "groupIdSource":  null,
+    "backgroundDownloadFromHttpDelayInSeconds":  300,
+    "foregroundDownloadFromHttpDelayInSeconds":  300,
+    "minimumRamAllowedToPeerInGigabytes":  6,
+    "minimumDiskSizeAllowedToPeerInGigabytes":  200,
+    "minimumFileSizeToCacheInMegabytes":  1,
+    "minimumBatteryPercentageAllowedToUpload":  70,
+    "modifyCacheLocation":  null,
+    "maximumCacheAgeInDays":  30,
+    "vpnPeerCaching":  "disabled",
+    "cacheServerHostNames":  [
+
+                             ],
+    "cacheServerForegroundDownloadFallbackToHttpDelayInSeconds":  0,
+    "cacheServerBackgroundDownloadFallbackToHttpDelayInSeconds":  0,
+    "bandwidthMode":  {
+                          "@odata.type":  "#microsoft.graph.deliveryOptimizationBandwidthHoursWithPercentage",
+                          "bandwidthBackgroundPercentageHours":  {
+                                                                     "bandwidthBeginBusinessHours":  8,
+                                                                     "bandwidthEndBusinessHours":  19,
+                                                                     "bandwidthPercentageDuringBusinessHours":  20,
+                                                                     "bandwidthPercentageOutsideBusinessHours":  80
+                                                                 },
+                          "bandwidthForegroundPercentageHours":  {
+                                                                     "bandwidthBeginBusinessHours":  8,
+                                                                     "bandwidthEndBusinessHours":  19,
+                                                                     "bandwidthPercentageDuringBusinessHours":  20,
+                                                                     "bandwidthPercentageOutsideBusinessHours":  80
+                                                                 }
+                      },
+    "maximumCacheSize":  {
+                             "@odata.type":  "#microsoft.graph.deliveryOptimizationMaxCacheSizeAbsolute",
+                             "maximumCacheSizeInGigabytes":  10
+                         }
+}

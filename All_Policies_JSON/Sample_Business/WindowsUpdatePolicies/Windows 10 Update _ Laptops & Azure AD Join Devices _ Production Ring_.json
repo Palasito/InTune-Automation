@@ -1,0 +1,69 @@
+{
+    "@odata.type":  "#microsoft.graph.windowsUpdateForBusinessConfiguration",
+    "id":  "7121113a-dea1-4293-bcb1-caa6a7a9db15",
+    "lastModifiedDateTime":  "2021-07-16T09:44:55.9914752Z",
+    "roleScopeTagIds":  [
+                            "0"
+                        ],
+    "supportsScopeTags":  true,
+    "deviceManagementApplicabilityRuleOsEdition":  null,
+    "deviceManagementApplicabilityRuleOsVersion":  null,
+    "deviceManagementApplicabilityRuleDeviceMode":  null,
+    "createdDateTime":  "2021-04-06T07:57:32.7086443Z",
+    "description":  "",
+    "displayName":  "Windows 10 Update | Laptops \u0026 Azure AD Join Devices | Production Ring",
+    "version":  5,
+    "deliveryOptimizationMode":  "userDefined",
+    "prereleaseFeatures":  "userDefined",
+    "automaticUpdateMode":  "autoInstallAndRebootAtScheduledTime",
+    "microsoftUpdateServiceAllowed":  true,
+    "driversExcluded":  true,
+    "qualityUpdatesDeferralPeriodInDays":  21,
+    "featureUpdatesDeferralPeriodInDays":  30,
+    "qualityUpdatesPaused":  false,
+    "featureUpdatesPaused":  false,
+    "qualityUpdatesPauseExpiryDateTime":  "0001-01-01T00:00:00Z",
+    "featureUpdatesPauseExpiryDateTime":  "0001-01-01T00:00:00Z",
+    "businessReadyUpdatesOnly":  "businessReadyOnly",
+    "skipChecksBeforeRestart":  false,
+    "updateWeeks":  "firstWeek,fourthWeek",
+    "qualityUpdatesPauseStartDate":  null,
+    "featureUpdatesPauseStartDate":  null,
+    "featureUpdatesRollbackWindowInDays":  60,
+    "qualityUpdatesWillBeRolledBack":  false,
+    "featureUpdatesWillBeRolledBack":  false,
+    "qualityUpdatesRollbackStartDateTime":  "0001-01-01T00:00:00Z",
+    "featureUpdatesRollbackStartDateTime":  "0001-01-01T00:00:00Z",
+    "engagedRestartDeadlineInDays":  null,
+    "engagedRestartSnoozeScheduleInDays":  null,
+    "engagedRestartTransitionScheduleInDays":  null,
+    "deadlineForFeatureUpdatesInDays":  null,
+    "deadlineForQualityUpdatesInDays":  null,
+    "deadlineGracePeriodInDays":  null,
+    "postponeRebootUntilAfterDeadline":  null,
+    "autoRestartNotificationDismissal":  "notConfigured",
+    "scheduleRestartWarningInHours":  2,
+    "scheduleImminentRestartWarningInMinutes":  15,
+    "userPauseAccess":  "disabled",
+    "userWindowsUpdateScanAccess":  "enabled",
+    "updateNotificationLevel":  "defaultNotifications",
+    "allowWindows11Upgrade":  false,
+    "installationSchedule":  {
+                                 "@odata.type":  "#microsoft.graph.windowsUpdateScheduledInstall",
+                                 "scheduledInstallDay":  "tuesday",
+                                 "scheduledInstallTime":  "14:00:00.0000000"
+                             },
+    "groupAssignments@odata.context":  "https://graph.microsoft.com/beta/$metadata#deviceManagement/deviceConfigurations(\u00277121113a-dea1-4293-bcb1-caa6a7a9db15\u0027)/microsoft.graph.windowsUpdateForBusinessConfiguration/groupAssignments",
+    "groupAssignments":  [
+                             {
+                                 "id":  "7121113a-dea1-4293-bcb1-caa6a7a9db15_07e4cc68-5ea4-448c-ada6-b8d50aa5e59c",
+                                 "targetGroupId":  "07e4cc68-5ea4-448c-ada6-b8d50aa5e59c",
+                                 "excludeGroup":  false
+                             },
+                             {
+                                 "id":  "7121113a-dea1-4293-bcb1-caa6a7a9db15_9bea73ee-959a-4303-9611-3026b9b4e26a",
+                                 "targetGroupId":  "9bea73ee-959a-4303-9611-3026b9b4e26a",
+                                 "excludeGroup":  false
+                             }
+                         ]
+}

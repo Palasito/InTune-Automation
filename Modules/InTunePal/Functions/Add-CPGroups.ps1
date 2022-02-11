@@ -63,7 +63,7 @@ function Add-CPGroups() {
         
         $Body = $Body | ConvertTo-Json -Depth 100
     
-        Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/deviceCompliancePolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+        $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/deviceCompliancePolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
     
         [PSCustomObject]@{
             "Action"          = "Assign"

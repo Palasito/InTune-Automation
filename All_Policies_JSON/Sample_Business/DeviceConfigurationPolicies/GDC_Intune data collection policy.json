@@ -1,0 +1,19 @@
+{
+    "@odata.type":  "#microsoft.graph.windowsHealthMonitoringConfiguration",
+    "id":  "062a4abd-64c0-4bba-a03c-9c41bf761436",
+    "lastModifiedDateTime":  "2021-09-13T11:39:20.8189242Z",
+    "roleScopeTagIds":  [
+                            "0"
+                        ],
+    "supportsScopeTags":  true,
+    "deviceManagementApplicabilityRuleOsEdition":  null,
+    "deviceManagementApplicabilityRuleOsVersion":  null,
+    "deviceManagementApplicabilityRuleDeviceMode":  null,
+    "createdDateTime":  "2021-09-13T11:39:20.8189242Z",
+    "description":  "",
+    "displayName":  "Intune data collection policy",
+    "version":  1,
+    "allowDeviceHealthMonitoring":  "enabled",
+    "configDeviceHealthMonitoringScope":  "bootPerformance",
+    "configDeviceHealthMonitoringCustomScope":  null
+}

@@ -1,0 +1,44 @@
+{
+    "@odata.context":  "https://graph.microsoft.com/beta/$metadata#deviceAppManagement/mobileApps/$entity",
+    "@odata.type":  "#microsoft.graph.iosStoreApp",
+    "id":  "10526dee-8f09-4b35-9948-da2c4c1c147f",
+    "displayName":  "Managed Browser",
+    "description":  "Managed Browser\nThe Intune Managed Browser app lets you safely view and navigate web pages that might contain company information, and provides a secure web-browsing experience for Microsoft Office and other apps managed by Microsoft Intune. This browser helps your IT administrator protect company information without restricting your regular web browsing or app experience.   \n\nFeatures:\n  Full compatibility with the Microsoft Office apps, protecting sensitive company data without impacting any of your personal information\n  Enables you to open rights-restricted data in a more secure app\n  Allows you to safely cut/copy/paste between apps managed with Microsoft Intune\n  Helps you get to work faster by signing in once and getting access to all your SaaS apps using Microsoft MyApps\n\nImportant: This app works best with your work account and a connection to your company’s subscription to Microsoft Intune. Some functionality is unavailable in certain countries. If you have issues with this software or questions about its use (including your company’s privacy policy), contact your IT administrator. Do not contact your network operator, the device manufacturer, or Microsoft for support.",
+    "publisher":  "Microsoft Corporation",
+    "createdDateTime":  "2022-01-04T15:35:48.4464413Z",
+    "lastModifiedDateTime":  "2022-01-04T15:35:48.4464413Z",
+    "isFeatured":  false,
+    "privacyInformationUrl":  "",
+    "informationUrl":  null,
+    "owner":  "",
+    "developer":  "",
+    "notes":  "",
+    "uploadState":  2,
+    "publishingState":  "processing",
+    "isAssigned":  false,
+    "roleScopeTagIds":  [
+                            "0"
+                        ],
+    "dependentAppCount":  0,
+    "supersedingAppCount":  0,
+    "supersededAppCount":  0,
+    "bundleId":  "",
+    "appStoreUrl":  "https://itunes.apple.com/us/app/intune-managed-browser/id943264951?mt=8\u0026uo=4",
+    "largeIcon":  {
+                      "type":  "image/jpeg",
+                      "value":  "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"
+                  },
+    "applicableDeviceType":  {
+                                 "iPad":  true,
+                                 "iPhoneAndIPod":  true
+                             },
+    "minimumSupportedOperatingSystem":  {
+                                            "v8_0":  true,
+                                            "v9_0":  false,
+                                            "v10_0":  false,
+                                            "v11_0":  false,
+                                            "v12_0":  false,
+                                            "v13_0":  false,
+                                            "v14_0":  false
+                                        }
+}

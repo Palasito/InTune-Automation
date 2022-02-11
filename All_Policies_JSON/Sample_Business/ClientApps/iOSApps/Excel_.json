@@ -1,0 +1,44 @@
+{
+    "@odata.context":  "https://graph.microsoft.com/beta/$metadata#deviceAppManagement/mobileApps/$entity",
+    "@odata.type":  "#microsoft.graph.iosStoreApp",
+    "id":  "cde2d71e-848e-4688-b316-b827c48a1a5e",
+    "displayName":  "Excel",
+    "description":  "*** Excel is ready for iPad Pro and looks amazing on the 12.9-inch screen. View Excel spreadsheets on iPad Pro for free. Or create and edit spreadsheets with a qualifying Office 365 subscription. Try it for free for 30 days. *** \nThe real Microsoft Excel app designed for iPad, iPhone and iPod touch. \nNow your Excel spreadsheets look better than ever on your tablet and phone. When you edit or create spreadsheets, you can be confident they will look exactly how you want across PC, Mac, tablet and phone. Excel has the familiar Office look and feel along with an intuitive touch experience, so you’ll be up and running in no time.\nOn iPhone, iPad Air, and iPad mini, the core Excel experience, including viewing, creating, and editing spreadsheets, is free. Or unlock the full Excel experience with a qualifying Office 365 subscription. On iPad Pro, you need Office 365 to create and edit spreadsheets. \n\nEXCEL SPREADSHEETS PROVIDE INSIGHT\n•Formulas, tables, charts, comments, PivotTables, sparklines, conditional formatting are all there, so you see the whole picture. \n•View email attachments and access all your Excel spreadsheets from OneDrive, Dropbox, iCloud, OneDrive for Business, or SharePoint.\n•Print an entire Excel workbook, a worksheet or a selected range to an AirPrint printer. \n\nCREATE AND EDIT WITH CONFIDENCE\n•When you edit a spreadsheet, your content and formatting are maintained across all your devices – PC, Mac, tablet and phone.\n•Turn numbers into insights, with support for formulas, charts, tables, sorting, filtering, and more. \n•A special formula keyboard lets you add numbers and formulas rapidly – much easier than with the standard touch keyboard. \n•Get tasks done faster, with multitasking. Run Excel for iPad side by side with other apps (requires iOS 9).\n\nREQUIREMENTS\niPad Pro: To create or edit documents, you need a qualifying Office 365 subscription*, which also gives you access to the full Office experience.\n\niPad, iPhone, iPod Touch: To create or edit documents, sign in with a free Microsoft account. To unlock the full Office experience and to access and save documents in OneDrive for Business or on SharePoint, you need a qualifying Office 365 subscription* .\n\n*To make an in-app purchase of an Office 365 Home or Personal subscription, open the app. In the document picker screen, tap Upgrade. Subscriptions begin at from $6.99 a month in the US, and can vary by region. With an Office 365 subscription, you get access to all features in Word, Excel, and PowerPoint on iPad, iPhone, and iPod touch, and you can install Word, Excel, PowerPoint, Outlook, and OneNote on PCs or Macs.\n\nOffice 365 subscriptions purchased from the app will be charged to your iTunes account and will automatically renew within 24 hours prior to the end of the current subscription period, unless auto-renewal is disabled beforehand. To manage your subscriptions or to disable auto-renewal, after purchase, go to your iTunes account settings. A subscription cannot be cancelled during the active subscription period.\n\nPrivacy Policy: http://go.microsoft.com/fwlink/?LinkID=507539. Terms of Use: http://go.microsoft.com/fwlink/?LinkID=390698.",
+    "publisher":  "Microsoft Corporation",
+    "createdDateTime":  "2022-01-04T15:36:08.6388635Z",
+    "lastModifiedDateTime":  "2022-01-04T15:36:08.6388635Z",
+    "isFeatured":  false,
+    "privacyInformationUrl":  "",
+    "informationUrl":  null,
+    "owner":  "",
+    "developer":  "",
+    "notes":  "",
+    "uploadState":  1,
+    "publishingState":  "published",
+    "isAssigned":  false,
+    "roleScopeTagIds":  [
+                            "0"
+                        ],
+    "dependentAppCount":  0,
+    "supersedingAppCount":  0,
+    "supersededAppCount":  0,
+    "bundleId":  "com.microsoft.Office.Excel",
+    "appStoreUrl":  "https://itunes.apple.com/us/app/microsoft-excel/id586683407?mt=8\u0026uo=4",
+    "largeIcon":  {
+                      "type":  "image/jpeg",
+                      "value":  "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAA8ADwDAREAAhEBAxEB/8QAGgAAAgMBAQAAAAAAAAAAAAAAAAYCBQcDAf/EADoQAAECBQIDAgwDCQAAAAAAAAECAwAEBQYREiEHEzFRdAgUIiYnQWFxgZGxsiOhwxUWJDJSVJPB0f/EABoBAQADAQEBAAAAAAAAAAAAAAABAgQDBQb/xAApEQACAgEDAwQABwAAAAAAAAAAAQIDEQQhMQUSEzIzUXEiI0FCYYGx/9oADAMBAAIRAxEAPwBRzGU+QDMAGYAMwAZgAzABmADMAQzAkZ7Ssms3Uy6/S0S/IaXy1uPOhACsA4xuTseyLKLlwaKdLZcswHmncEZ1eDUa1LND1pl2VLPzUR9It4zZHpcv3SGmm8FreZAM5M1CbV6wXA2k/BIz+cWVaNMem1L1Nszji/bMpQ7mlpOg091uWMolxQbC3MqKlAkk53wBFJxw9jBraFXYo1rbAjeITv8AZTX+Bf8AyKYMfZL4OC0qQspWlSVA4KVDBHvECMYI5gQQzAsb34PJ82Kn339NMdq+D2em+2/s1FudlVThlEzLBmwnWWA4NYT26euNxvHTJ6Hcs9udz2nVWQqD0yzIzjEw7LK0PJaWFFtW+ysdDsdvZEZTEZxk2ovOBNuSfuKX4l0yXpTsgmlOtMiaS842HCC4oK0gkKO3TAirbzsZrZWK6KjjG2SpoVbvt65pRioTFFNNVMaXUtPslwt5PQBWc9PVEJyyca7NQ7EpNY/oyHiefSFcHej9qY5z5Z5ur96X2LGYqZznqgSb54PJ82Kn339NMdq+D2One2/snxedVbVYot2U5TaZ9PMk3Gz1eQUEg+3Tn6QntuNY/FKN0eeBt4TUhmkWTIFt1D786nxx99JzzFrGevsGB8DFoLCNOkrUKl/O4qXyKWeM1veOUyozE7oluTMMOhLTZ5ysFY0nODudxtFZY7kcb+3zxym3t/op2gm3P3+p3itvV1ma8eOh918FtKsnyiNA2+MVWM8GSlVeVYi85FLigfSHcHej9qYrLkz6v3pCvqipnOeqBJvng8HzXqnff00x2r4PX6f6H9jTUrUerV8MVOruy7tHlZVbMvKDJVrWMKWrIx0J6diYnGXlneVLnb3S4S4O/DGh1a2qTM0mpuMPSbDylSLrbhUrlEk6VAjbB3+JiYprZltLXOqLhLj9Cju+afb4t0Rpu6BTWlty+qnkOfxP4qtvJGnfpvEP1cnO5vzR/Fjjb5Fy16hOOXpINr4ipnmzOEGR0v8A4gyfI3GP9bRVPfkz1Sl5F+bnfjczvikfSLcPez9qYpLlmPVe9IVtUVM5DVEk4Nl4HXNRaPRZ+UqtSl5OYdmuYhLxKQpOhIznGOo7Y6QaSPS0VsIRak8bmy0+pSU+kKkZ2VmUn1svJX9DHQ9KMlLhlkkkfzAj3wLmS8TrnoduX7JTNTt79pTrcq06xMBwJLRC14xnsIzFJNJ7mHUWwrsTlHLFOT4i2bJT7c9KWJypttfNQ6l5OpKu384r3L4M61NEX3KG5n12VhNeuWpVVDKmEzbxdDalZKdgMEj3RVvLyY7p+Sbl8lVqiDlghmBYM+2APEnSrUjyVf1J2PzEAti7p123HTMCQrtSZSOieeVp+SsiJ7mdo32R4ZxuG4apcc41N1uaEzMttBkOaEoOkEkZ0gD1neDeSttkrXmRV5iDmGYAMwBGBIQAQAQAQAQAQAQB/9k="
+                  },
+    "applicableDeviceType":  {
+                                 "iPad":  true,
+                                 "iPhoneAndIPod":  true
+                             },
+    "minimumSupportedOperatingSystem":  {
+                                            "v8_0":  true,
+                                            "v9_0":  false,
+                                            "v10_0":  false,
+                                            "v11_0":  false,
+                                            "v12_0":  false,
+                                            "v13_0":  false,
+                                            "v14_0":  false
+                                        }
+}

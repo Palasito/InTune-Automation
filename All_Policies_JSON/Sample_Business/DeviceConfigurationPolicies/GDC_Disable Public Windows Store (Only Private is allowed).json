@@ -1,0 +1,28 @@
+{
+    "@odata.type":  "#microsoft.graph.windows10CustomConfiguration",
+    "id":  "035c4e2f-add9-410c-bddd-ce96f9217096",
+    "lastModifiedDateTime":  "2021-06-14T10:26:58.4159818Z",
+    "roleScopeTagIds":  [
+                            "0"
+                        ],
+    "supportsScopeTags":  true,
+    "deviceManagementApplicabilityRuleOsEdition":  null,
+    "deviceManagementApplicabilityRuleOsVersion":  null,
+    "deviceManagementApplicabilityRuleDeviceMode":  null,
+    "createdDateTime":  "2021-06-14T10:20:39.1374616Z",
+    "description":  null,
+    "displayName":  "Disable Public Windows Store (Only Private is allowed)",
+    "version":  2,
+    "omaSettings":  [
+                        {
+                            "@odata.type":  "#microsoft.graph.omaSettingInteger",
+                            "displayName":  "RequireOnlyPrivateStore",
+                            "description":  "Custom OMA-URI to allow only private store",
+                            "omaUri":  "./User/Vendor/MSFT/Policy/Config/ApplicationManagement/RequirePrivateStoreOnly",
+                            "secretReferenceValueId":  null,
+                            "isEncrypted":  false,
+                            "value":  1,
+                            "isReadOnly":  false
+                        }
+                    ]
+}
