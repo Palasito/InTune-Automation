@@ -11,7 +11,7 @@ function Get-AuthToken {
 
     $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
         
-    # $tenant = $userUpn.Host
+    $tenant = $userUpn.Host
         
     $AadModule = Get-Module -Name "AzureAD" -ListAvailable
         
@@ -132,33 +132,33 @@ function Get-Tokens {
     
             if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens) {
                 $confirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
-                while($confirmation -ne "y")
-                {
-                   if ($confirmation -eq 'n') {
-                       Connect-AzureAD
+                if ($confirmation -eq 'n') {
+                    Connect-AzureAD
 
-                       $tokennew = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
-                       $global:User = $tokennew.AccessToken.UserId
-                       $global:authToken = Get-AuthToken -User $User -Tenant $userUpn.Host
-               
-                       $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
-                       $global:tenantforbreak = $userUpn.Host
-                   }
-                   $confirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
+                    $tokennew = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
+                    $global:User = $tokennew.AccessToken.UserId
+                    $global:authToken = Get-AuthToken -User $User -Tenant $userUpn.Host
+            
+                    $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
+                    $global:tenantforbreak = $userUpn.Host
+                    break;
                 }
-                $Tenantconfirm = Read-Host "Please provide the tenant Id to be used!"
-                $TenantSuff = Read-Host "Please provide the tenant suffix"
-                Connect-AzureAD -TenantId $Tenantconfirm
-
-                $tokennew = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
-                $global:User = $tokennew.AccessToken.UserId
-
-                $global:authToken = Get-AuthToken -User $User -Tenant $TenantSuff
-        
-                $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
-                $global:tenantforbreak = $TenantSuff
                 
-            } 
+                elseif ($confirmation -eq 'y') {
+                    $Tenantconfirm = Read-Host "Please provide the tenant Id to be used!"
+                    $TenantSuff = Read-Host "Please provide the tenant suffix"
+                    Connect-AzureAD -TenantId $Tenantconfirm
+
+                    $tokennew = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
+                    $global:User = $tokennew.AccessToken.UserId
+
+                    $global:authToken = Get-AuthToken -User $User -Tenant $TenantSuff
+            
+                    $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
+                    $global:tenantforbreak = $TenantSuff
+                }
+            
+        } 
             
             else {
                 $token = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens

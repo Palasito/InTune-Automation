@@ -47,7 +47,7 @@ Function Import-CompliancePolicies() {
         }
 
         # Getting the authorization token
-        $global:authToken = Get-AuthToken -User $User
+        $global:authToken = Get-Tokens -User $User
 
     }
 
