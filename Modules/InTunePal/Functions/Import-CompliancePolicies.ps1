@@ -47,7 +47,7 @@ Function Import-CompliancePolicies() {
         }
 
         # Getting the authorization token
-        $global:authToken = Get-Tokens -User $User
+        $global:authToken = Get-AuthToken -User $User
 
     }
 
@@ -74,6 +74,9 @@ Function Import-CompliancePolicies() {
 
     $AvailableJsons = Get-ChildItem "$ImportPath\DeviceCompliancePolicies" -Recurse -Include *.json
 
+    $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceCompliancePolicies"
+    $AllExistingComp = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value 
+
     foreach ($json in $AvailableJsons) {
 
         $JSON_Data = Get-Content $json.FullName
@@ -81,7 +84,7 @@ Function Import-CompliancePolicies() {
         $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id, createdDateTime, lastModifiedDateTime, version
 
         $DisplayName = $JSON_Convert.displayName
-        
+
         $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
 
         $scheduledActionsForRule = '"scheduledActionsForRule":[{"ruleName":"PasswordRequired","scheduledActionConfigurations":[{"actionType":"block","gracePeriodHours":0,"notificationTemplateId":"","notificationMessageCCList":[]}]}]'
@@ -92,8 +95,7 @@ Function Import-CompliancePolicies() {
 
         $JSON_Output = $JSON_Output + $scheduledActionsForRule + "`r`n" + "}"
 
-        $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceCompliancePolicies"
-        $check = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayname').equals($DisplayName) }
+        $check = $AllExistingComp | Where-Object { ($_.'displayname').equals($DisplayName) }
         if ($null -eq $check) {
 
             $null = Add-DeviceCompliancePolicy -JSON $JSON_Output

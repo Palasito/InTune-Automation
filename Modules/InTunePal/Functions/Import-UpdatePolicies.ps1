@@ -67,6 +67,8 @@ function Import-UpdatePolicies() {
 
     $AvailableJsonsiOS = Get-ChildItem "$ImportPath\iOSUpdatePolicies" -Recurse -Include *.json
 
+    $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceConfigurations"
+    $Existing = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value 
     foreach ($json in $AvailableJsonsiOS) {
 
         $JSON_Data = Get-Content $json
@@ -75,8 +77,7 @@ function Import-UpdatePolicies() {
 
         $DisplayName = $JSON_Convert.displayName
 
-        $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceConfigurations"
-        $check = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value | Where-Object { $_.displayName -eq $DisplayName }
+        $check = $EXisting | Where-Object { $_.displayName -eq $DisplayName }
         if ($null -eq $check) {
             $JSON_Output = $JSON_Convert | ConvertTo-Json
 
@@ -96,6 +97,8 @@ function Import-UpdatePolicies() {
 
     $AvailableJsonsWindows = Get-ChildItem "$ImportPath\WindowsUpdatePolicies" -Recurse -Include *.json
 
+    $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceConfigurations"
+    $Existing = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value
     foreach ($json in $AvailableJsonsWindows) {
 
         $JSON_Data = Get-Content $json
@@ -104,13 +107,12 @@ function Import-UpdatePolicies() {
 
         $DisplayName = $JSON_Convert.displayName
 
-        $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceConfigurations"
-        $check = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).value | Where-Object { $_.displayName -eq $DisplayName }
+        $check = $Existing | Where-Object { $_.displayName -eq $DisplayName }
         if ($null -eq $check) {
             $JSON_Output = $JSON_Convert | ConvertTo-Json
 
             $null = Add-DeviceConfigurationUpdatePolicy -JSON $JSON_Output
-    
+
             [PSCustomObject]@{
                 "Action" = "Import"
                 "Type"   = "Software Update Policy"

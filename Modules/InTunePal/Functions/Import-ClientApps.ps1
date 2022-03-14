@@ -67,6 +67,9 @@
 
     $AvailableJSONS = Get-ChildItem "$ImportPath\ClientApps" -Recurse -Include *.json
 
+    $uri = "https://graph.microsoft.com/Beta/deviceAppManagement/mobileApps"
+    $Existing = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
+
     foreach ($json in $AvailableJSONS) {
 
         $JSON_Data = Get-Content $json
@@ -75,8 +78,7 @@
 
         $DisplayName = $JSON_Convert.displayName
 
-        $uri = "https://graph.microsoft.com/Beta/deviceAppManagement/mobileApps"
-        $check = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayName').contains("$DisplayName") }
+        $check = $Existing | Where-Object { ($_.'displayName').contains("$DisplayName") }
 
         if ($null -eq $check) {
 
