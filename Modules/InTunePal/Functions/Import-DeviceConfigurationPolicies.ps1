@@ -74,6 +74,7 @@ function Import-DeviceConfigurationPolicies() {
     Write-Host "Importing Device Configuration Profiles..." -ForegroundColor cyan
 
     $AvailableJsonsGDC = Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include GDC_*.json
+    $AllExistingGDC = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     foreach ($json in $AvailableJsonsGDC) {
 
         $JSON_Data = Get-Content $json.FullName
@@ -83,7 +84,7 @@ function Import-DeviceConfigurationPolicies() {
         $DisplayName = $JSON_Convert.displayName
 
         $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceConfigurations"
-        $check = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { $_.DisplayName -eq $DisplayName }
+        $check = $AllExistingGDC | Where-Object { $_.DisplayName -eq $DisplayName }
         if ($null -eq $check) {
             $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
@@ -105,6 +106,7 @@ function Import-DeviceConfigurationPolicies() {
     Write-Host "Importing Settings Catalog Profiles..." -ForegroundColor cyan
 
     $AvailableJsonsSCP = Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include SC_*.json
+    $AllexistingSCP = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     foreach ($json in $AvailableJsonsSCP) {
 
         $JSON_Data = Get-Content $json.FullName
@@ -114,7 +116,7 @@ function Import-DeviceConfigurationPolicies() {
         $DisplayName = $JSON_Convert.name
 
         $uri = "https://graph.microsoft.com/Beta/deviceManagement/configurationPolicies"
-        $check = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { $_.Name -eq $DisplayName }
+        $check = $AllexistingSCP | Where-Object { $_.Name -eq $DisplayName }
         if ($null -eq $check) {
             $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
@@ -136,6 +138,7 @@ function Import-DeviceConfigurationPolicies() {
     Write-Host "Importing Administrative Templates..." -ForegroundColor cyan
 
     $AvailableJsonsAT = Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include AT_*.json
+    $AllExistingAT = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     foreach ($json in $AvailableJsonsAT) {
 
         $JSON_Data = Get-Content $json.FullName
@@ -145,7 +148,7 @@ function Import-DeviceConfigurationPolicies() {
         $DisplayName = $JSON_Convert.displayName
 
         $uri = "https://graph.microsoft.com/Beta/deviceManagement/groupPolicyConfigurations"
-        $check = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { $_.DisplayName -eq $DisplayName }
+        $check = $AllExistingAT | Where-Object { $_.DisplayName -eq $DisplayName }
         if ($null -eq $check) {
             $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 

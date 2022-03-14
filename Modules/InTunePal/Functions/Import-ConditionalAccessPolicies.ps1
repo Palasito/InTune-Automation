@@ -21,11 +21,12 @@ function Import-ConditionalAccessPolicies() {
     Write-Host
     Write-Host "Importing Conditional Access Policies..." -ForegroundColor cyan
 
+    $Allexisting = Get-AzureADMSConditionalAccessPolicy
     foreach ($Json in $BackupJsons) {
 
         $policy = Get-Content $Json.FullName | ConvertFrom-Json
 
-        $check = Get-AzureADMSConditionalAccessPolicy | Where-object { $_.DisplayName -eq $policy.DisplayName }
+        $check = $Allexisting | Where-object { $_.DisplayName -eq $policy.DisplayName }
 
         if ($null -eq $check) {
 
