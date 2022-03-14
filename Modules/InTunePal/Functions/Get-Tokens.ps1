@@ -159,12 +159,12 @@ function Get-Tokens {
                 }
             
         } 
-            
+
             else {
                 $token = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
                 Write-host "Connected to tenant: $($token.AccessToken.TenantId) with user: $($token.AccessToken.UserId)"
             }        
-    
+
         }
     
         # $tokennew = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
@@ -173,27 +173,27 @@ function Get-Tokens {
 
         # $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
         # $global:tenantforbreak = $userUpn.Host
-    
+
     }
 
     else {
-            
+
         if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens) {
             $null = Connect-AzureAD
-        } 
-            
+        }
+
         else {
             $token = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
             # Write-host "Connected to tenant: $($token.AccessToken.TenantId) with user: $($token.AccessToken.UserId)"
         }
-            
+
         $tokennew = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
         $global:User = $tokennew.AccessToken.UserId
         $global:authToken = Get-AuthToken -User $User
 
         $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
         $global:tenantforbreak = $userUpn.Host
-            
+
     }
-        
+
 }
