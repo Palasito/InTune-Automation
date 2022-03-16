@@ -16,24 +16,22 @@ function Add-CAPGroups() {
         $InclGrps = $pol.IncludeGroups -split ";"
         $ExclGrps = $pol.ExcludeGroups -split ";"
 
-        if ([string]::IsNullOrEmpty($grp)) {
-            $Conditions.Users.IncludeUsers = "All"
-        }
-
-        else {
-            foreach ($grp in $InclGrps) {
-                if (-not([string]::IsNullOrEmpty($grp))) {
-                    $g = Get-AzureADMSGroup -SearchString $grp
-                    if ($null -ne $g) {
-                        $Conditions.Users.IncludeGroups += $g.Id
-                    }
-                    else {
-    
-                    }
+        foreach ($grp in $InclGrps) {
+            if (-not([string]::IsNullOrEmpty($grp))) {
+                $g = Get-AzureADMSGroup -SearchString $grp
+                $Conditions.Users.IncludeUsers = @{}
+                if ($null -ne $g) {
+                    $Conditions.Users.IncludeGroups += $g.Id
+                }
+                elseif ($grp -eq "GuestsOrExternalUsers"){
+                    $Conditions.Users.IncludeUsers = "GuestsOrExternalUsers"
                 }
                 else {
-    
+                    
                 }
+            }
+            else {
+                $Conditions.Users.IncludeUsers = "All"
             }
         }
 
@@ -52,6 +50,7 @@ function Add-CAPGroups() {
             }
         }
         $null = Set-AzureADMSConditionalAccessPolicy -PolicyId $Policy.Id -Conditions $Conditions
+        Start-Sleep 3
 
         [PSCustomObject]@{
             "Action"          = "Assign"
