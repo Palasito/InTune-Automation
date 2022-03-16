@@ -6,6 +6,8 @@ function Import-ConditionalAccessPolicies() {
         $AzureADToken
     )
 
+    # Authentication Region
+
     if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens) {
         Write-Host "Getting AzureAD authToken"
         Connect-AzureAD
@@ -14,6 +16,10 @@ function Import-ConditionalAccessPolicies() {
         $azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
     
     }
+
+    # endregion
+
+    ############################################
 
     # $CAPGroups = Import-Csv -Path $Path\CSVs\ConditionalAccess\*.csv -Delimiter ','
     $BackupJsons = Get-ChildItem "$Path\ConditionalAccessPolicies" -Recurse -Include *.json
@@ -34,16 +40,16 @@ function Import-ConditionalAccessPolicies() {
             [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
             [Microsoft.Open.MSGraph.Model.ConditionalAccessGrantControls]$GrantControls = $Policy.GrantControls
             [Microsoft.Open.MSGraph.Model.ConditionalAccessSessionControls]$SessionControls = $Policy.SessionControls
-            $BreakGlass = Get-AzureADUser -SearchString "breakuser"
-            $OLUser = Get-AzureADUser -SearchString "officeline"
-            $TestUser = Get-AzureADUser -SearchString "testuser"
+            # $BreakGlass = Get-AzureADUser -SearchString "breakuser"
+            # $OLUser = Get-AzureADUser -SearchString "officeline"
+            # $TestUser = Get-AzureADUser -SearchString "testuser"
 
             $Users = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessUserCondition
 
-            $Users.IncludeUsers = $Users.IncludeUsers + $Conditions.Users.IncludeUsers
-            $Users.IncludeUsers += $TestUser.ObjectId
-            $Users.ExcludeUsers += $BreakGlass.ObjectId
-            $Users.ExcludeUsers += $OLUser.ObjectId
+            $Users.IncludeUsers = "None"
+            # $Users.IncludeUsers += $TestUser.ObjectId
+            # $Users.ExcludeUsers += $BreakGlass.ObjectId
+            # $Users.ExcludeUsers += $OLUser.ObjectId
             $Conditions.Users = $Users
 
             $OldInclLocations = $policy.Conditions.Locations.IncludeLocations

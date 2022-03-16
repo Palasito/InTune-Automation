@@ -7,6 +7,14 @@ Function Export-JSONData() {
 
     )
 
+    # Authentication region
+
+    Get-Tokens
+
+    #endregion
+    
+    ####################################################
+
     try {
 
         if ($JSON -eq "" -or $null -eq $JSON) {

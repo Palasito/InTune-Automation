@@ -9,49 +9,7 @@ function Import-AppProtectionPolicies() {
 
     #region AuthenticationW
     
-    # Checking if authToken exists before running authentication
-    if ($global:authToken) {
-    
-        # Setting DateTime to Universal time to work in all timezones
-        $DateTime = (Get-Date).ToUniversalTime()
-    
-        # If the authToken exists checking when it expires
-        $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
-    
-        if ($TokenExpires -le 0) {
-    
-            write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
-            write-host
-    
-            # Defining User Principal Name if not present
-    
-            if ($null -eq $User -or $User -eq "") {
-    
-                $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-                Write-Host
-    
-            }
-    
-            $global:authToken = Get-AuthToken -User $User
-    
-        }
-    }
-    
-    # Authentication doesn't exist, calling Get-AuthToken function
-    
-    else {
-    
-        if ($null -eq $User -or $User -eq "") {
-    
-            $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-            Write-Host
-    
-        }
-    
-        # Getting the authorization token
-        $global:authToken = Get-AuthToken -User $User
-    
-    }
+    Get-Tokens
     
     #endregion
     
@@ -78,6 +36,9 @@ function Import-AppProtectionPolicies() {
     write-host
     write-host "Importing App Protection Policies..." -ForegroundColor Cyan
 
+    $uri = "https://graph.microsoft.com/Beta/deviceAppManagement/managedAppPolicies"
+    $AllAppProtPolicies = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
+
     foreach ($json in $JSON_Data) {
 
         $Json_file = Get-Content $json
@@ -86,8 +47,7 @@ function Import-AppProtectionPolicies() {
 
         $DisplayName = $JSON_Convert.displayName
 
-        $uri = "https://graph.microsoft.com/Beta/deviceAppManagement/managedAppPolicies"
-        $check = (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayName').contains("$DisplayName") }
+        $check = $AllAppProtPolicies | Where-Object { ($_.'displayName').contains("$DisplayName") }
 
         if ($null -eq $check) {
 

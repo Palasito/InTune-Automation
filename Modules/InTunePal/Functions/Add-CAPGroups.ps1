@@ -1,4 +1,4 @@
-function Add-CAPGroups(){
+function Add-CAPGroups() {
     
     [cmdletbinding()]
 
@@ -10,31 +10,37 @@ function Add-CAPGroups(){
 
     Write-host
     Write-Host "Assigning Groups to Conditional Access Policies" -ForegroundColor Cyan
-    foreach($Pol in $CAPGroups){
+    foreach ($Pol in $CAPGroups) {
         $Policy = Get-AzureADMSConditionalAccessPolicy | Where-Object displayName -eq $pol.DisplayName
         [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
         $InclGrps = $pol.IncludeGroups -split ";"
         $ExclGrps = $pol.ExcludeGroups -split ";"
 
-        foreach ($grp in $InclGrps) {
-            if (-not([string]::IsNullOrEmpty($grp))) {
-                $g = Get-AzureADMSGroup -SearchString $grp
-                if ($null -ne $g){
-                    $Conditions.Users.IncludeGroups += $g.Id
+        if ([string]::IsNullOrEmpty($grp)) {
+            $Conditions.Users.IncludeUsers = "All"
+        }
+
+        else {
+            foreach ($grp in $InclGrps) {
+                if (-not([string]::IsNullOrEmpty($grp))) {
+                    $g = Get-AzureADMSGroup -SearchString $grp
+                    if ($null -ne $g) {
+                        $Conditions.Users.IncludeGroups += $g.Id
+                    }
+                    else {
+    
+                    }
                 }
                 else {
-
+    
                 }
-            }
-            else {
-
             }
         }
 
         foreach ($grp in $ExclGrps) {
             if (-not([string]::IsNullOrEmpty($grp))) {
                 $g = Get-AzureADMSGroup -SearchString "$($grp)"
-                if ($null -ne $g){
+                if ($null -ne $g) {
                     $Conditions.Users.ExcludeGroups += $g.Id
                 }
                 else {
@@ -48,8 +54,8 @@ function Add-CAPGroups(){
         $null = Set-AzureADMSConditionalAccessPolicy -PolicyId $Policy.Id -Conditions $Conditions
 
         [PSCustomObject]@{
-            "Action" = "Assign"
-            "Type"   = "Conditional Access Policy"
+            "Action"          = "Assign"
+            "Type"            = "Conditional Access Policy"
             "Name"            = $Policy.displayName
             "Included Groups" = $InclGrps
             "Excluded Groups" = $ExclGrps

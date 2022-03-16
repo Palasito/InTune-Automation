@@ -18,6 +18,14 @@ Function Export-JSONData() {
         $ExportPath
     
     )
+
+    # Authentication region
+
+    Get-Tokens
+
+    #endregion
+    
+    ####################################################
     
     try {
     

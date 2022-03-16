@@ -20,11 +20,13 @@ Function Import-NamedLocations() {
 
     Write-Host
     Write-Host "Importing Named Locations (Countries Only)..." -ForegroundColor cyan
+
+    $AllExisting = Get-AzureADMSNamedLocationPolicy
     foreach ($Json in $BackupJsons) {
 
         $policy = Get-Content $Json | ConvertFrom-Json
 
-        $check = Get-AzureADMSNamedLocationPolicy | Where-Object { $_.DisplayName -eq $policy.DisplayName }
+        $check = $AllExisting | Where-Object { $_.DisplayName -eq $policy.DisplayName }
         if ($null -eq $check) {
             $Parameters = @{
                 OdataType                         = $policy.OdataType
@@ -50,7 +52,7 @@ Function Import-NamedLocations() {
     Write-Host
     Write-Host "Creating Trusted IP Range Policy..." -ForegroundColor Cyan
 
-    $check = Get-AzureADMSNamedLocationPolicy | Where-Object { $_.DisplayName -eq "Trusted Networks" }
+    $check = $AllExisting | Where-Object { $_.DisplayName -eq "Trusted Networks" }
     if ( $null -eq $check ) {
         [System.Collections.Generic.List`1[Microsoft.Open.MSGraph.Model.IpRange]]$cidrAddress = @()
         # $IPs = do

@@ -2,8 +2,24 @@ Function Import-AADGroups() {
 
     param(
         [parameter()]
-        [String]$Path
+        [String]$Path,
+        $AzureADToken
     )
+
+    # Authentication Region
+
+    if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens) {
+        Write-Host "Getting AzureAD authToken"
+        Connect-AzureAD
+    }
+    else {
+        $azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
+        
+    }
+    
+    # endregion
+    
+    ############################################
 
     Write-Host
     Write-Host "Creating specified security groups" -ForegroundColor Cyan

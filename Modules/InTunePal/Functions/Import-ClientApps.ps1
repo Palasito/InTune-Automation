@@ -7,41 +7,9 @@
         $Path
     )
 
-    if ($global:authToken) {
+    # Authentication region
 
-        $DateTime = (Get-Date).ToUniversalTime()
-
-        $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
-
-        if ($TokenExpires -le 0) {
-
-            write-host "Authentication Token expired" $TokenExpires "minutes ago" -ForegroundColor Yellow
-            write-host
-
-            if ($null -eq $User -or $User -eq "") {
-
-                $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-                Write-Host
-
-            }
-
-            $global:authToken = Get-AuthToken -User $User
-
-        }
-    }
-
-    else {
-
-        if ($null -eq $User -or $User -eq "") {
-
-            $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-            Write-Host
-
-        }
-
-        $global:authToken = Get-AuthToken -User $User
-
-    }
+    Get-Tokens
 
     #endregion
 
