@@ -44,7 +44,6 @@ function Add-APPGroups() {
                     }
                 }
                 
-
                 foreach ($grp in $ExclGrps) {
                     if (-not([string]::IsNullOrEmpty($grp))) {
                         $g = Get-AzureADMSGroup -SearchString "$($grp)"
