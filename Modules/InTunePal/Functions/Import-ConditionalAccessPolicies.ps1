@@ -102,6 +102,8 @@ function Import-ConditionalAccessPolicies() {
             }
 
             $null = New-AzureADMSConditionalAccessPolicy @Parameters
+
+            Start-Sleep 3
         }
         else {
             Write-Host "Conditional Access policy $($policy.DisplayName) already exists and will not be imported" -ForegroundColor Red
