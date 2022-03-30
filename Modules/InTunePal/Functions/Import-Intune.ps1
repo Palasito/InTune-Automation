@@ -33,7 +33,13 @@ function Import-Intune() {
 
         Import-NamedLocations -Path $Path
         # Start-Sleep -Seconds 5
-        Add-BreakGlassAccount -tenantforbreak $tenantforbreak
+        $confirmation = Read-Host "Do you want to create the predefined user accounts? [y/n]"
+                if ($confirmation -eq 'n') {
+
+                }
+                if ($confirmation -eq 'y') {
+                    Add-BreakGlassAccount -tenantforbreak $tenantforbreak
+                }
         # Start-Sleep -Seconds 5
         Import-AADGroups -Path $Path
         # Start-Sleep -Seconds 5

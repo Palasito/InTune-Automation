@@ -1,7 +1,7 @@
 Function Add-BreakGlassAccount() {
 
     param(
-        $tenantforbreak
+        $global:tenantforbreak
     )
 
     Write-Host

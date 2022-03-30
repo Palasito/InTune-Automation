@@ -141,7 +141,6 @@ function Get-Tokens {
             
                     $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
                     $global:tenantforbreak = $userUpn.Host
-                    break;
                 }
                 
                 elseif ($confirmation -eq 'y') {
@@ -166,13 +165,6 @@ function Get-Tokens {
             }        
 
         }
-    
-        # $tokennew = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
-        # $global:User = $tokennew.AccessToken.UserId
-        # $global:authToken = Get-AuthToken -User $User
-
-        # $userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $User
-        # $global:tenantforbreak = $userUpn.Host
 
     }
 
