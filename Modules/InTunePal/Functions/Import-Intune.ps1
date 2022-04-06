@@ -1,10 +1,15 @@
 function Import-Intune() {
+
+    [cmdletbinding()]
+
+    param(
+        [Parameter(mandatory)]
+        $Path
+    )
     
     Import-Module AzureAD
 
     Write-Host "Starting InTune Configuration import....."
-
-    $Path = Read-host -Prompt "Specify the root path to import"
 
     if (-not (Test-Path "$Path")) {
         Write-Host "Invalid Path specified!!!" -ForegroundColor Red
@@ -49,6 +54,7 @@ function Import-Intune() {
 
         $confirmation = Read-Host "Do you want to assign groups based on the CSVs? [y/n]"
         if ($confirmation -eq 'n') {
+            Write-Host "Thanks for using InTunePal! Enjoy your new configuration!" -ForegroundColor Cyan
             break;
         }
         if ($confirmation -eq 'y') {
@@ -65,6 +71,7 @@ function Import-Intune() {
             Add-APPGroups -Path $Path
             # Start-Sleep -Seconds 5
             Add-CAPGroups -Path $Path
+            Write-Host "Thanks for using InTunePal! Enjoy your new configuration!" -ForegroundColor Cyan
         }
     }
 }
