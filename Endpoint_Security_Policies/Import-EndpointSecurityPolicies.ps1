@@ -341,7 +341,7 @@ $global:authToken = Get-AuthToken -User $User
 #endregion
 
 ####################################################
-$Path = "C:\script_output\test"
+$Path = "C:\script\testout"
 $ImportPath = $Path
 
 # Replacing quotes for Test-Path
@@ -359,7 +359,7 @@ break
 ####################################################
 
 # Getting content of JSON Import file
-$JSON_Data = Get-ChildItem "$ImportPath\EndpointSecurityPolicies" -Recurse -Include *.json
+$JSON_Data = Get-Content -Path "$($Path)/Test AV.json"
 
 # Converting input to JSON format
 $JSON_Convert = $JSON_Data | ConvertFrom-Json

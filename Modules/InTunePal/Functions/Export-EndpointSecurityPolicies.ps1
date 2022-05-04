@@ -5,7 +5,7 @@ Function Get-PolicyEndpointSettingsJSON() {
     )
 
     $graphApiVersion = "Beta"
-    $DSC_Resource = "deviceManagement/configurationPolicies"
+    $DSC_Resource = "deviceManagement/intents"
 
     try {
 
@@ -29,42 +29,33 @@ function Export-EndpointPolicies {
         $Path
     )
     
+
     Get-Tokens
 
-    $uri = 'https://graph.microsoft.com/beta/deviceManagement/configurationPolicies'
+    $uri = 'https://graph.microsoft.com/beta/deviceManagement/intents'
 
     $EPP = (Invoke-RestMethod -Method GET -Headers $authToken -Uri $uri).value
 
     foreach ($e in $EPP) {
 
-        if ($e.templateReference -match 'endpointSecurity') {
+        $Settings = Get-PolicyEndpointSettingsJSON -Policies $e
 
-            $Settings = Get-PolicyEndpointSettingsJSON -Policies $e
-
-            $templateReference = $e.templateReference
-            $TemplateId = $templateReference.TemplateId
-            $TemplateDispName = $templateReference.templateDisplayName
-
-            $PolicyJSON = [pscustomobject]@{
-                DisplayName         = $e.Name
-                Description         = $e.description
-                Platforms           = $e.platforms
-                technologies        = $e.technologies
-                settings            = $Settings
-                templateId          = $TemplateId
-                templateDisplayName = $TemplateDispName
-            }
-
-            $FinalJSONdisplayName = $e.name
-
-            $FinalJSONDisplayName = $FinalJSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
-
-            $FileName_FinalJSON = "$FinalJSONDisplayName" + ".json"
-
-            $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
-
-            $FinalJSON | Set-Content -LiteralPath "C:\script\testout\$FileName_FinalJSON"
+        $PolicyJSON = [pscustomobject]@{
+            DisplayName   = $e.displayName
+            Description   = $e.description
+            Platforms     = $e.platforms
+            settingsDelta = $Settings
+            templateId    = $e.TemplateId
         }
+
+        $FinalJSONdisplayName = $e.displayName
+
+        $FinalJSONDisplayName = $FinalJSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+
+        $FileName_FinalJSON = "$FinalJSONDisplayName" + ".json"
+
+        $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
+        $FinalJSON | Set-Content -LiteralPath "$($Path)\$($FileName_FinalJSON)"
+            
     }
 }
-
