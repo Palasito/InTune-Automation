@@ -3,6 +3,8 @@
         $Path
     )
 
+    Get-Tokens
+
     $ImportPath = $Path
 
     # Replacing quotes for Test-Path
@@ -20,7 +22,7 @@
     ####################################################
 
     # Getting content of JSON Import file
-    $JSON_Data = Get-ChildItem $ImportPath -Recurse -Include *.json
+    $JSON_Data = Get-ChildItem "$ImportPath\EndpointSecurityPolicies" -Recurse -Include *.json
 
     ####################################################
 

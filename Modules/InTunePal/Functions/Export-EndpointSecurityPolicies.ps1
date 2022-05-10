@@ -2,9 +2,42 @@ function Export-EndpointSecurityPolicies {
     param (
         $Path
     )
-    
 
     Get-Tokens
+
+    ########################################################################################
+
+    if (!(Test-Path "$Path")) {
+
+        Write-Host
+        Write-Host "Path '$Path' doesn't exist, do you want to create this directory? Y or N?" -ForegroundColor Yellow
+    
+        $Confirm = read-host
+    
+        if ($Confirm -eq "y" -or $Confirm -eq "Y") {
+    
+            new-item -ItemType Directory -Path "$Path" | Out-Null
+            Write-Host
+    
+        }
+
+        else {
+
+            Write-Host "Creation of directory path was cancelled..." -ForegroundColor Red
+            Write-Host
+            break
+
+        }
+
+    }
+
+    ########################################################################################
+
+    if (-not (Test-Path "$ExportPath\EndpointSecurityPolicies")) {
+        $null = New-Item -Path "$ExportPath\EndpointSecurityPolicies" -ItemType Directory
+    }
+
+    ########################################################################################
 
     $uri = 'https://graph.microsoft.com/beta/deviceManagement/intents'
 
@@ -29,7 +62,7 @@ function Export-EndpointSecurityPolicies {
         $FileName_FinalJSON = "$FinalJSONDisplayName" + ".json"
 
         $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
-        $FinalJSON | Set-Content -LiteralPath "$($Path)\$($FileName_FinalJSON)"
+        $FinalJSON | Set-Content -LiteralPath "$($Path)\EndpointSecurityPolicies\$($FileName_FinalJSON)"
             
     }
 }
