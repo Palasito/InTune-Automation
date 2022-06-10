@@ -7,10 +7,8 @@ function Export-DeviceConfigurationPolicies() {
         $Path
     )
 
-    # Authentication region
-
-    Get-Tokens
-
+    #Region Authentication 
+    Get-TokensNew
     #endregion
 
     ####################################################

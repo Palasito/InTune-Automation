@@ -3,10 +3,14 @@ function Export-EndpointSecurityPolicies {
         $Path
     )
 
-    Get-Tokens
+    #Region Authentication 
+    Get-TokensNew
+    #endregion
 
     ########################################################################################
 
+    $ExportPath = $Path
+    
     if (!(Test-Path "$Path")) {
 
         Write-Host
