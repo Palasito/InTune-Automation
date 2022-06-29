@@ -76,7 +76,7 @@ function Export-CompliancePolicies() {
     )
 
     #Region Authentication 
-    Get-TokensNew
+    Get-Token
     #endregion
 
     ####################################################

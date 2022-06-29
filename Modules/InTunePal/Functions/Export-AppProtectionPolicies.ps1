@@ -72,7 +72,7 @@ function Export-AppProtectionPolicies() {
     write-host
     
     #Region Authentication 
-    Get-TokensNew
+    Get-Token
     #endregion
     
     ####################################################

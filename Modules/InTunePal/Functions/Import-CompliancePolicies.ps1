@@ -8,9 +8,7 @@ Function Import-CompliancePolicies() {
     )
 
     # Authentication region
-
-    Get-Tokens
-
+    Get-Token
     #endregion
 
     ####################################################

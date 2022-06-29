@@ -1,12 +1,14 @@
-function Export-Intune() {
+function Export-Intune {
     
     Write-Host "Starting InTune Configuration export....."
 
     $Path = Read-host -Prompt "Specify the root path to export"
 
-    Import-Module AzureAD
+    # Import-Module AzureAD
 
-    Get-Tokens
+    $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
+    Write-host "Please wait for the Authentication popup to appear" -ForegroundColor Cyan
+    Get-Token
 
     # Graph API Powershell
 

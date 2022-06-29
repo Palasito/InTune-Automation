@@ -8,9 +8,7 @@
     )
 
     # Authentication region
-
-    Get-Tokens
-
+    Get-Token
     #endregion
 
     ####################################################

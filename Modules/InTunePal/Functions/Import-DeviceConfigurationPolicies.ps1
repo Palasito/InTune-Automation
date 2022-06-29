@@ -8,9 +8,7 @@ function Import-DeviceConfigurationPolicies() {
     )
 
     # Authentication region
-
-    Get-Tokens
-
+    Get-Token
     #endregion
 
     ####################################################

@@ -1,4 +1,4 @@
-function Import-Intune() {
+function Import-Intune {
 
     [cmdletbinding()]
 
@@ -18,9 +18,7 @@ function Import-Intune() {
     else {
 
         # Authentication
-
-        Get-Tokens
-
+        Get-Token
         # Graph Api Powershell
 
         Write-Host "Creating Intune Policies and Profiles as specified in"$Path" folder..." -ForegroundColor Cyan

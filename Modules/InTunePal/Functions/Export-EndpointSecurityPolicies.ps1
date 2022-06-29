@@ -4,7 +4,7 @@ function Export-EndpointSecurityPolicies {
     )
 
     #Region Authentication 
-    Get-TokensNew
+    Get-Token
     #endregion
 
     ########################################################################################

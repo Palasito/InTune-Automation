@@ -8,7 +8,7 @@ function Export-DeviceConfigurationPolicies() {
     )
 
     #Region Authentication 
-    Get-TokensNew
+    Get-Token
     #endregion
 
     ####################################################

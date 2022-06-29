@@ -3,24 +3,18 @@ Function Export-NamedLocations() {
     [cmdletbinding()]
 
     param(
-        $Path,
-        $azureADToken
+        $Path
     )
 
-    if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens) {
-        Write-Host "Getting AzureAD authToken"
-        Connect-AzureAD
-    }
-    else {
-        $global:azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
-        
-    }
-
+    #Region Authentication
+    Get-Token
+    #EndRegion
+    
     if (-not (Test-Path "$Path\NamedLocations")) {
         $null = New-Item -Path "$Path\NamedLocations" -ItemType Directory
     }
 
-    $NamedLocations = Get-AzureADMSNamedLocationPolicy | Where-Object 'OdataType' -Match 'countryNamedLocation'
+    $NamedLocations = Get-NamedLocations | Where-Object '@odata.type' -Match 'countryNamedLocation'
 
     Write-Host
     Write-Host "Exporting Named Location Policies..." -ForegroundColor Cyan

@@ -4,23 +4,20 @@
         $Path,
         $AzureADToken
     )
-    # Connect to Azure AD
-    if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens) {
-        Write-Host "Getting AzureAD authToken"
-        Connect-AzureAD
-    }
-    else {
-        $azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
-    
-    }
+
+    #Region Authentication
+    Get-Token
+    #EndRegion
 
     if (-not (Test-Path "$Path\ConditionalAccessPolicies")) {
         $null = New-Item -Path "$Path\ConditionalAccessPolicies" -ItemType Directory
     }
+
     Write-Host
     Write-Host "Exporting Conditional Access Policies..." -ForegroundColor cyan
 
-    $AllPolicies = Get-AzureADMSConditionalAccessPolicy
+    $AllPolicies = Get-ConditionalAccessPolicies
+    
     foreach ($Policy in $AllPolicies) {
         $PolicyJSON = $Policy | ConvertTo-Json -Depth 20
 

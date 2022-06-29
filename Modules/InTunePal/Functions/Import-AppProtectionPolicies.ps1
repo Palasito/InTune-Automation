@@ -8,9 +8,7 @@ function Import-AppProtectionPolicies() {
     )
 
     #region AuthenticationW
-    
-    Get-Tokens
-    
+    Get-Token
     #endregion
     
     ####################################################

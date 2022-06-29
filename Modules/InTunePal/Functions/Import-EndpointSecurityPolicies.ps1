@@ -3,8 +3,9 @@
         $Path
     )
 
-    Get-Tokens
-
+    #Region Authentication
+    Get-Token
+    #EndRegion
     $ImportPath = $Path
 
     # Replacing quotes for Test-Path

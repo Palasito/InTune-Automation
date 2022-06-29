@@ -75,7 +75,7 @@ function Export-UpdatePolicies() {
     )
     
     #Region Authentication 
-    Get-TokensNew
+    Get-Token
     #endregion
     
     ####################################################
