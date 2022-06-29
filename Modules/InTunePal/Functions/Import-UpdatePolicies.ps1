@@ -8,7 +8,7 @@ function Import-UpdatePolicies() {
     )
 
     # Authentication region
-    Get-Token
+    $null = Get-Token
     #endregion
 
     ####################################################

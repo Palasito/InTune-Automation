@@ -18,7 +18,7 @@ function Import-Intune {
     else {
 
         # Authentication
-        Get-Token
+        $null = Get-Token
         # Graph Api Powershell
 
         Write-Host "Creating Intune Policies and Profiles as specified in"$Path" folder..." -ForegroundColor Cyan

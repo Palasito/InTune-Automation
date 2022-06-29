@@ -8,7 +8,7 @@ function Export-Intune {
 
     $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
     Write-host "Please wait for the Authentication popup to appear" -ForegroundColor Cyan
-    Get-Token
+    $null = Get-Token
 
     # Graph API Powershell
 
@@ -18,8 +18,6 @@ function Export-Intune {
     Export-DeviceConfigurationPolicies -Path $Path
     Export-UpdatePolicies -Path $Path
     Export-EndpointSecurityPolicies -Path $Path
-
-    # AzureAD Powershell
 
     Export-ConditionalAccessPolicies -Path $Path
     Export-NamedLocations -Path $Path

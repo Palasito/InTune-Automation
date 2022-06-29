@@ -76,7 +76,7 @@ function Export-CompliancePolicies() {
     )
 
     #Region Authentication 
-    Get-Token
+    $null = Get-Token
     #endregion
 
     ####################################################

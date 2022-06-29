@@ -6,7 +6,7 @@
     )
 
     #Region Authentication
-    Get-Token
+    $null = Get-Token
     #EndRegion
 
     if (-not (Test-Path "$Path\ConditionalAccessPolicies")) {

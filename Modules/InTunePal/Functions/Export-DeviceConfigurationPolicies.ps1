@@ -8,7 +8,7 @@ function Export-DeviceConfigurationPolicies() {
     )
 
     #Region Authentication 
-    Get-Token
+    $null = Get-Token
     #endregion
 
     ####################################################

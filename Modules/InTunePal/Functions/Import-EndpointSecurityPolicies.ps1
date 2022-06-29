@@ -4,7 +4,7 @@
     )
 
     #Region Authentication
-    Get-Token
+    $null = Get-Token
     #EndRegion
     $ImportPath = $Path
 

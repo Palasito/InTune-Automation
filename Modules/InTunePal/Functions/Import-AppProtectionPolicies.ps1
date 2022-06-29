@@ -8,7 +8,7 @@ function Import-AppProtectionPolicies() {
     )
 
     #region AuthenticationW
-    Get-Token
+    $null = Get-Token
     #endregion
     
     ####################################################

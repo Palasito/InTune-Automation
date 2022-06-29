@@ -8,7 +8,7 @@
     )
 
     # Authentication region
-    Get-Token
+    $null = Get-Token
     #endregion
 
     ####################################################

@@ -4,7 +4,7 @@ function Export-EndpointSecurityPolicies {
     )
 
     #Region Authentication 
-    Get-Token
+    $null = Get-Token
     #endregion
 
     ########################################################################################
