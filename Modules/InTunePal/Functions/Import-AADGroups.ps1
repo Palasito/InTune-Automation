@@ -2,8 +2,7 @@ Function Import-AADGroups() {
 
     param(
         [parameter()]
-        [String]$Path,
-        $AzureADToken
+        [String]$Path
     )
 
     # Authentication Region
@@ -17,6 +16,7 @@ Function Import-AADGroups() {
 
     $Groups = Import-Csv -Path $Path\CSVs\AADGroups\*.csv
     $check = Get-Groups
+    $uri = "https://graph.microsoft.com/v1.0/groups"
     
     foreach ($Group in $Groups) {
 
@@ -24,7 +24,18 @@ Function Import-AADGroups() {
 
         if ($null -eq $checkresult) {
 
-            $null = New-AzureADMSGroup -DisplayName $Group.DisplayName -Description $Group.Description -MailEnabled $False -MailNickName "group" -SecurityEnabled $True
+            $NickName = $Group.DisplayName.Replace(" ","")
+
+            $body = @{}
+            $body.description = $Group.Description
+            $body.displayName = $Group.DisplayName
+            $body.MailEnabled = $false
+            $body.MailNickName = $NickName
+            $body.securityEnabled = $True
+
+            $bodyfinal = $body | ConvertTo-Json -Depth 5
+
+            $null = Invoke-RestMethod -Uri $uri -Method Post -Headers $authToken -ContentType "application/json" -Body $bodyfinal
 
             [PSCustomObject]@{
                 "Action" = "Import"

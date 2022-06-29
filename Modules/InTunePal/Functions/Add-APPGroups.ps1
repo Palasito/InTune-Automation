@@ -10,6 +10,7 @@ function Add-APPGroups() {
     Write-Host
     
     $APPGroups = Import-Csv -Path $Path\CSVs\AppProtection\*.csv -Delimiter ','
+    $gr = Get-Groups
 
     foreach ($Pol in $APPGroups) {
     
@@ -25,7 +26,7 @@ function Add-APPGroups() {
 
                 foreach ($grp in $InclGrps) {
                     if (-not([string]::IsNullOrEmpty($grp))) {
-                        $g = Get-AzureADMSGroup -SearchString $grp
+                        $g = $gr | Where-Object { $_.displayName -eq $grp }
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -46,7 +47,7 @@ function Add-APPGroups() {
                 
                 foreach ($grp in $ExclGrps) {
                     if (-not([string]::IsNullOrEmpty($grp))) {
-                        $g = Get-AzureADMSGroup -SearchString "$($grp)"
+                        $g = $gr | Where-Object { $_.displayName -eq $grp }
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -88,7 +89,7 @@ function Add-APPGroups() {
 
                 foreach ($grp in $InclGrps) {
                     if (-not([string]::IsNullOrEmpty($grp))) {
-                        $g = Get-AzureADMSGroup -SearchString $grp
+                        $g = $gr | Where-Object { $_.displayName -eq $grp }
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -109,7 +110,7 @@ function Add-APPGroups() {
 
                 foreach ($grp in $ExclGrps) {
                     if (-not([string]::IsNullOrEmpty($grp))) {
-                        $g = Get-AzureADMSGroup -SearchString "$($grp)"
+                        $g = $gr | Where-Object { $_.displayName -eq $grp }
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -151,7 +152,7 @@ function Add-APPGroups() {
 
                 foreach ($grp in $InclGrps) {
                     if (-not([string]::IsNullOrEmpty($grp))) {
-                        $g = Get-AzureADMSGroup -SearchString $grp
+                        $g = $gr | Where-Object { $_.displayName -eq $grp }
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -172,7 +173,7 @@ function Add-APPGroups() {
 
                 foreach ($grp in $ExclGrps) {
                     if (-not([string]::IsNullOrEmpty($grp))) {
-                        $g = Get-AzureADMSGroup -SearchString "$($grp)"
+                        $g = $gr | Where-Object { $_.displayName -eq $grp }
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -214,7 +215,7 @@ function Add-APPGroups() {
 
                 foreach ($grp in $InclGrps) {
                     if (-not([string]::IsNullOrEmpty($grp))) {
-                        $g = Get-AzureADMSGroup -SearchString $grp
+                        $g = $gr | Where-Object { $_.displayName -eq $grp }
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -235,7 +236,7 @@ function Add-APPGroups() {
 
                 foreach ($grp in $ExclGrps) {
                     if (-not([string]::IsNullOrEmpty($grp))) {
-                        $g = Get-AzureADMSGroup -SearchString "$($grp)"
+                        $g = $gr | Where-Object { $_.displayName -eq $grp }
                         $targetmember = @{}
                         $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
                         $targetmember.deviceAndAppManagementAssignmentFilterId = $null

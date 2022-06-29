@@ -8,6 +8,7 @@ function Add-DUPGroups() {
     
     Write-Host "Adding specified groups to Software Update Policies..." -ForegroundColor Cyan
     $DCPGroups = Import-Csv -Path $Path\CSVs\UpdatePolicies\*.csv -Delimiter ','
+    $gr = Get-Groups
     
     foreach ($Pol in $DCPGroups) {
         $Policy = Get-SoftwareUpdatePolicyAssignments | Where-Object displayName -eq $pol.DisplayName
@@ -19,7 +20,7 @@ function Add-DUPGroups() {
     
         foreach ($grp in $InclGrps) {
             if (-not([string]::IsNullOrEmpty($grp))) {
-                $g = Get-AzureADMSGroup -SearchString $grp
+                $g = $gr | Where-Object { $_.displayName -eq $grp }
                 $targetmember = @{}
                 $targetmember.'@odata.type' = "#microsoft.graph.groupAssignmentTarget"
                 $targetmember.deviceAndAppManagementAssignmentFilterId = $null
@@ -40,7 +41,7 @@ function Add-DUPGroups() {
     
         foreach ($grp in $ExclGrps) {
             if (-not([string]::IsNullOrEmpty($grp))) {
-                $g = Get-AzureADMSGroup -SearchString "$($grp)"
+                $g = $gr | Where-Object { $_.displayName -eq $grp }
                 $targetmember = @{}
                 $targetmember.'@odata.type' = "#microsoft.graph.exclusionGroupAssignmentTarget"
                 $targetmember.deviceAndAppManagementAssignmentFilterId = $null

@@ -7,7 +7,7 @@ function Get-Groups {
     
     try {
     
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($GR_resource)?$select=displayName"
+        $uri = "https://graph.microsoft.com/$graphApiVersion/$($GR_resource)?$select=displayName,id"
     (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
     }

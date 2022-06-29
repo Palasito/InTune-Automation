@@ -10,6 +10,8 @@ function Add-CAPGroups() {
 
     Write-host
     Write-Host "Assigning Groups to Conditional Access Policies" -ForegroundColor Cyan
+    $gr = Get-Groups
+
     foreach ($Pol in $CAPGroups) {
         $Policy = Get-AzureADMSConditionalAccessPolicy | Where-Object displayName -eq $pol.DisplayName
         [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
@@ -18,7 +20,7 @@ function Add-CAPGroups() {
 
         foreach ($grp in $InclGrps) {
             if (-not([string]::IsNullOrEmpty($grp))) {
-                $g = Get-AzureADMSGroup -SearchString $grp
+                $g = $gr | Where-Object { $_.displayName -eq $grp }
                 $Conditions.Users.IncludeUsers = @{}
                 if ($null -ne $g) {
                     $Conditions.Users.IncludeGroups += $g.Id
@@ -37,7 +39,7 @@ function Add-CAPGroups() {
 
         foreach ($grp in $ExclGrps) {
             if (-not([string]::IsNullOrEmpty($grp))) {
-                $g = Get-AzureADMSGroup -SearchString "$($grp)"
+                $g = $gr | Where-Object { $_.displayName -eq $grp }
                 if ($null -ne $g) {
                     $Conditions.Users.ExcludeGroups += $g.Id
                 }
