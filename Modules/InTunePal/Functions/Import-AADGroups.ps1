@@ -7,16 +7,7 @@ Function Import-AADGroups() {
     )
 
     # Authentication Region
-
-    if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens) {
-        Write-Host "Getting AzureAD authToken"
-        Connect-AzureAD
-    }
-    else {
-        $azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
-        
-    }
-    
+    $null = Get-Token
     # endregion
     
     ############################################
@@ -25,12 +16,13 @@ Function Import-AADGroups() {
     Write-Host "Creating specified security groups" -ForegroundColor Cyan
 
     $Groups = Import-Csv -Path $Path\CSVs\AADGroups\*.csv
-
+    $check = Get-Groups
+    
     foreach ($Group in $Groups) {
 
-        $check = Get-AzureADMSGroup -SearchString $Group.DisplayName
+        $checkresult = $check | Where-Object { $_.displayName -eq $Group }
 
-        if ($null -eq $check) {
+        if ($null -eq $checkresult) {
 
             $null = New-AzureADMSGroup -DisplayName $Group.DisplayName -Description $Group.Description -MailEnabled $False -MailNickName "group" -SecurityEnabled $True
 
