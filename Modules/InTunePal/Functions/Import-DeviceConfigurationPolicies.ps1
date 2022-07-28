@@ -47,7 +47,7 @@ function Import-DeviceConfigurationPolicies() {
         if ($null -eq $check) {
             $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
-            $null = Add-DeviceGeneralConfigurationPolicy -JSON $JSON_Output -ErrorAction Continue
+            $null = Add-DeviceGeneralConfigurationPolicy -JSON $JSON_Output
     
             [PSCustomObject]@{
                 "Action" = "Import"
