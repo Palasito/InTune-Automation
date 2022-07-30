@@ -12,28 +12,33 @@ function Add-CAPGroups() {
     Write-Host "Assigning Groups to Conditional Access Policies" -ForegroundColor Cyan
     $gr = Get-Groups
 
+    $AllExisting = Get-ConditionalAccessPolicies
     foreach ($Pol in $CAPGroups) {
-        $Policy = Get-AzureADMSConditionalAccessPolicy | Where-Object displayName -eq $pol.DisplayName
-        [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
+        $Policy = $AllExisting | Where-Object displayName -eq $pol.DisplayName
+        $JSON = @{
+            conditions = @{
+                users = @{}
+            }
+        }
         $InclGrps = $pol.IncludeGroups -split ";"
         $ExclGrps = $pol.ExcludeGroups -split ";"
 
         foreach ($grp in $InclGrps) {
             if (-not([string]::IsNullOrEmpty($grp))) {
                 $g = $gr | Where-Object { $_.displayName -eq $grp }
-                $Conditions.Users.IncludeUsers = @{}
+                $JSON.conditions.users.includeUsers = @{}
                 if ($null -ne $g) {
-                    $Conditions.Users.IncludeGroups += $g.Id
+                    $JSON.conditions.Users.includeGroups += $g.Id
                 }
                 elseif ($grp -eq "GuestsOrExternalUsers"){
-                    $Conditions.Users.IncludeUsers = "GuestsOrExternalUsers"
+                    $JSON.conditions.users.includeUsers = "GuestsOrExternalUsers"
                 }
                 else {
                     
                 }
             }
             else {
-                $Conditions.Users.IncludeUsers = "All"
+                $JSON.conditions.users.includeUsers = "All"
             }
         }
 
@@ -41,7 +46,10 @@ function Add-CAPGroups() {
             if (-not([string]::IsNullOrEmpty($grp))) {
                 $g = $gr | Where-Object { $_.displayName -eq $grp }
                 if ($null -ne $g) {
-                    $Conditions.Users.ExcludeGroups += $g.Id
+                    $JSON.conditions.users.excludeGroups += $g.Id
+                }
+                elseif ($grp -eq "GuestsOrExternalUsers"){
+                    $JSON.conditions.users.includeUsers = "GuestsOrExternalUsers"
                 }
                 else {
                     
@@ -51,7 +59,10 @@ function Add-CAPGroups() {
 
             }
         }
-        $null = Set-AzureADMSConditionalAccessPolicy -PolicyId $Policy.Id -Conditions $Conditions
+
+        $j = $JSON | ConvertTo-Json -Depth 5
+        $uri = "https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies/$($Policy.id)"
+        $null = Invoke-RestMethod -Uri $uri -Headers $authToken -Method Patch -Body $j -ContentType "application/json" 
         Start-Sleep 3
 
         [PSCustomObject]@{

@@ -1,4 +1,4 @@
-Function Add-ConditionalAccessPolicy() {
+Function Add-NamedLocations() {
 
     [cmdletbinding()]
 
@@ -8,7 +8,7 @@ Function Add-ConditionalAccessPolicy() {
     )
 
     $graphApiVersion = "1.0"
-    $Resource = "identity/conditionalAccess/policies"
+    $Resource = "identity/conditionalAccess/namedLocations"
     
     try {
 

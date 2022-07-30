@@ -3,39 +3,32 @@ Function Import-NamedLocations() {
     [cmdletbinding()]
 
     param(
-        $Path,
-        $AzureADToken
+        $Path
     )
-
-    if ($null -eq [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens) {
-        Write-Host "Getting AzureAD authToken"
-        Connect-AzureAD
-    }
-    else {
-        $global:azureADToken = [Microsoft.Open.Azure.AD.CommonLibrary.AzureSession]::AccessTokens
-        
-    }
 
     $BackupJsons = Get-ChildItem "$Path\NamedLocations" -Recurse -Include *.json
 
     Write-Host
     Write-Host "Importing Named Locations (Countries Only)..." -ForegroundColor cyan
 
-    $AllExisting = Get-AzureADMSNamedLocationPolicy
+    $AllExisting = Get-NamedLocations
     foreach ($Json in $BackupJsons) {
 
-        $policy = Get-Content $Json | ConvertFrom-Json
+        $policy = Get-Content $Json.FullName | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id, createdDateTime, modifiedDateTime, version
 
         $check = $AllExisting | Where-Object { $_.DisplayName -eq $policy.DisplayName }
         if ($null -eq $check) {
-            $Parameters = @{
-                OdataType                         = $policy.OdataType
-                DisplayName                       = $policy.DisplayName
-                IncludeUnknownCountriesAndRegions = $Policy.IncludeUnknownCountriesAndRegions
-                CountriesAndRegion                = $Policy.CountriesAndRegions
-            }
+
+            # $Parameters = @{
+            #     OdataType                         = $policy.OdataType
+            #     DisplayName                       = $policy.DisplayName
+            #     IncludeUnknownCountriesAndRegions = $Policy.IncludeUnknownCountriesAndRegions
+            #     CountriesAndRegion                = $Policy.CountriesAndRegions
+            # }
     
-            New-AzureADMSNamedLocationPolicy @Parameters
+            $jsontoimport = $policy | ConvertTo-Json -Depth 10
+
+            Add-NamedLocations -JSON $jsontoimport
     
             [PSCustomObject]@{
                 "Action" = "Import"
@@ -54,7 +47,6 @@ Function Import-NamedLocations() {
 
     $check = $AllExisting | Where-Object { $_.DisplayName -eq "Trusted Networks" }
     if ( $null -eq $check ) {
-        [System.Collections.Generic.List`1[Microsoft.Open.MSGraph.Model.IpRange]]$cidrAddress = @()
         # $IPs = do
         # {
         #     $ip = Read-Host "Enter IP or press enter to finish"
@@ -65,18 +57,23 @@ Function Import-NamedLocations() {
     
         $IPCSV = Import-Csv $path\CSVs\IPs\*.csv
     
+        $ipRanges = @()
         foreach ($i in $IPCSV) {
-            $IP = $i.IP
-            $cidrAddress.Add("$IP")
+            $target = @{}
+            $target."@odata.Type" = "#microsoft.graph.iPv4CidrRange"
+            $target.cidrAddress = $i
+        
+            $ipRanges += $target
         }
     
-        $Parameters = @{
-            OdataType   = '#microsoft.graph.ipNamedLocation'
-            DisplayName = 'Trusted Networks'
-            IsTrusted   = $true
-            IpRanges    = $cidrAddress
+        $jsontoimport = @{
+            "@odata.type" = "#microsoft.graph.ipNamedLocation"
+            displayName   = "Trusted Networks"
+            Trusted       = $true
+            ipRanges      = $ipRanges
         }
-        $null = New-AzureADMSNamedLocationPolicy @parameters
+        
+        $null = Add-NamedLocations -JSON $jsontoimport
     
         [PSCustomObject]@{
             "Action" = "Import"

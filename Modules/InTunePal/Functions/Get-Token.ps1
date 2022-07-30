@@ -78,4 +78,4 @@ function Get-Token {
 
     #     $global:authToken = GetMSALToken -OtherTenant -Tenant $Tenantconfirm
     # }
-}
+}Get-Token

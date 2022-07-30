@@ -13,68 +13,56 @@ function Import-ConditionalAccessPolicies() {
     Write-Host "Importing Conditional Access Policies..." -ForegroundColor cyan
 
     $Allexisting = Get-ConditionalAccessPolicies
+    $NamedLocations = Get-NamedLocations
     foreach ($Json in $BackupJsons) {
 
-        $policy = Get-Content $Json.FullName | ConvertFrom-Json
+        $policy = Get-Content $Json.FullName | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id, createdDateTime, lastModifiedDateTime, version
 
         $check = $Allexisting | Where-object { $_.displayName -eq $policy.DisplayName }
 
         if ($null -eq $check) {
 
-            # Create objects for the conditions and GrantControls
-            [Microsoft.Open.MSGraph.Model.ConditionalAccessConditionSet]$Conditions = $Policy.Conditions
-            [Microsoft.Open.MSGraph.Model.ConditionalAccessGrantControls]$GrantControls = $Policy.GrantControls
-            [Microsoft.Open.MSGraph.Model.ConditionalAccessSessionControls]$SessionControls = $Policy.SessionControls
+            #Region Users
+            $includeUsers = @(
+                "none"
+            )
+            $Users = @{
+                includeUsers = $includeUsers
+            }
+            $policy.conditions.users = $Users
+            #EndRegion
 
-            $Users = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessUserCondition
-
-            $Users.IncludeUsers = "None"
-            # $Users.IncludeUsers += $TestUser.ObjectId
-            # $Users.ExcludeUsers += $BreakGlass.ObjectId
-            # $Users.ExcludeUsers += $OLUser.ObjectId
-            $Conditions.Users = $Users
-
+            #Region Locations
             $OldInclLocations = $policy.Conditions.Locations.IncludeLocations
             $OldExclLocations = $Policy.Conditions.Locations.ExcludeLocations
+            $ExcludeLocations = @()
+            $IncludeLocations = @()
             if ($null -ne $OldInclLocations) {
-                $Locations = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessLocationCondition
                 foreach ($loc in $OldExclLocations) {
                     if (-not[string]::IsNullOrEmpty($OldExclLocations)) {
-                        $Exclloc = Get-AzureADMSNamedLocationPolicy | Where-object displayName -eq "$loc"
-                        $Locations.ExcludeLocations += $Exclloc.Id
+                        $Exclloc = $NamedLocations | Where-object { $_.displayName -eq $loc }
+                        $ExcludeLocations += $Exclloc.Id
                     }
                 }
                 foreach ($loc in $OldInclLocations) {
                     if ($OldInclLocations = "All") {
-                        $Locations.IncludeLocations = "All"
+                        $policy.conditions.locations.IncludeLocations = "All"
                     }
                     elseif (-not[string]::IsNullOrEmpty($OldInclLocations)) {
-                        $Inclloc = Get-AzureADMSNamedLocationPolicy | Where-object displayName -eq "$loc"
-                        $Locations.IncludeLocations += $Inclloc.Id
+                        $Inclloc = $NamedLocations | Where-object { $_.displayName -eq $loc }
+                        $IncludeLocations += $Inclloc.Id
                     }
                 }
-
-                $Conditions.Locations = $locations
-            }
-
-            # Do the same thing for the applications
-            $OldApplications = $Policy.Conditions.Applications
-            $ApplicationMembers = $OldApplications | Get-Member -MemberType NoteProperty
-            $Applications = New-Object Microsoft.Open.MSGraph.Model.ConditionalAccessApplicationCondition
-            foreach ($member in $ApplicationMembers) {
-                if (-not[string]::IsNullOrEmpty($OldApplications.$($member.Name))) {
-                    $Applications.($member.Name) = ($OldApplications.$($member.Name))
+                $Locations = @{
+                    includeLocations = $IncludeLocations
+                    excludeLocations = $ExcludeLocations
                 }
-            }
 
-            $Conditions.Applications = $Applications
-            $Jsontoimport = @{
-                displayName     = $Policy.DisplayName
-                state           = "disabled"
-                conditions      = $Conditions
-                grantControls   = $GrantControls
-                sessionControls = $SessionControls
+                $policy.conditions.locations = $locations
             }
+            #EndRegion
+
+            $jsontoImport = $policy | ConvertTo-Json -Depth 10
         
             [PSCustomObject]@{
                 "Action" = "Import"
@@ -83,7 +71,7 @@ function Import-ConditionalAccessPolicies() {
                 "From"   = $Json
             }
 
-            $null = New-AzureADMSConditionalAccessPolicy @Parameters
+            $null = Add-ConditionalAccessPolicy -JSON $jsontoImport
 
             Start-Sleep 3
         }
