@@ -7,7 +7,7 @@ Function Add-ConditionalAccessPolicy() {
         $JSON
     )
 
-    $graphApiVersion = "1.0"
+    $graphApiVersion = "v1.0"
     $Resource = "identity/conditionalAccess/policies"
     
     try {

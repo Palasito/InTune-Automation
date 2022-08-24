@@ -23,22 +23,26 @@ function Add-CAPGroups() {
         $InclGrps = $pol.IncludeGroups -split ";"
         $ExclGrps = $pol.ExcludeGroups -split ";"
 
+        $InGrp = @()
+        $ExGrp = @()
+
+
         foreach ($grp in $InclGrps) {
             if (-not([string]::IsNullOrEmpty($grp))) {
                 $g = $gr | Where-Object { $_.displayName -eq $grp }
-                $JSON.conditions.users.includeUsers = @{}
+                $JSON.conditions.users.includeUsers = @("none")
                 if ($null -ne $g) {
-                    $JSON.conditions.Users.includeGroups += $g.Id
+                    $InGrp += $g.Id
                 }
-                elseif ($grp -eq "GuestsOrExternalUsers"){
-                    $JSON.conditions.users.includeUsers = "GuestsOrExternalUsers"
+                elseif ($grp -eq "GuestsOrExternalUsers") {
+                    $JSON.conditions.users.includeUsers = @("GuestsOrExternalUsers")
                 }
                 else {
                     
                 }
             }
             else {
-                $JSON.conditions.users.includeUsers = "All"
+                $JSON.conditions.users.includeUsers = @("All")
             }
         }
 
@@ -46,10 +50,10 @@ function Add-CAPGroups() {
             if (-not([string]::IsNullOrEmpty($grp))) {
                 $g = $gr | Where-Object { $_.displayName -eq $grp }
                 if ($null -ne $g) {
-                    $JSON.conditions.users.excludeGroups += $g.Id
+                    $ExGrp += $g.Id
                 }
-                elseif ($grp -eq "GuestsOrExternalUsers"){
-                    $JSON.conditions.users.includeUsers = "GuestsOrExternalUsers"
+                elseif ($grp -eq "GuestsOrExternalUsers") {
+                    $JSON.conditions.users.excludeUsers = @("GuestsOrExternalUsers")
                 }
                 else {
                     
@@ -60,7 +64,11 @@ function Add-CAPGroups() {
             }
         }
 
+        $JSON.conditions.Users.includeGroups = $InGrp
+        $JSON.conditions.users.excludeGroups = $ExGrp
+
         $j = $JSON | ConvertTo-Json -Depth 5
+        
         $uri = "https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies/$($Policy.id)"
         $null = Invoke-RestMethod -Uri $uri -Headers $authToken -Method Patch -Body $j -ContentType "application/json" 
         Start-Sleep 3

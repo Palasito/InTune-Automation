@@ -8,7 +8,12 @@ function Export-Intune {
 
     $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
     Write-host "Please wait for the Authentication popup to appear" -ForegroundColor Cyan
-    $null = Get-Token
+    if ($global:authToken) {
+        #Do nothing
+    }
+    else {
+        $null = Get-Token
+    }
 
     # Graph API Powershell
 

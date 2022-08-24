@@ -6,6 +6,15 @@ Function Import-NamedLocations() {
         $Path
     )
 
+    #Region Authentication
+    if ($global:authToken) {
+        #Do nothing
+    }
+    else {
+        $null = Get-Token
+    }
+    #endregion
+
     $BackupJsons = Get-ChildItem "$Path\NamedLocations" -Recurse -Include *.json
 
     Write-Host
@@ -28,7 +37,7 @@ Function Import-NamedLocations() {
     
             $jsontoimport = $policy | ConvertTo-Json -Depth 10
 
-            Add-NamedLocations -JSON $jsontoimport
+            $null = Add-NamedLocations -JSON $jsontoimport
     
             [PSCustomObject]@{
                 "Action" = "Import"
@@ -61,17 +70,19 @@ Function Import-NamedLocations() {
         foreach ($i in $IPCSV) {
             $target = @{}
             $target."@odata.Type" = "#microsoft.graph.iPv4CidrRange"
-            $target.cidrAddress = $i
+            $target.cidrAddress = $i.IP
         
             $ipRanges += $target
         }
     
-        $jsontoimport = @{
+        $jsontoimporttemp = @{
             "@odata.type" = "#microsoft.graph.ipNamedLocation"
             displayName   = "Trusted Networks"
-            Trusted       = $true
+            isTrusted     = $true
             ipRanges      = $ipRanges
         }
+
+        $jsontoimport = $jsontoimporttemp | ConvertTo-Json -Depth 10
         
         $null = Add-NamedLocations -JSON $jsontoimport
     

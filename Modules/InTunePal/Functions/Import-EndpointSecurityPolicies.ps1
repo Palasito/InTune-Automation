@@ -4,8 +4,14 @@
     )
 
     #Region Authentication
-    $null = Get-Token
+    if ($global:authToken) {
+        #Do nothing
+    }
+    else {
+        $null = Get-Token
+    }
     #EndRegion
+    
     $ImportPath = $Path
 
     # Replacing quotes for Test-Path

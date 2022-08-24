@@ -8,7 +8,12 @@ Function Import-CompliancePolicies() {
     )
 
     # Authentication region
-    $null = Get-Token
+    if ($global:authToken) {
+        #Do nothing
+    }
+    else {
+        $null = Get-Token
+    }
     #endregion
 
     ####################################################

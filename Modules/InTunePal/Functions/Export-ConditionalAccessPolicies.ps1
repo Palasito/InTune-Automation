@@ -6,7 +6,12 @@
     )
 
     #Region Authentication
-    $null = Get-Token
+    if ($global:authToken) {
+        #Do nothing
+    }
+    else {
+        $null = Get-Token
+    }
     #EndRegion
 
     if (-not (Test-Path "$Path\ConditionalAccessPolicies")) {

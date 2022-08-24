@@ -31,7 +31,7 @@ function Add-DUPGroups() {
                     "target" = $targetmember
                 }
             }
-            elseif ([string]::IsNullOrEmpty($grp)){
+            elseif ([string]::IsNullOrEmpty($grp)) {
 
             }
             else {
@@ -52,7 +52,7 @@ function Add-DUPGroups() {
                     "target" = $targetmember
                 }
             }
-            elseif ([string]::IsNullOrEmpty($grp)){
+            elseif ([string]::IsNullOrEmpty($grp)) {
 
             }
             else {
@@ -62,7 +62,7 @@ function Add-DUPGroups() {
             
         $Body = $Body | ConvertTo-Json -Depth 100
         
-        Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/deviceManagement/deviceConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+        Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
         
         [PSCustomObject]@{
             "Action"          = "Assign"
@@ -72,5 +72,4 @@ function Add-DUPGroups() {
             "Excluded Groups" = $ExclGrps
         }
     }
-    
 }

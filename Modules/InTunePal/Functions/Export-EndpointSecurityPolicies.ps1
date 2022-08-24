@@ -4,7 +4,12 @@ function Export-EndpointSecurityPolicies {
     )
 
     #Region Authentication 
-    $null = Get-Token
+    if ($global:authToken) {
+        #Do nothing
+    }
+    else {
+        $null = Get-Token
+    }
     #endregion
 
     ########################################################################################

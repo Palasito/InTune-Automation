@@ -6,7 +6,12 @@ Function Import-AADGroups() {
     )
 
     # Authentication Region
-    $null = Get-Token
+    if ($global:authToken) {
+        #Do nothing
+    }
+    else {
+        $null = Get-Token
+    }
     # endregion
     
     ############################################
@@ -20,11 +25,11 @@ Function Import-AADGroups() {
     
     foreach ($Group in $Groups) {
 
-        $checkresult = $check | Where-Object { $_.displayName -eq $Group }
+        $checkresult = $check | Where-Object { $_.displayName -eq $Group.DisplayName }
 
         if ($null -eq $checkresult) {
 
-            $NickName = $Group.DisplayName.Replace(" ","")
+            $NickName = $Group.DisplayName.Replace(" ", "")
 
             $body = @{}
             $body.description = $Group.Description

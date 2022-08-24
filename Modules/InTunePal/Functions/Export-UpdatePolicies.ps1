@@ -75,7 +75,12 @@ function Export-UpdatePolicies() {
     )
     
     #Region Authentication 
-    $null = Get-Token
+    if ($global:authToken) {
+        #Do nothing
+    }
+    else {
+        $null = Get-Token
+    }
     #endregion
     
     ####################################################

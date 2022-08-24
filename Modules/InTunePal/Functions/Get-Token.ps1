@@ -15,8 +15,8 @@ function GetMSALToken {
     switch ($OtherTenant) {
         $true {
             $authority = "https://login.microsoftonline.com/$Tenant"
-            $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -Authority $authority -ForceRefresh -Interactive
-            $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -Authority $authority -ForceRefresh -Interactive
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -Authority $authority -ForceRefresh 
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -Authority $authority -ForceRefresh
             $authHeader = @{
                 'Content-Type'  = 'application/json'
                 'Authorization' = "Bearer " + $authResult.AccessToken
@@ -25,8 +25,8 @@ function GetMSALToken {
             return $authHeader
         }
         $false {
-            $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh -Interactive
-            $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh -Interactive
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh 
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh 
             $authHeader = @{
                 'Content-Type'  = 'application/json'
                 'Authorization' = "Bearer " + $authResult.AccessToken
@@ -35,8 +35,8 @@ function GetMSALToken {
             return $authHeader
         }
         default {
-            $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh -Interactive
-            $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh -Interactive
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh 
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh 
             $authHeader = @{
                 'Content-Type'  = 'application/json'
                 'Authorization' = "Bearer " + $authResult.AccessToken

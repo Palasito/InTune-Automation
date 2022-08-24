@@ -91,7 +91,12 @@ function Export-ClientApps() {
     write-host
 
     #Region Authentication 
-    $null = Get-Token
+    if ($global:authToken) {
+        #Do nothing
+    }
+    else {
+        $null = Get-Token
+    }
     #endregion
 
     ####################################################

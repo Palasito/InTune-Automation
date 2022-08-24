@@ -6,6 +6,15 @@ function Import-ConditionalAccessPolicies() {
         $AzureADToken
     )
 
+    #Region Authentication
+    if ($global:authToken) {
+        #Do nothing
+    }
+    else {
+        $null = Get-Token
+    }
+    #EndRegion
+
     # $CAPGroups = Import-Csv -Path $Path\CSVs\ConditionalAccess\*.csv -Delimiter ','
     $BackupJsons = Get-ChildItem "$Path\ConditionalAccessPolicies" -Recurse -Include *.json
 
@@ -16,7 +25,7 @@ function Import-ConditionalAccessPolicies() {
     $NamedLocations = Get-NamedLocations
     foreach ($Json in $BackupJsons) {
 
-        $policy = Get-Content $Json.FullName | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id, createdDateTime, lastModifiedDateTime, version
+        $policy = Get-Content $Json.FullName | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id, createdDateTime, ModifiedDateTime, version
 
         $check = $Allexisting | Where-object { $_.displayName -eq $policy.DisplayName }
 
@@ -46,7 +55,7 @@ function Import-ConditionalAccessPolicies() {
                 }
                 foreach ($loc in $OldInclLocations) {
                     if ($OldInclLocations = "All") {
-                        $policy.conditions.locations.IncludeLocations = "All"
+                        $IncludeLocations += "All"
                     }
                     elseif (-not[string]::IsNullOrEmpty($OldInclLocations)) {
                         $Inclloc = $NamedLocations | Where-object { $_.displayName -eq $loc }
@@ -63,7 +72,7 @@ function Import-ConditionalAccessPolicies() {
             #EndRegion
 
             $jsontoImport = $policy | ConvertTo-Json -Depth 10
-        
+
             [PSCustomObject]@{
                 "Action" = "Import"
                 "Type"   = "Conditional Access Policy"

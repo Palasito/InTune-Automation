@@ -8,7 +8,12 @@ function Import-AppProtectionPolicies() {
     )
 
     #region AuthenticationW
-    $null = Get-Token
+    if ($global:authToken) {
+        #Do nothing
+    }
+    else {
+        $null = Get-Token
+    }
     #endregion
     
     ####################################################
