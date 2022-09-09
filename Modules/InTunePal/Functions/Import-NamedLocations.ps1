@@ -64,7 +64,7 @@ Function Import-NamedLocations() {
     
         # $IPs = ($IPs[0..($IPs.Length-2)])
     
-        $IPCSV = Import-Csv $path\CSVs\IPs\*.csv
+        $IPCSV = Import-Csv "$path\CSVs\IPs" -Recurse -Include *.csv
     
         $ipRanges = @()
         foreach ($i in $IPCSV) {
