@@ -63,34 +63,38 @@ Function Import-NamedLocations() {
         # } while ($ip -ne '')
     
         # $IPs = ($IPs[0..($IPs.Length-2)])
-    
-        $IPCSV = Import-Csv "$path\CSVs\IPs" -Recurse -Include *.csv
-    
-        $ipRanges = @()
-        foreach ($i in $IPCSV) {
-            $target = @{}
-            $target."@odata.Type" = "#microsoft.graph.iPv4CidrRange"
-            $target.cidrAddress = $i.IP
-        
-            $ipRanges += $target
-        }
-    
-        $jsontoimporttemp = @{
-            "@odata.type" = "#microsoft.graph.ipNamedLocation"
-            displayName   = "Trusted Networks"
-            isTrusted     = $true
-            ipRanges      = $ipRanges
-        }
 
-        $jsontoimport = $jsontoimporttemp | ConvertTo-Json -Depth 10
+        $IPCSV = Import-Csv -Path (Get-ChildItem -Path "$path\CSVs\NamedLocations\IPs" -Filter '*.csv').FullName
+        if ($ull -eq $IPCSV) {
+            Write-Host "No trusted Networks are going to be created. Csv was not found. Make sure to remove the trusted Networks from all conditional access policies you want to import" -ForegroundColor Yellow
+        }
+        else {
+            $ipRanges = @()
+            foreach ($i in $IPCSV) {
+                $target = @{}
+                $target."@odata.Type" = "#microsoft.graph.iPv4CidrRange"
+                $target.cidrAddress = $i.IP
+            
+                $ipRanges += $target
+            }
         
-        $null = Add-NamedLocations -JSON $jsontoimport
+            $jsontoimporttemp = @{
+                "@odata.type" = "#microsoft.graph.ipNamedLocation"
+                displayName   = "Trusted Networks"
+                isTrusted     = $true
+                ipRanges      = $ipRanges
+            }
     
-        [PSCustomObject]@{
-            "Action" = "Import"
-            "Type"   = "Trusted IP Range Policy"
-            "Name"   = "Trusted Networks"
-            "From"   = "$($Path)\CSVs\IPs"
+            $jsontoimport = $jsontoimporttemp | ConvertTo-Json -Depth 10
+            
+            $null = Add-NamedLocations -JSON $jsontoimport
+        
+            [PSCustomObject]@{
+                "Action" = "Import"
+                "Type"   = "Trusted IP Range Policy"
+                "Name"   = "Trusted Networks"
+                "From"   = "$($Path)\CSVs\IPs"
+            }
         }
     }
     else {
