@@ -15,7 +15,6 @@ function Import-ConditionalAccessPolicies() {
     }
     #EndRegion
 
-    # $CAPGroups = Import-Csv -Path $Path\CSVs\ConditionalAccess\*.csv -Delimiter ','
     $BackupJsons = Get-ChildItem "$Path\ConditionalAccessPolicies" -Recurse -Include *.json
 
     Write-Host

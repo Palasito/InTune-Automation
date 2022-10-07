@@ -14,7 +14,7 @@ Function Add-ConditionalAccessPolicy() {
 
         if ($JSON -eq "" -or $null -eq $JSON) {
 
-            write-host "No JSON specified, please specify valid JSON for the Device Compliance Policies..." -f Red
+            write-host "No JSON specified, please specify valid JSON for the Conditional Access Policy..." -f Red
 
         }
 
