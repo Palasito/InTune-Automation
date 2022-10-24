@@ -42,15 +42,15 @@ function Import-Intune {
         # AzureAD Powershell
 
         Import-NamedLocations -Path $Path
-        # Start-Sleep -Seconds 5
-        $confirmation = Read-Host "Do you want to create the predefined user accounts? [y/n]"
-        if ($confirmation -eq 'n') {
-            # Do nothing !
-        }
-        if ($confirmation -eq 'y') {
-            Add-BreakGlassAccount -tenantforbreak $tenantforbreak
-        }
-        # Start-Sleep -Seconds 5
+
+        # $confirmation = Read-Host "Do you want to create the predefined user accounts? [y/n]"
+        # if ($confirmation -eq 'n') {
+        #     # Do nothing !
+        # }
+        # if ($confirmation -eq 'y') {
+        #     Add-BreakGlassAccount -tenantforbreak $tenantforbreak
+        # }
+
         Import-AADGroups -Path $Path
         # Start-Sleep -Seconds 5
         Import-ConditionalAccessPolicies -Path $Path
