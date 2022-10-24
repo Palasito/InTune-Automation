@@ -6,7 +6,16 @@ function Add-CAPGroups() {
         $Path
     )
 
-    $CAPGroups = Import-Csv -Path $Path\CSVs\ConditionalAccess\*.csv -Delimiter ','
+    $CAPGroupsCheck = Get-ChildItem -Path $Path\CSVs\ConditionalAccess
+
+    if ($null -eq $CAPGroupsCheck) {
+        Write-Host "No CSVs found containing groups to assign for the Conditional Access Policies !" -ForegroundColor DarkMagenta
+        break
+    }
+
+    else {
+        $CAPGroups = $CAPGroupsCheck | ForEach-Object { Import-Csv $Path\CSVs\ConditionalAccess\$_ -Delimiter "," }
+    }
 
     Write-host
     Write-Host "Assigning Groups to Conditional Access Policies" -ForegroundColor Cyan
