@@ -69,13 +69,4 @@ function Get-Token {
             return $global:authToken
         }
     }
-    # if ($global:tenantconfirmation -eq 'n') {
-    #     $global:authToken = GetMSALToken
-    # }
-                
-    # elseif ($global:tenantconfirmation -eq 'y') {
-    #     $Tenantconfirm = Read-Host "Please provide the tenant Id or Tenant Suffix to be used!"
-
-    #     $global:authToken = GetMSALToken -OtherTenant -Tenant $Tenantconfirm
-    # }
 }
