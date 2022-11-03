@@ -7,7 +7,7 @@ Function Get-ManagedAppProtection() {
         $id,
         [Parameter(Mandatory = $true)]
         [ValidateSet("Android", "iOS", "WIP_WE", "WIP_MDM")]
-        $OS    
+        $OS
     )
     
     $graphApiVersion = "Beta"
