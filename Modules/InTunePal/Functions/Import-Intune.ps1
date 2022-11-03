@@ -7,8 +7,6 @@ function Import-Intune {
         $Path
     )
 
-    Import-Module AzureAD
-
     Write-Host "Starting InTune Configuration import....."
 
     if (-not (Test-Path "$Path")) {
@@ -18,6 +16,9 @@ function Import-Intune {
     else {
 
         #Region Authentication
+        $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
+        Write-host "Please wait for the Authentication popup to appear" -ForegroundColor Cyan
+    
         if ($global:authToken) {
             #Do nothing
         }
