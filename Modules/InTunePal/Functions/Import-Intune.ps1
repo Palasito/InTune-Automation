@@ -6,7 +6,7 @@ function Import-Intune {
         [Parameter(mandatory)]
         $Path
     )
-    
+
     Import-Module AzureAD
 
     Write-Host "Starting InTune Configuration import....."
@@ -17,14 +17,16 @@ function Import-Intune {
 
     else {
 
-        # Authentication
+        #Region Authentication
         if ($global:authToken) {
             #Do nothing
         }
         else {
             $null = Get-Token
         }
-        # Graph Api Powershell
+        #EndRegion
+        
+        #Region Graph Api Powershell
 
         Write-Host "Creating Intune Policies and Profiles as specified in"$Path" folder..." -ForegroundColor Cyan
         
@@ -38,25 +40,16 @@ function Import-Intune {
         Import-ClientApps -Path $Path
         # Start-Sleep -Seconds 5
         Import-AppProtectionPolicies -Path $Path
-
-        # AzureAD Powershell
-
+        # Start-Sleep -Seconds 5
         Import-NamedLocations -Path $Path
-
-        # $confirmation = Read-Host "Do you want to create the predefined user accounts? [y/n]"
-        # if ($confirmation -eq 'n') {
-        #     # Do nothing !
-        # }
-        # if ($confirmation -eq 'y') {
-        #     Add-BreakGlassAccount -tenantforbreak $tenantforbreak
-        # }
-
+        # Start-Sleep -Seconds 5
         Import-AADGroups -Path $Path
         # Start-Sleep -Seconds 5
         Import-ConditionalAccessPolicies -Path $Path
         # Start-Sleep -Seconds 5
+        #EndRegion
 
-
+        #Region Group Assignments
         $confirmation = Read-Host "Do you want to assign groups based on the CSVs? [y/n]"
         if ($confirmation -eq 'n') {
             # Do Nothing !
@@ -76,7 +69,9 @@ function Import-Intune {
             # Start-Sleep -Seconds 5
             Add-CAPGroups -Path $Path
         }
+        #EndRegion
         
+        #Region Endpoint Security Policies
         $confirmation = Read-Host "Do you want to import endpoint security policies? [y/n]"
         if ($confirmation -eq 'n') {
             # Do Nothing !
@@ -87,6 +82,7 @@ function Import-Intune {
 
             Import-EndpointSecurityPolicies -Path $Path
         }
+        #EndRegion
 
         Write-Host "Thanks for using InTunePal! Enjoy your new configuration!" -ForegroundColor Cyan
     }
