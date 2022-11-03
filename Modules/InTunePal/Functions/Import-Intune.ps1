@@ -44,8 +44,6 @@ function Import-Intune {
         # Start-Sleep -Seconds 5
         Import-NamedLocations -Path $Path
         # Start-Sleep -Seconds 5
-        Import-AADGroups -Path $Path
-        # Start-Sleep -Seconds 5
         Import-ConditionalAccessPolicies -Path $Path
         # Start-Sleep -Seconds 5
         #EndRegion
@@ -59,7 +57,9 @@ function Import-Intune {
             Write-Host
             Write-Host "Getting Ready to assign AzureAD Groups to the imported configuration..." -ForegroundColor Cyan
             Start-Sleep -Seconds 15
-    
+
+            Import-AADGroups -Path $Path
+            # Start-Sleep -Seconds 5
             Add-CPGroups -Path $Path
             # Start-Sleep -Seconds 5
             Add-DCPGroups -Path $Path
