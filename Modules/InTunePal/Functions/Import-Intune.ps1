@@ -85,6 +85,6 @@ function Import-Intune {
         }
         #EndRegion
 
-        Write-Host "Thanks for using InTunePal! Enjoy your new configuration!" -ForegroundColor Cyan
+        Write-Host "Thanks for using InTunePal! Enjoy your new configuration!" -ForegroundColor Green
     }
 }
