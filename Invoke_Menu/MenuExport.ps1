@@ -20,7 +20,7 @@ function MenuExport {
             -Item 1 `
             -Label "Authenticate to the target Tenant" `
             -Order 1 `
-            -Info "This is some info" `
+            -Info "This option retrieves an authentication Token to be used with all the exporting operations" `
             -Selected `
             -Readonly
     
@@ -76,7 +76,7 @@ function MenuExport {
 
     $options = @{
         HeaderColor          = [ConsoleColor]::Cyan;
-        HelpColor            = [ConsoleColor]::DarkCyan;
+        HelpColor            = [ConsoleColor]::White;
         CurrentItemColor     = [ConsoleColor]::DarkGreen;
         LinkColor            = [ConsoleColor]::DarkCyan;
         CurrentItemLinkColor = [ConsoleColor]::Black;
@@ -88,7 +88,7 @@ function MenuExport {
         MenuErrorColor       = [ConsoleColor]::DarkRed;
     }
     
-    $header = "Please choose which policies you want to export"
+    $header = "Please choose which policies you want to export and press Enter"
     
     $selectedOptions = Get-InteractiveMenuUserSelection -Header $header -Items $multiMenuItems -Options $options
     
