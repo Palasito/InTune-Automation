@@ -26,5 +26,5 @@ function Export-Intune {
 
     Export-ConditionalAccessPolicies -Path $Path
     Export-NamedLocations -Path $Path
-    Export-EndpointSecurityPolicies -Path $Path
+    # Export-EndpointSecurityPolicies -Path $Path
 }
