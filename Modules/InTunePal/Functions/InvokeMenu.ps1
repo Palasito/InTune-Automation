@@ -31,7 +31,7 @@ function InvokeMenu {
         OptionSeparator = "`r`n"
     }
     
-    $question = "Please select the type of work that is going to be performed and then press Enter"
+    $question = "Please select the type of work that is going to be performed and then press Enter`nWorking Location is $Path"
     
     $answer = Get-InteractiveMenuChooseUserSelection -Question $question -Answers $Items -Options $options
     

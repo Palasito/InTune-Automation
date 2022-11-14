@@ -1,20 +1,53 @@
 function Start-InTuneModule {
 
-    Add-Type -AssemblyName System.Windows.Forms
+    #Region Path
+    if ([string]::IsNullOrEmpty($Path)) {
+        Add-Type -AssemblyName System.Windows.Forms
 
-    Push-Location
-    $FileBrowser = New-Object System.Windows.Forms.FolderBrowserDialog -Property @{
-        ShowNewFolderButton = $true
-        Description         = 'Select root folder where the folder structure is located...'
-        RootFolder          = 'Desktop'
+        Push-Location
+        $FileBrowser = New-Object System.Windows.Forms.FolderBrowserDialog -Property @{
+            ShowNewFolderButton = $true
+            Description         = 'Select root folder where the folder structure is located...'
+            RootFolder          = 'Desktop'
+        }
+        if ($FileBrowser.ShowDialog() -ne "OK") {
+            exit
+        }
+        Pop-Location
+    
+        $Path = $FileBrowser.SelectedPath
     }
-    if ($FileBrowser.ShowDialog() -ne "OK") {
-        exit
+    else {
+        $confirmation = Read-Host "Is the working path ($Path) correct? [y/n]"
+        if ($confirmation -eq 'n') {
+            $confirmation = Read-Host "Do you want to change the working path? [y/n]"
+            if ($confirmation -eq 'n') {
+                # Do Nothing !
+            }
+            if ($confirmation -eq 'y') {
+                Add-Type -AssemblyName System.Windows.Forms
+
+                Push-Location
+                $FileBrowser = New-Object System.Windows.Forms.FolderBrowserDialog -Property @{
+                    ShowNewFolderButton = $true
+                    Description         = 'Select root folder where the folder structure is located...'
+                    RootFolder          = 'Desktop'
+                }
+                if ($FileBrowser.ShowDialog() -ne "OK") {
+                    exit
+                }
+                Pop-Location
+        
+                $Path = $FileBrowser.SelectedPath
+            }
+        }
+        if ($confirmation -eq 'y') {
+            # Do Nothing !
+        }
     }
-    Pop-Location
+    #EndRegion 
 
-    $Path = $FileBrowser.SelectedPath
-
+    #Region Menu
     $w = InvokeMenu
 
     switch ($w) {
@@ -95,5 +128,5 @@ function Start-InTuneModule {
         }
 
     }
-
+    #EndRegion
 }

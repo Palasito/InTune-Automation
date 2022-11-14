@@ -18,7 +18,7 @@ function Export-Intune {
     
     Write-Host "Starting InTune Configuration export....." -ForegroundColor Cyan
 
-    #Region Graph API Powershell
+    #Region Authentication
     if ($Token) {
         $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
         Write-host "Please wait for the Authentication popup to appear" -ForegroundColor Cyan
@@ -29,7 +29,10 @@ function Export-Intune {
             $null = Get-Token
         }
     }
+    #EndRegion
 
+    #Region Exportation
+    Write-Host "Exporting Existing Intune Policies and Profiles in "$Path" folder..." -ForegroundColor Cyan
     if ($Named) { Export-NamedLocations -Path $Path }
 
     if ($Conditional) { Export-ConditionalAccessPolicies -Path $Path }

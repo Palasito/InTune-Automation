@@ -28,16 +28,16 @@ function MenuAssign {
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 2 `
-        -Label "Assign Groups to Conditional Access Policies" `
+        -Label "Create Groups as specified in the CSV file" `
         -Order 2 `
+        -Info "This option creates all specified groups in the csv which resides in $($Path)" 
+
+    $multiMenuItems += Get-InteractiveMultiMenuOption `
+        -Item 3 `
+        -Label "Assign Groups to Conditional Access Policies" `
+        -Order 3 `
         -Info "This option assigns groups as they are specified in the CSVs to Conditional Access Policies"
-
-    # $multiMenuItems += Get-InteractiveMultiMenuOption `
-    #     -Item 3 `
-    #     -Label "Import Named Locations" `
-    #     -Order 3 `
-    #     -Info "This option imports ALL Named Locations as jsons" 
-
+    
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 4 `
         -Label "Assign Groups to Compliance Policies" `
