@@ -1,4 +1,4 @@
-function MenuImport {
+function MenuExport {
 
     $multiMenuItems = @()
 
@@ -9,7 +9,7 @@ function MenuImport {
             -Item 1 `
             -Label "Authenticate to the target Tenant" `
             -Order 1 `
-            -Info "This option retrieves an authentication Token to be used with all the importing operations" `
+            -Info "This option retrieves an authentication Token to be used with all the exporting operations" `
             -Readonly
 
     }
@@ -20,7 +20,7 @@ function MenuImport {
             -Item 1 `
             -Label "Authenticate to the target Tenant" `
             -Order 1 `
-            -Info "This option retrieves an authentication Token to be used with all the importing operations" `
+            -Info "This option retrieves an authentication Token to be used with all the exporting operations" `
             -Selected `
             -Readonly
     
@@ -28,55 +28,55 @@ function MenuImport {
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 2 `
-        -Label "Import Conditional Access Policies" `
+        -Label "Export Conditional Access Policies" `
         -Order 2 `
-        -Info "This option imports ALL Conditional Access Policies from jsons"
+        -Info "This option exports ALL Conditional Access Policies as jsons"
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 3 `
-        -Label "Import Named Locations" `
+        -Label "Export Named Locations" `
         -Order 3 `
-        -Info "This option imports ALL Named Locations from jsons" 
+        -Info "This option exports ALL Named Locations as jsons" 
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 4 `
-        -Label "Import Compliance Policies" `
+        -Label "Export Compliance Policies" `
         -Order 4 `
-        -Info "This option imports ALL Compliance Policies from jsons" 
+        -Info "This option exports ALL Compliance Policies as jsons" 
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 5 `
-        -Label "Import Device Configuration Policies" `
+        -Label "Export Device Configuration Policies" `
         -Order 5 `
-        -Info "This option imports ALL Device Configuration Policies from jsons" 
+        -Info "This option exports ALL Device Configuration Policies as jsons" 
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 6 `
-        -Label "Import Update Policies" `
+        -Label "Export Update Policies" `
         -Order 6 `
-        -Info "This option imports ALL Update Policies from jsons" 
+        -Info "This option exports ALL Update Policies as jsons" 
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 7 `
-        -Label "Import Client Applications" `
+        -Label "Export Client Applications" `
         -Order 7 `
-        -Info "This option imports ALL Client Applications from jsons" 
+        -Info "This option exports ALL Client Applications as jsons" 
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 8 `
-        -Label "Import Application Protection Policies" `
+        -Label "Export Application Protection Policies" `
         -Order 8 `
-        -Info "This option imports ALL Application Protection Policies from jsons" 
+        -Info "This option exports ALL Application Protection Policies as jsons" 
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 9 `
-        -Label "Import Endpoint Security Policies" `
+        -Label "Export Endpoint Security Policies" `
         -Order 9 `
-        -Info "This option imports ALL Endpoint Security Policies from jsons" 
-    
+        -Info "This option exports ALL Endpoint Security Policies as jsons" 
+
     $options = @{
         HeaderColor          = [ConsoleColor]::Cyan;
-        HelpColor            = [ConsoleColor]::DarkCyan;
+        HelpColor            = [ConsoleColor]::White;
         CurrentItemColor     = [ConsoleColor]::DarkGreen;
         LinkColor            = [ConsoleColor]::DarkCyan;
         CurrentItemLinkColor = [ConsoleColor]::Black;
@@ -88,7 +88,7 @@ function MenuImport {
         MenuErrorColor       = [ConsoleColor]::DarkRed;
     }
     
-    $header = "Please select the type of work that is going to be performed"
+    $header = "Please choose which policies you want to export and press Enter"
     
     $selectedOptions = Get-InteractiveMenuUserSelection -Header $header -Items $multiMenuItems -Options $options
     

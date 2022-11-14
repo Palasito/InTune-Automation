@@ -1,4 +1,4 @@
-function MenuImport {
+function MenuAssign {
 
     $multiMenuItems = @()
 
@@ -9,7 +9,7 @@ function MenuImport {
             -Item 1 `
             -Label "Authenticate to the target Tenant" `
             -Order 1 `
-            -Info "This option retrieves an authentication Token to be used with all the importing operations" `
+            -Info "This option retrieves an authentication Token to be used with all the exporting operations" `
             -Readonly
 
     }
@@ -20,7 +20,7 @@ function MenuImport {
             -Item 1 `
             -Label "Authenticate to the target Tenant" `
             -Order 1 `
-            -Info "This option retrieves an authentication Token to be used with all the importing operations" `
+            -Info "This option retrieves an authentication Token to be used with all the exporting operations" `
             -Selected `
             -Readonly
     
@@ -28,51 +28,51 @@ function MenuImport {
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 2 `
-        -Label "Import Conditional Access Policies" `
+        -Label "Assign Groups to Conditional Access Policies" `
         -Order 2 `
-        -Info "This option imports ALL Conditional Access Policies from jsons"
+        -Info "This option assigns groups as they are specified in the CSVs to Conditional Access Policies"
 
-    $multiMenuItems += Get-InteractiveMultiMenuOption `
-        -Item 3 `
-        -Label "Import Named Locations" `
-        -Order 3 `
-        -Info "This option imports ALL Named Locations from jsons" 
+    # $multiMenuItems += Get-InteractiveMultiMenuOption `
+    #     -Item 3 `
+    #     -Label "Import Named Locations" `
+    #     -Order 3 `
+    #     -Info "This option imports ALL Named Locations as jsons" 
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 4 `
-        -Label "Import Compliance Policies" `
+        -Label "Assign Groups to Compliance Policies" `
         -Order 4 `
-        -Info "This option imports ALL Compliance Policies from jsons" 
+        -Info "This option assigns groups as they are specified in the CSVs to Compliance Policies"
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 5 `
-        -Label "Import Device Configuration Policies" `
+        -Label "Assign Groups to Device Configuration Policies" `
         -Order 5 `
-        -Info "This option imports ALL Device Configuration Policies from jsons" 
+        -Info "This option assigns groups as they are specified in the CSVs to Device Configuration Policies" 
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 6 `
-        -Label "Import Update Policies" `
+        -Label "Assign Groups to Update Policies" `
         -Order 6 `
-        -Info "This option imports ALL Update Policies from jsons" 
+        -Info "This option assigns groups as they are specified in the CSVs to Update Policies"
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 7 `
-        -Label "Import Client Applications" `
+        -Label "Assign Groups to Client Applications" `
         -Order 7 `
-        -Info "This option imports ALL Client Applications from jsons" 
+        -Info "This option assigns groups as they are specified in the CSVs to Client Applications"
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 8 `
-        -Label "Import Application Protection Policies" `
+        -Label "Assign Groups to Application Protection Policies" `
         -Order 8 `
-        -Info "This option imports ALL Application Protection Policies from jsons" 
+        -Info "This option assigns groups as they are specified in the CSVs to Application Protection Policies"
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 9 `
-        -Label "Import Endpoint Security Policies" `
+        -Label "Assign Groups to Endpoint Security Policies" `
         -Order 9 `
-        -Info "This option imports ALL Endpoint Security Policies from jsons" 
+        -Info "This option assigns groups as they are specified in the CSVs to Endpoint Security Policies"
     
     $options = @{
         HeaderColor          = [ConsoleColor]::Cyan;

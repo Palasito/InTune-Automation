@@ -403,6 +403,12 @@ class InteractiveMenuChooseMenu {
                     $this.CurrentIndex = $this.Options.Length -1;
                 }
             }
+            $([ConsoleKey]::DownArrow) {
+                $this.CurrentIndex++
+                if ($this.CurrentIndex -ge $this.Options.Length) {
+                    $this.CurrentIndex = $this.Options.Length -1;
+                }
+            }
             $([ConsoleKey]::D6) { # this is only for powersession
                 $this.CurrentIndex++
                 if ($this.CurrentIndex -ge $this.Options.Length) {
@@ -410,6 +416,12 @@ class InteractiveMenuChooseMenu {
                 }
             }
             $([ConsoleKey]::LeftArrow) {
+                $this.CurrentIndex--
+                if ($this.CurrentIndex -lt 0) {
+                    $this.CurrentIndex = 0;
+                }
+            }
+            $([ConsoleKey]::UpArrow) {
                 $this.CurrentIndex--
                 if ($this.CurrentIndex -lt 0) {
                     $this.CurrentIndex = 0;
