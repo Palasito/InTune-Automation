@@ -73,6 +73,12 @@ function MenuImport {
         -Label "Import Endpoint Security Policies" `
         -Order 9 `
         -Info "This option imports ALL Endpoint Security Policies from jsons" 
+
+    $multiMenuItems += Get-InteractiveMultiMenuOption `
+        -Item 10 `
+        -Label "Back" `
+        -Order 10 `
+        -Info "Navigate back to the previous menu"
     
     $options = @{
         HeaderColor          = [ConsoleColor]::Cyan;

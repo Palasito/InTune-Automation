@@ -73,6 +73,12 @@ function MenuAssign {
         -Label "Assign Groups to Endpoint Security Policies" `
         -Order 9 `
         -Info "This option assigns groups as they are specified in the CSVs to Endpoint Security Policies"
+
+    $multiMenuItems += Get-InteractiveMultiMenuOption `
+        -Item 10 `
+        -Label "Back" `
+        -Order 10 `
+        -Info "Navigate back to the previous menu"
     
     $options = @{
         HeaderColor          = [ConsoleColor]::Cyan;

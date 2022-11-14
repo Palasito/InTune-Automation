@@ -74,6 +74,12 @@ function MenuExport {
         -Order 9 `
         -Info "This option exports ALL Endpoint Security Policies as jsons" 
 
+    $multiMenuItems += Get-InteractiveMultiMenuOption `
+        -Item 10 `
+        -Label "Back" `
+        -Order 10 `
+        -Info "Navigate back to the previous menu"
+
     $options = @{
         HeaderColor          = [ConsoleColor]::Cyan;
         HelpColor            = [ConsoleColor]::White;
