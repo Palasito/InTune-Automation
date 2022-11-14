@@ -4,7 +4,16 @@ function Import-Intune {
 
     param(
         [Parameter(mandatory)]
-        $Path
+        $Path,
+        [switch]$Token,
+        [switch]$Named,
+        [switch]$Conditional,
+        [switch]$Compliance,
+        [switch]$Configuration,
+        [switch]$Update,
+        [switch]$CApps,
+        [switch]$ApplicationProt,
+        [switch]$EndpointSec
     )
 
     Write-Host "Starting InTune Configuration import....."

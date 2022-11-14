@@ -1,30 +1,49 @@
 function Export-Intune {
+
+    [cmdletbinding()]
+
+    param (
+        [parameter(Mandatory)]
+        $Path,
+        [switch]$Token,
+        [switch]$Named,
+        [switch]$Conditional,
+        [switch]$Compliance,
+        [switch]$Configuration,
+        [switch]$Update,
+        [switch]$CApps,
+        [switch]$ApplicationProt,
+        [switch]$EndpointSec
+    )
     
-    Write-Host "Starting InTune Configuration export....."
+    Write-Host "Starting InTune Configuration export....." -ForegroundColor Cyan
 
-    $Path = Read-host -Prompt "Specify the root path to export"
-
-    # Import-Module AzureAD
-
-    $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
-    Write-host "Please wait for the Authentication popup to appear" -ForegroundColor Cyan
-    if ($global:authToken) {
-        #Do nothing
+    #Region Graph API Powershell
+    if ($Token) {
+        $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
+        Write-host "Please wait for the Authentication popup to appear" -ForegroundColor Cyan
+        if ($global:authToken) {
+            #Do nothing
+        }
+        else {
+            $null = Get-Token
+        }
     }
-    else {
-        $null = Get-Token
-    }
 
-    # Graph API Powershell
+    if ($Named) { Export-NamedLocations -Path $Path }
 
-    Export-AppProtectionPolicies -Path $Path
-    Export-ClientApps -Path $Path
-    Export-CompliancePolicies -Path $Path
-    Export-DeviceConfigurationPolicies -Path $Path
-    Export-UpdatePolicies -Path $Path
-    Export-EndpointSecurityPolicies -Path $Path
+    if ($Conditional) { Export-ConditionalAccessPolicies -Path $Path }
 
-    Export-ConditionalAccessPolicies -Path $Path
-    Export-NamedLocations -Path $Path
-    # Export-EndpointSecurityPolicies -Path $Path
+    if ($Compliance) { Export-CompliancePolicies -Path $Path }
+
+    if ($Configuration) { Export-DeviceConfigurationPolicies -Path $Path }
+
+    if ($Update) { Export-UpdatePolicies -Path $Path }
+
+    if ($CApps) { Export-ClientApps -Path $Path }
+
+    if ($ApplicationProt) { Export-AppProtectionPolicies -Path $Path }
+
+    if ($EndpointSec) { Export-EndpointSecurityPolicies -Path $Path }
+    #EndRegion
 }
