@@ -93,7 +93,7 @@ function Start-InTuneModule {
             }
             
             else {
-                $command = "Export-Intune"
+                $command = "Export-Intune -Path $Path"
                 if ($e -contains 1) { $Token = " -Token" }
                 else { $Token = "" }
                 if ($e -contains 2) { $Conditional = " -Conditional" }
@@ -126,7 +126,6 @@ function Start-InTuneModule {
         default {
             Write-Host "Not configured for other options yet" -ForegroundColor Yellow
         }
-
     }
     #EndRegion
 }

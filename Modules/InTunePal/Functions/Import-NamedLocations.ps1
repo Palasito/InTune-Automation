@@ -100,5 +100,4 @@ Function Import-NamedLocations() {
     else {
         Write-Host "Trusted IP Policy 'Trusted Networks' already exists and will not be imported" -ForegroundColor Red
     }
-    
 }
