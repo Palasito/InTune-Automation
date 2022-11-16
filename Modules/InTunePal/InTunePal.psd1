@@ -24,10 +24,10 @@
     Author            = 'cpalavouzis'
 
     # Company or vendor of this module
-    CompanyName       = 'OfficeLine'
+    CompanyName       = 'OfficeLine SA'
 
     # Copyright statement for this module
-    Copyright         = '(c) 2021 cpalavouzis. All rights reserved.'
+    Copyright         = '(c) 2021-2023 cpalavouzis. All rights reserved.'
 
     # Description of the functionality provided by this module
     # Description = ''
@@ -51,7 +51,7 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules   = 'MSAL.PS'
+    # RequiredModules   = 'MSAL.PS'
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
@@ -69,7 +69,7 @@
     NestedModules     = @('InteractiveMenu')
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = '*'
+    FunctionsToExport = @(Start-InTuneModule)
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport   = @()
