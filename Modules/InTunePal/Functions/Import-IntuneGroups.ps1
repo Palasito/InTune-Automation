@@ -7,11 +7,11 @@ function Import-IntuneGroups {
         $Path,
         [switch]$Token,
         [switch]$AADGroups,
-		[switch]$CAPGroups,
+        [switch]$CAPGroups,
         [switch]$CPGroups,
         [switch]$DCPGroups,
         [switch]$DUPGroups,
-		[switch]$ApplicationGroups,
+        [switch]$ApplicationGroups,
         [switch]$APPGroups,
         [switch]$EndpointSecGroups
     )
@@ -35,13 +35,28 @@ function Import-IntuneGroups {
 
     #Region Assignments
     Write-Host "Creating Assignments as specified in "$Path\CSVs" folder..." -ForegroundColor Cyan
-    Import-AADGroups -Path $Path
-    Add-CAPGroups -Path $Path
-    Add-CPGroups -Path $Path
-    Add-DCPGroups -Path $Path
-    Add-DUPGroups -Path $Path
-    Add-APPGroups -Path $Path
-    # Start-Sleep -Seconds 5
+
+    if ($AADGroups) { Import-AADGroups -Path $Path }
+
+    if ($CAPGroups) { Add-CAPGroups -Path $Path }
+
+    if ($CPGroups) { Add-CPGroups -Path $Path }
+    
+    if ($DCPGroups) { Add-DCPGroups -Path $Path }
+
+    if ($DUPGroups) { Add-DUPGroups -Path $Path }
+
+    if ($APPGroups) { Add-APPGroups -Path $Path }
     #EndRegion
 
+    #Region Continue or Exit
+    $confirmation = Read-Host "Do you want to perform another job? [y/n]"
+    if ($confirmation -eq 'n') {
+        Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green
+        break;
+    }
+    if ($confirmation -eq 'y') {
+        Start-InTuneModule
+    }
+    #EndRegion
 }

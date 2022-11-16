@@ -6,10 +6,19 @@ function Add-APPGroups() {
         $Path
     )
 
+    $APPGroupsCheck = Get-ChildItem -Path $Path\CSVs\AppProtection
+
+    if ($null -eq $APPGroupsCheck) {
+        Write-Host "No CSVs found containing groups to assign for the App Protection Policies !" -ForegroundColor Yellow
+        break
+    }
+
+    else {
+        $APPGroups = $APPGroupsCheck | ForEach-Object { Import-Csv $Path\CSVs\AppProtection\$_ -Delimiter "," }
+    }
+
     Write-Host "Adding specified groups to App Protection Policies..." -ForegroundColor Cyan
     Write-Host
-    
-    $APPGroups = Import-Csv -Path $Path\CSVs\AppProtection\*.csv -Delimiter ','
     $gr = Get-Groups
 
     foreach ($Pol in $APPGroups) {

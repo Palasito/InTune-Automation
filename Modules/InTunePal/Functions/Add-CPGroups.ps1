@@ -6,14 +6,23 @@ function Add-CPGroups() {
         $Path
     )
 
-    $DCPGroups = Import-Csv -Path $Path\CSVs\CompliancePolicies\*.csv -Delimiter ','
+    $CPGroupsCheck = Get-ChildItem -Path $Path\CSVs\CompliancePolicies
+
+    if ($null -eq $CPGroupsCheck) {
+        Write-Host "No CSVs found containing groups to assign for the Device Compliance Policies !" -ForegroundColor Yellow
+        break
+    }
+
+    else {
+        $CPGroups = $CPGroupsCheck | ForEach-Object { Import-Csv $Path\CSVs\CompliancePolicies\$_ -Delimiter "," }
+    }
 
     Write-Host "Adding specified groups to Device Compliance Policies..." -ForegroundColor Cyan
     Write-Host
 
     $gr = Get-Groups
     
-    foreach ($Pol in $DCPGroups) {
+    foreach ($Pol in $CPGroups) {
         $Policy = Get-DeviceCompliancePolicy -Name $pol.DisplayName
         $InclGrps = $pol.IncludeGroups -split ";"
         $ExclGrps = $pol.ExcludeGroups -split ";"

@@ -6,9 +6,18 @@ function Add-DCPGroups() {
         $Path
     )
 
-    $DCPGroups = Import-Csv -Path $Path\CSVs\DeviceConfigurationProfiles\*.csv -Delimiter ','
+    $DCPGroupsCheck = Get-ChildItem -Path $Path\CSVs\DeviceConfigurationProfiles
 
-    Write-Host "Adding specified Groups to the Device Configuration Policies..." -ForegroundColor Cyan
+    if ($null -eq $DCPGroupsCheck) {
+        Write-Host "No CSVs found containing groups to assign for the Device Configuration Profiles !" -ForegroundColor Yellow
+        break
+    }
+
+    else {
+        $DCPGroups = $DCPGroupsCheck | ForEach-Object { Import-Csv $Path\CSVs\DeviceConfigurationProfiles\$_ -Delimiter "," }
+    }
+
+    Write-Host "Adding specified Groups to the Device Configuration Profiles..." -ForegroundColor Cyan
     $gr = Get-Groups
 
     foreach ($Pol in $DCPGroups) {

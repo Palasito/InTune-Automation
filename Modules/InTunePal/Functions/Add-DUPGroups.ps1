@@ -6,11 +6,23 @@ function Add-DUPGroups() {
         $Path
     )
     
+    $DUPGroupsCheck = Get-ChildItem -Path $Path\CSVs\UpdatePolicies
+
+    if ($null -eq $DUPGroupsCheck) {
+        Write-Host "No CSVs found containing groups to assign for the Software Update Policies !" -ForegroundColor Yellow
+        break
+    }
+
+    else {
+        $DUPGroups = $DUPGroupsCheck | ForEach-Object { Import-Csv $Path\CSVs\UpdatePolicies\$_ -Delimiter "," }
+    }
+
+    $DUPGroups = Import-Csv -Path $Path\CSVs\UpdatePolicies\*.csv -Delimiter ','
+
     Write-Host "Adding specified groups to Software Update Policies..." -ForegroundColor Cyan
-    $DCPGroups = Import-Csv -Path $Path\CSVs\UpdatePolicies\*.csv -Delimiter ','
     $gr = Get-Groups
     
-    foreach ($Pol in $DCPGroups) {
+    foreach ($Pol in $DUPGroups) {
         $Policy = Get-SoftwareUpdatePolicyAssignments | Where-Object displayName -eq $pol.DisplayName
         $InclGrps = $pol.IncludeGroups -split ";"
         $ExclGrps = $pol.ExcludeGroups -split ";"

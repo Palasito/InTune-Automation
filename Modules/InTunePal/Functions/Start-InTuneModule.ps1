@@ -1,8 +1,11 @@
 function Start-InTuneModule {
 
+    #Region Assembly Addition
+    Add-Type -AssemblyName System.Windows.Forms
+    #EndRegion
+
     #Region Path
     if ([string]::IsNullOrEmpty($Path)) {
-        Add-Type -AssemblyName System.Windows.Forms
 
         Push-Location
         $FileBrowser = New-Object System.Windows.Forms.FolderBrowserDialog -Property @{
@@ -25,7 +28,6 @@ function Start-InTuneModule {
                 # Do Nothing !
             }
             if ($confirmation -eq 'y') {
-                Add-Type -AssemblyName System.Windows.Forms
 
                 Push-Location
                 $FileBrowser = New-Object System.Windows.Forms.FolderBrowserDialog -Property @{
@@ -55,7 +57,7 @@ function Start-InTuneModule {
             $i = MenuImport
 
             if ($i -contains 10) { 
-                $w = $null
+                
                 Start-InTuneModule
             }
             
@@ -88,7 +90,7 @@ function Start-InTuneModule {
             $e = MenuExport
 
             if ($e -contains 10) { 
-                $w = $null
+                
                 Start-InTuneModule
             }
             
@@ -119,32 +121,32 @@ function Start-InTuneModule {
         }
         3 {
             
-            $e = MenuAssign
+            $a = MenuAssign
 
-            if ($e -contains 10) { 
-                $w = $null
+            if ($a -contains 10) { 
+                
                 Start-InTuneModule
             }
             
             else {
                 $command = "Import-IntuneGroups -Path $Path"
-                if ($e -contains 1) { $Token = " -Token" }
+                if ($a -contains 1) { $Token = " -Token" }
                 else { $Token = "" }
-                if ($e -contains 2) { $CreateGrp = " -AADGroups" }
+                if ($a -contains 2) { $CreateGrp = " -AADGroups" }
                 else { $CreateGrp = "" }
-                if ($e -contains 3) { $Conditional = " -CAPGroups" }
+                if ($a -contains 3) { $Conditional = " -CAPGroups" }
                 else { $Conditional = "" }
-                if ($e -contains 4) { $Compliance = " -CPGroups" }
+                if ($a -contains 4) { $Compliance = " -CPGroups" }
                 else { $Compliance = "" }
-                if ($e -contains 5) { $Configuration = " -DCPGroups" }
+                if ($a -contains 5) { $Configuration = " -DCPGroups" }
                 else { $Configuration = "" }
-                if ($e -contains 6) { $Update = " -DUPGroups" }
+                if ($a -contains 6) { $Update = " -DUPGroups" }
                 else { $Update = "" }
-                if ($e -contains 7) { $Capps = " -ApplicationGroups" }
+                if ($a -contains 7) { $Capps = " -ApplicationGroups" }
                 else { $Capps = "" }
-                if ($e -contains 8) { $ApplicationProt = " -APPGroups" }
+                if ($a -contains 8) { $ApplicationProt = " -APPGroups" }
                 else { $ApplicationProt = "" }
-                if ($e -contains 9) { $EndpointSec = " -EndpointSecGroups" }
+                if ($a -contains 9) { $EndpointSec = " -EndpointSecGroups" }
                 else { $EndpointSec = "" }
 
                 $commandf = -join ($command, $Token, $CreateGrp, $Conditional, $Compliance, $Configuration, $Update, $Capps, $ApplicationProt, $EndpointSec)
@@ -152,6 +154,24 @@ function Start-InTuneModule {
             }
         }
         4 {
+            Push-Location
+            $FileBrowser = New-Object System.Windows.Forms.FolderBrowserDialog -Property @{
+                ShowNewFolderButton = $true
+                Description         = 'Select root folder where the folder structure is located...'
+                RootFolder          = 'Desktop'
+            }
+            if ($FileBrowser.ShowDialog() -ne "OK") {
+                exit
+            }
+            Pop-Location
+        
+            $Path = $FileBrowser.SelectedPath
+
+            
+            Start-InTuneModule
+        }
+        5 {
+            Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green
             break;
         }
         default {

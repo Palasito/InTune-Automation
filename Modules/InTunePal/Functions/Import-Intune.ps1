@@ -41,7 +41,8 @@ function Import-Intune {
         #Region Importation
         Write-Host "Creating Intune Policies and Profiles as specified in "$Path" folder..." -ForegroundColor Cyan
 
-        if ($Named) { Import-NamedLocations -Path $Path
+        if ($Named) {
+            Import-NamedLocations -Path $Path
             Write-Host "When all Named Locations are created press enter" -ForegroundColor Cyan
             Pause
         }
@@ -61,6 +62,15 @@ function Import-Intune {
         if ($EndpointSec) { Import-EndpointSecurityPolicies -Path $Path }
         #EndRegion
 
-        Write-Host "Thanks for using InTunePal! Enjoy your new configuration!" -ForegroundColor Green
+        #Region Continue or Exit
+        $confirmation = Read-Host "Do you want to perform another job? [y/n]"
+        if ($confirmation -eq 'n') {
+            Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green
+            break;
+        }
+        if ($confirmation -eq 'y') {
+            Start-InTuneModule
+        }
+        #EndRegion
     }
 }

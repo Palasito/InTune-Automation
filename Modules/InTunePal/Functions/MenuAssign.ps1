@@ -2,29 +2,12 @@ function MenuAssign {
 
     $multiMenuItems = @()
 
-
-    if ($global:authToken) {
-
-        $multiMenuItems += Get-InteractiveMultiMenuOption `
-            -Item 1 `
-            -Label "Authenticate to the target Tenant" `
-            -Order 1 `
-            -Info "This option retrieves an authentication Token to be used with all the exporting operations" `
-            -Readonly
-
-    }
-
-    else {
-
-        $multiMenuItems += Get-InteractiveMultiMenuOption `
-            -Item 1 `
-            -Label "Authenticate to the target Tenant" `
-            -Order 1 `
-            -Info "This option retrieves an authentication Token to be used with all the exporting operations" `
-            -Selected `
-            -Readonly
-    
-    }
+    $multiMenuItems += Get-InteractiveMultiMenuOption `
+        -Item 1 `
+        -Label "Authenticate to the target Tenant" `
+        -Order 1 `
+        -Info "This option retrieves an authentication Token to be used with all the exporting operations" `
+        -Readonly
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 2 `
@@ -46,7 +29,7 @@ function MenuAssign {
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 5 `
-        -Label "Assign Groups to Device Configuration Policies" `
+        -Label "Assign Groups to Device Configuration Profiles" `
         -Order 5 `
         -Info "This option assigns groups as they are specified in the CSVs to Device Configuration Policies" 
 

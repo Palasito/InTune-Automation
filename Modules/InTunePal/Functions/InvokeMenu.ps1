@@ -19,6 +19,11 @@ function InvokeMenu {
 
     $Items += Get-InteractiveChooseMenuOption `
         -Value 4 `
+        -Label "Change Working Path" `
+        -Info "This option shows a popup menu to change the working directory"
+
+    $Items += Get-InteractiveChooseMenuOption `
+        -Value 5 `
         -Label "Exit" `
         -Info "Just Exit the module"
 

@@ -49,4 +49,15 @@ function Export-Intune {
 
     if ($EndpointSec) { Export-EndpointSecurityPolicies -Path $Path }
     #EndRegion
+
+    #Region Continue or Exit
+    $confirmation = Read-Host "Do you want to perform another job? [y/n]"
+    if ($confirmation -eq 'n') {
+        Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green
+        break;
+    }
+    if ($confirmation -eq 'y') {
+        Start-InTuneModule
+    }
+    #EndRegion
 }

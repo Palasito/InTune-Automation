@@ -9,7 +9,7 @@ function Add-CAPGroups() {
     $CAPGroupsCheck = Get-ChildItem -Path $Path\CSVs\ConditionalAccess
 
     if ($null -eq $CAPGroupsCheck) {
-        Write-Host "No CSVs found containing groups to assign for the Conditional Access Policies !" -ForegroundColor DarkMagenta
+        Write-Host "No CSVs found containing groups to assign for the Conditional Access Policies !" -ForegroundColor Yellow
         break
     }
 
