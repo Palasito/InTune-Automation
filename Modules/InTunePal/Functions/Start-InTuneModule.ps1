@@ -118,7 +118,38 @@ function Start-InTuneModule {
             }
         }
         3 {
-            MenuAssign
+            
+            $e = MenuAssign
+
+            if ($e -contains 10) { 
+                $w = $null
+                Start-InTuneModule
+            }
+            
+            else {
+                $command = "Import-IntuneGroups -Path $Path"
+                if ($e -contains 1) { $Token = " -Token" }
+                else { $Token = "" }
+                if ($e -contains 2) { $CreateGrp = " -AADGroups" }
+                else { $CreateGrp = "" }
+                if ($e -contains 3) { $Conditional = " -CAPGroups" }
+                else { $Conditional = "" }
+                if ($e -contains 4) { $Compliance = " -CPGroups" }
+                else { $Compliance = "" }
+                if ($e -contains 5) { $Configuration = " -DCPGroups" }
+                else { $Configuration = "" }
+                if ($e -contains 6) { $Update = " -DUPGroups" }
+                else { $Update = "" }
+                if ($e -contains 7) { $Capps = " -ApplicationGroups" }
+                else { $Capps = "" }
+                if ($e -contains 8) { $ApplicationProt = " -APPGroups" }
+                else { $ApplicationProt = "" }
+                if ($e -contains 9) { $EndpointSec = " -EndpointSecGroups" }
+                else { $EndpointSec = "" }
+
+                $commandf = -join ($command, $Token, $CreateGrp, $Conditional, $Compliance, $Configuration, $Update, $Capps, $ApplicationProt, $EndpointSec)
+                powershell $commandf
+            }
         }
         4 {
             break;

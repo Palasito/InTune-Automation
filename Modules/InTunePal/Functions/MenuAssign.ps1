@@ -60,7 +60,8 @@ function MenuAssign {
         -Item 7 `
         -Label "Assign Groups to Client Applications" `
         -Order 7 `
-        -Info "This option assigns groups as they are specified in the CSVs to Client Applications"
+        -Info "This option assigns groups as they are specified in the CSVs to Client Applications" `
+        -Readonly
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 8 `
@@ -72,7 +73,8 @@ function MenuAssign {
         -Item 9 `
         -Label "Assign Groups to Endpoint Security Policies" `
         -Order 9 `
-        -Info "This option assigns groups as they are specified in the CSVs to Endpoint Security Policies"
+        -Info "This option assigns groups as they are specified in the CSVs to Endpoint Security Policies" `
+        -Readonly
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 10 `

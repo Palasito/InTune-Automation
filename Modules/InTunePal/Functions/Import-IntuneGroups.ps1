@@ -7,11 +7,13 @@ function Import-IntuneGroups {
         $Path,
         [switch]$Token,
         [switch]$AADGroups,
+		[switch]$CAPGroups,
         [switch]$CPGroups,
         [switch]$DCPGroups,
         [switch]$DUPGroups,
+		[switch]$ApplicationGroups,
         [switch]$APPGroups,
-        [switch]$CAPGroups
+        [switch]$EndpointSecGroups
     )
 
     Write-Host
@@ -34,16 +36,12 @@ function Import-IntuneGroups {
     #Region Assignments
     Write-Host "Creating Assignments as specified in "$Path\CSVs" folder..." -ForegroundColor Cyan
     Import-AADGroups -Path $Path
-    # Start-Sleep -Seconds 5
+    Add-CAPGroups -Path $Path
     Add-CPGroups -Path $Path
-    # Start-Sleep -Seconds 5
     Add-DCPGroups -Path $Path
-    # Start-Sleep -Seconds 5
     Add-DUPGroups -Path $Path
-    # Start-Sleep -Seconds 5
     Add-APPGroups -Path $Path
     # Start-Sleep -Seconds 5
-    Add-CAPGroups -Path $Path
     #EndRegion
 
 }
