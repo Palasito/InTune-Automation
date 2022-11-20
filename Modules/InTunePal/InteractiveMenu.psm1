@@ -8,28 +8,33 @@ class InteractiveMultiMenuItem {
     [bool]$Readonly
     [string]$Info
     [string]$Url
+    [bool]$Standalone
 
     InteractiveMultiMenuItem([object]$itemInfo, [string]$label, [int]$order) {
-        $this.Init($itemInfo, $label, $false, $order, $null, $null, $null);
+        $this.Init($itemInfo, $label, $false, $order, $null, $null, $null, $null);
     }
 
     InteractiveMultiMenuItem([object]$itemInfo, [string]$label, [bool]$selected, [int]$order) {
-        $this.Init($itemInfo, $label, $selected, $order, $null, $null, $null);
+        $this.Init($itemInfo, $label, $selected, $order, $null, $null, $null, $null);
     }
 
     InteractiveMultiMenuItem([object]$itemInfo, [string]$label, [bool]$selected, [int]$order, [bool]$readonly) {
-        $this.Init($itemInfo, $label, $selected, $order, $readonly, $null, $null);
+        $this.Init($itemInfo, $label, $selected, $order, $readonly, $null, $null, $null);
     }
 
     InteractiveMultiMenuItem([object]$itemInfo, [string]$label, [bool]$selected, [int]$order, [bool]$readonly, [string]$info) {
-        $this.Init($itemInfo, $label, $selected, $order, $readonly, $info, $null);
+        $this.Init($itemInfo, $label, $selected, $order, $readonly, $info, $null, $null);
     }
 
     InteractiveMultiMenuItem([object]$itemInfo, [string]$label, [bool]$selected, [int]$order, [bool]$readonly, [string]$info, [string]$url) {
-        $this.Init($itemInfo, $label, $selected, $order, $readonly, $info, $url);
+        $this.Init($itemInfo, $label, $selected, $order, $readonly, $info, $url, $null);
     }
 
-    hidden Init([object]$itemInfo, [string]$label, [bool]$selected, [int]$order, [bool]$readonly, [string]$info, [string]$url) {
+    InteractiveMultiMenuItem([object]$itemInfo, [string]$label, [bool]$selected, [int]$order, [bool]$readonly, [string]$info, [string]$url, [bool]$Standalone) {
+        $this.Init($itemInfo, $label, $selected, $order, $readonly, $info, $url, $Standalone);
+    }
+
+    hidden Init([object]$itemInfo, [string]$label, [bool]$selected, [int]$order, [bool]$readonly, [string]$info, [string]$url, [bool]$Standalone) {
         $this.ItemInfo = $itemInfo
         $this.Label = $label
         $this.Selected = $selected
@@ -37,6 +42,7 @@ class InteractiveMultiMenuItem {
         $this.Readonly = $readonly
         $this.Info = $info
         $this.Url = $url
+        $this.Standalone = $Standalone
     }
 }
 
@@ -198,7 +204,7 @@ class InteractiveMultiMenu {
             }
             $([ConsoleKey]::A) {
                 $this.Items | ForEach-Object {
-                    if (-not $_.Readonly) {
+                    if (-not $_.Readonly -and -not $_.Standalone) {
                         $_.Selected = $true
                     }
                 }
@@ -490,9 +496,10 @@ function Get-InteractiveMultiMenuOption {
         [Parameter()][switch]$Selected,
         [Parameter()][switch]$Readonly,
         [Parameter()][string]$Info,
-        [Parameter()][string]$Url
+        [Parameter()][string]$Url,
+        [Parameter()][switch]$Standalone
     )
-    [InteractiveMultiMenuItem]::New($Item, $Label, $Selected.IsPresent, $Order, $Readonly.IsPresent, $Info, $Url)
+    [InteractiveMultiMenuItem]::New($Item, $Label, $Selected.IsPresent, $Order, $Readonly.IsPresent, $Info, $Url, $Standalone)
 } 
 
 function Get-InteractiveMenuUserSelection {

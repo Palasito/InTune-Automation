@@ -62,7 +62,8 @@ function MenuImport {
         -Item 10 `
         -Label "Back" `
         -Order 10 `
-        -Info "Navigate back to the previous menu"
+        -Info "Navigate back to the previous menu" `
+        -Standalone
     
     $options = @{
         HeaderColor          = [ConsoleColor]::Cyan;

@@ -36,6 +36,14 @@ function Import-IntuneGroups {
     #Region Assignments
     Write-Host "Creating Assignments as specified in "$Path\CSVs" folder..." -ForegroundColor Cyan
 
+    [PSCustomObject]@{
+        "Action"          = ""
+        "Type"            = ""
+        "Name"            = ""
+        "Included Groups" = ""
+        "Excluded Groups" = ""
+    }
+
     if ($AADGroups) { Import-AADGroups -Path $Path }
 
     if ($CAPGroups) { Add-CAPGroups -Path $Path }

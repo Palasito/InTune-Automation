@@ -83,7 +83,7 @@ function Start-InTuneModule {
                 else { $EndpointSec = "" }
 
                 $commandf = -join ($command, $Token, $Named, $Conditional, $Compliance, $Configuration, $Update, $Capps, $ApplicationProt, $EndpointSec)
-                powershell -NoProfile -ExecutionPolicy bypass -Command $commandf
+                Invoke-Expression -Command $commandf
             }
         }
         2 {
@@ -116,7 +116,7 @@ function Start-InTuneModule {
                 else { $EndpointSec = "" }
 
                 $commandf = -join ($command, $Token, $Named, $Conditional, $Compliance, $Configuration, $Update, $Capps, $ApplicationProt, $EndpointSec)
-                powershell -NoProfile -ExecutionPolicy bypass -Command $commandf
+                Invoke-Expression -Command $commandf
             }
         }
         3 {
@@ -150,7 +150,7 @@ function Start-InTuneModule {
                 else { $EndpointSec = "" }
 
                 $commandf = -join ($command, $Token, $CreateGrp, $Conditional, $Compliance, $Configuration, $Update, $Capps, $ApplicationProt, $EndpointSec)
-                powershell -NoProfile -ExecutionPolicy bypass -Command $commandf
+                Invoke-Expression -Command $commandf
             }
         }
         4 {
