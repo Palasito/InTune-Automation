@@ -114,7 +114,8 @@ class InteractiveMultiMenu {
         foreach ($option in $options.GetEnumerator()) {
             if ($null -eq $this.$($option.Key)) {
                 Write-Host "Invalid option key: $($option.Key)"
-            } else {
+            }
+            else {
                 $this.$($option.Key) = $option.Value
             }
         }
@@ -142,7 +143,8 @@ class InteractiveMultiMenu {
             if ($currentItem.Readonly) {
                 if ($currentItem.Selected) {
                     $selectionStatus = $this.MenuCannotDeselect
-                } else {
+                }
+                else {
                     $selectionStatus = $this.MenuCannotSelect
                 }
             }
@@ -150,7 +152,8 @@ class InteractiveMultiMenu {
             Write-Host "$($selectionStatus) $($currentItem.Label)" -NoNewline -ForegroundColor $color -BackgroundColor $background
             if (-not [string]::IsNullOrEmpty($currentItem.Url)) {
                 Write-Host " [$($currentItem.Url)]" -ForegroundColor $linkColor -BackgroundColor $background
-            } else {
+            }
+            else {
                 Write-Host
             }
             $i++
@@ -173,13 +176,14 @@ class InteractiveMultiMenu {
             $([ConsoleKey]::DownArrow) {
                 $this.CurrentIndex++
                 if ($this.CurrentIndex -ge $this.Items.Length) {
-                    $this.CurrentIndex = $this.Items.Length -1;
+                    $this.CurrentIndex = $this.Items.Length - 1;
                 }
             }
-            $([ConsoleKey]::D2) { # this is only for powersession
+            $([ConsoleKey]::D2) {
+                # this is only for powersession
                 $this.CurrentIndex++
                 if ($this.CurrentIndex -ge $this.Items.Length) {
-                    $this.CurrentIndex = $this.Items.Length -1;
+                    $this.CurrentIndex = $this.Items.Length - 1;
                 }
             }
             $([ConsoleKey]::UpArrow) {
@@ -188,7 +192,8 @@ class InteractiveMultiMenu {
                     $this.CurrentIndex = 0;
                 }
             }
-            $([ConsoleKey]::D8) { # this is only for powersession
+            $([ConsoleKey]::D8) {
+                # this is only for powersession
                 $this.CurrentIndex--
                 if ($this.CurrentIndex -lt 0) {
                     $this.CurrentIndex = 0;
@@ -198,8 +203,9 @@ class InteractiveMultiMenu {
                 $selectedItem = $this.GetSelectedItem()
                 if ($selectedItem.Readonly) {
                     $this.Error = "$($selectedItem.Label) is marked as readonly and cannot be changed"
-                } else {
-                    $selectedItem.Selected=!$selectedItem.Selected;
+                }
+                else {
+                    $selectedItem.Selected = !$selectedItem.Selected;
                 }
             }
             $([ConsoleKey]::A) {
@@ -246,7 +252,8 @@ class InteractiveMultiMenu {
         $selectedItem = $this.GetSelectedItem()
         if (-not [string]::IsNullOrEmpty($selectedItem.Url)) {
             Start-Process "$($selectedItem.Url)"
-        } else {
+        }
+        else {
             $this.Error = "$($selectedItem.Label) doesn't have an URL"
         }
     }
@@ -301,7 +308,8 @@ class InteractiveMultiMenu {
         if (-not [string]::IsNullOrEmpty($this.Error)) {
             Write-Host "$($this.Error)$bufferFill" -ForegroundColor $this.MenuErrorColor
             $this.Error = $null
-        } else {
+        }
+        else {
             Write-Host $bufferFill
         }
     }
@@ -370,7 +378,8 @@ class InteractiveMenuChooseMenu {
         foreach ($option in $options.GetEnumerator()) {
             if ($null -eq $this.$($option.Key)) {
                 Write-Host "Invalid option key: $($option.Key)"
-            } else {
+            }
+            else {
                 $this.$($option.Key) = $option.Value
             }
         }
@@ -406,19 +415,20 @@ class InteractiveMenuChooseMenu {
             $([ConsoleKey]::RightArrow) {
                 $this.CurrentIndex++
                 if ($this.CurrentIndex -ge $this.Options.Length) {
-                    $this.CurrentIndex = $this.Options.Length -1;
+                    $this.CurrentIndex = $this.Options.Length - 1;
                 }
             }
             $([ConsoleKey]::DownArrow) {
                 $this.CurrentIndex++
                 if ($this.CurrentIndex -ge $this.Options.Length) {
-                    $this.CurrentIndex = $this.Options.Length -1;
+                    $this.CurrentIndex = $this.Options.Length - 1;
                 }
             }
-            $([ConsoleKey]::D6) { # this is only for powersession
+            $([ConsoleKey]::D6) {
+                # this is only for powersession
                 $this.CurrentIndex++
                 if ($this.CurrentIndex -ge $this.Options.Length) {
-                    $this.CurrentIndex = $this.Options.Length -1;
+                    $this.CurrentIndex = $this.Options.Length - 1;
                 }
             }
             $([ConsoleKey]::LeftArrow) {
@@ -433,7 +443,8 @@ class InteractiveMenuChooseMenu {
                     $this.CurrentIndex = 0;
                 }
             }
-            $([ConsoleKey]::D4) { # this is only for powersession
+            $([ConsoleKey]::D4) {
+                # this is only for powersession
                 $this.CurrentIndex--
                 if ($this.CurrentIndex -lt 0) {
                     $this.CurrentIndex = 0;
@@ -469,7 +480,8 @@ class InteractiveMenuChooseMenu {
         if (-not [string]::IsNullOrEmpty($this.Error)) {
             Write-Host "$($this.Error)$bufferFill" -ForegroundColor $this.ErrorColor
             $this.Error = $null
-        } else {
+        }
+        else {
             Write-Host $bufferFill
         }
     }
@@ -539,4 +551,4 @@ function Get-InteractiveMenuChooseUserSelection {
     return $menu.GetAnswer()
 }
 
-Export-ModuleMember -Function Get-InteractiveMultiMenuOption,Get-InteractiveMenuUserSelection,Get-InteractiveChooseMenuOption,Get-InteractiveMenuChooseUserSelection
+Export-ModuleMember -Function Get-InteractiveMultiMenuOption, Get-InteractiveMenuUserSelection, Get-InteractiveChooseMenuOption, Get-InteractiveMenuChooseUserSelection
