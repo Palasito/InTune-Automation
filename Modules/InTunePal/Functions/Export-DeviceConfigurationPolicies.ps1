@@ -64,7 +64,6 @@ function Export-DeviceConfigurationPolicies() {
             "Action" = "Export"
             "Type"   = "General Device Configuration Policy"  
             "Name"   = $GDC.DisplayName
-            "Path"   = $ExportPath
         }
 
     }
@@ -80,7 +79,6 @@ function Export-DeviceConfigurationPolicies() {
             "Action" = "Export"
             "Type"   = "Settings Catalog Policy"
             "Name"   = $DSC.name
-            "Path"   = $ExportPath
         }
     }
 
@@ -95,7 +93,6 @@ function Export-DeviceConfigurationPolicies() {
             "Action" = "Export"
             "Type"   = "Administrative Template"
             "Name"   = $DAT.DisplayName
-            "Path"   = $ExportPath
         }
     }
 

@@ -133,7 +133,6 @@ function Export-CompliancePolicies() {
             "Action" = "Export"
             "Type"   = "Compliance Policy"
             "Name"   = $CP.displayName
-            "Path"   = "$ExportPath"
         }
     }
 }

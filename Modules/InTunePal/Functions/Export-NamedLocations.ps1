@@ -38,7 +38,6 @@ Function Export-NamedLocations() {
             "Action" = "Export"
             "Type"   = "Named Location Policy"
             "Name"   = $Loc.DisplayName
-            "Path"   = "NamedLocations\$($FinalJSONdisplayName).json"
         }
 
     }

@@ -169,7 +169,6 @@ function Export-ClientApps() {
                     "Action" = "Export"
                     "Type"   = "Client App"
                     "Name"   = $App.displayName
-                    "Path"   = "$ExportPath\ClientApps\AndroidApps"
                 }
             }
         
@@ -182,7 +181,6 @@ function Export-ClientApps() {
                     "Action" = "Export"
                     "Type"   = "Client App"
                     "Name"   = $App.displayName
-                    "Path"   = "$ExportPath\ClientApps\iOSApps"
                 }
             }
 
@@ -195,7 +193,6 @@ function Export-ClientApps() {
                     "Action" = "Export"
                     "Type"   = "Client App"
                     "Name"   = $App.displayName
-                    "Path"   = "$ExportPath\ClientApps\WindowsApps"
                 }
             }
             else {
@@ -207,7 +204,6 @@ function Export-ClientApps() {
                     "Action" = "Export"
                     "Type"   = "Unknown Client App"
                     "Name"   = $App.displayName
-                    "Path"   = "$ExportPath\ClientApps\"
                 }
             }
         

@@ -67,7 +67,6 @@
             "Action" = "Export"
             "Type"   = "Conditional Access Policy"
             "Name"   = $Policy.DisplayName
-            "Path"   = "ConditionalAccessPolicies\$($FinalJSONdisplayName).json"
         }
     }
 }

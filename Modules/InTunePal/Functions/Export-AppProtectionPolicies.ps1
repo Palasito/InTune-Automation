@@ -29,7 +29,7 @@ Function Export-JSONData() {
     
         else {
 
-            $JSON1 = ConvertTo-Json $JSON -Depth 5
+            $JSON1 = ConvertTo-Json $JSON -Depth 100
     
             $JSON_Convert = $JSON1 | ConvertFrom-Json
     
@@ -142,7 +142,6 @@ function Export-AppProtectionPolicies() {
                     "Action" = "Export"
                     "Type"   = "App Protection Policy"
                     "Name"   = $AppProtectionPolicy.displayName
-                    "Path"   = "$ExportPath\AppProtectionPolicies"
                 }
     
             }
@@ -161,7 +160,6 @@ function Export-AppProtectionPolicies() {
                     "Action" = "Export"
                     "Type"   = "App Protection Policy"
                     "Name"   = $AppProtectionPolicy.displayName
-                    "Path"   = "$ExportPath\AppProtectionPolicies"
                 }
     
             }

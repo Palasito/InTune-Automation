@@ -134,7 +134,6 @@ function Export-UpdatePolicies() {
                 "Action" = "Export"
                 "Type"   = "Windows Update Policy"
                 "Name"   = $WSUP.displayName
-                "Path"   = "WindowsUpdatePolicies\$WSUP.displayName"
             }
     
         }
@@ -166,7 +165,6 @@ function Export-UpdatePolicies() {
                 "Action" = "Export"
                 "Type"   = "iOS Update Policy"
                 "Name"   = $ISUP.displayName
-                "Path"   = "iOSUpdatePolicies\$ISUP.displayName"
             }
     
         }

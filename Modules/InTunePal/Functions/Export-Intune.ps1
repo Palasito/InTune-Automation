@@ -38,7 +38,6 @@ function Export-Intune {
         "Action" = ""
         "Type"   = ""
         "Name"   = ""
-        "Path"   = ""
     }
 
     if ($Named) { Export-NamedLocations -Path $Path }
