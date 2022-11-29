@@ -43,7 +43,6 @@ Function Import-NamedLocations() {
                 "Action" = "Import"
                 "Type"   = "Named Location"
                 "Name"   = $policy.DisplayName
-                "From"   = "$json"
             }
         }
         else {
@@ -93,7 +92,6 @@ Function Import-NamedLocations() {
                 "Action" = "Import"
                 "Type"   = "Trusted IP Range Policy"
                 "Name"   = "Trusted Networks"
-                "From"   = "$($Path)\CSVs\IPs"
             }
         }
     }

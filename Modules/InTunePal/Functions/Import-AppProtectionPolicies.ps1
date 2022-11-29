@@ -64,7 +64,6 @@ function Import-AppProtectionPolicies() {
                 "Action" = "Import"
                 "Type"   = "Intune App Protection"
                 "Name"   = $DisplayName
-                "From"   = "$json"
             }
         }
         else {

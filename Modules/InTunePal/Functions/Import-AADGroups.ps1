@@ -46,7 +46,6 @@ Function Import-AADGroups() {
                 "Action" = "Import"
                 "Type"   = "Groups"
                 "Name"   = $Group.DisplayName
-                "Path"   = "$Path\CSVs\AADGroups"
             }
         }
 

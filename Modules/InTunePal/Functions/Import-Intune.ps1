@@ -45,7 +45,6 @@ function Import-Intune {
             "Action" = ""
             "Type"   = ""
             "Name"   = ""
-            "Path"   = ""
         }
 
         if ($Named) {

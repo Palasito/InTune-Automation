@@ -67,7 +67,6 @@ Function Import-CompliancePolicies() {
                 "Action" = "Import"
                 "Type"   = "Device Compliance Policy"
                 "Name"   = $DisplayName
-                "Path"   = "$($ImportPath)\DeviceCompliancePolicies"
             }
         }    
         else {

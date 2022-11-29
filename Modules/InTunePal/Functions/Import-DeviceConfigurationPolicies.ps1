@@ -58,7 +58,6 @@ function Import-DeviceConfigurationPolicies() {
                 "Action" = "Import"
                 "Type"   = "Device Configuration Profile"
                 "Name"   = $DisplayName
-                "From"   = "$json"
             }
         }
         else {
@@ -90,7 +89,6 @@ function Import-DeviceConfigurationPolicies() {
                 "Action" = "Import"
                 "Type"   = "Settings Catalog Profile"
                 "Name"   = $DisplayName
-                "From"   = "$json"
             }
         }
         else {
@@ -122,7 +120,6 @@ function Import-DeviceConfigurationPolicies() {
                 "Action" = "Import"
                 "Type"   = "Administrative Template"
                 "Name"   = $DisplayName
-                "From"   = "$json"
             }
         }
         else {

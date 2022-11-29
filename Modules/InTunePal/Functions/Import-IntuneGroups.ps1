@@ -40,8 +40,6 @@ function Import-IntuneGroups {
         "Action"          = ""
         "Type"            = ""
         "Name"            = ""
-        "Included Groups" = ""
-        "Excluded Groups" = ""
     }
 
     if ($AADGroups) { Import-AADGroups -Path $Path }

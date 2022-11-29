@@ -61,7 +61,6 @@
                 "Action" = "Import"
                 "Type"   = "ClientApp"
                 "Name"   = $DisplayName
-                "From"   = "$json"
             }
         }
         else {

@@ -58,7 +58,6 @@ function Import-UpdatePolicies() {
                 "Action" = "Import"
                 "Type"   = "Software Update Policy"
                 "Name"   = $DisplayName
-                "Path"   = "$($ImportPath)\iOSUpdatePolicies"
             }
         }
         else {
@@ -88,7 +87,6 @@ function Import-UpdatePolicies() {
                 "Action" = "Import"
                 "Type"   = "Software Update Policy"
                 "Name"   = $DisplayName
-                "Path"   = "$($ImportPath)\WindowsUpdatePolicies"
             }
         }
         else {

@@ -76,7 +76,6 @@ function Import-ConditionalAccessPolicies() {
                 "Action" = "Import"
                 "Type"   = "Conditional Access Policy"
                 "Name"   = $Policy.displayName
-                "From"   = $Json
             }
 
             $null = Add-ConditionalAccessPolicy -JSON $jsontoImport
