@@ -52,6 +52,7 @@ function Export-EndpointSecurityPolicies {
 
     $EPP = (Invoke-RestMethod -Method GET -Headers $authToken -Uri $uri).value
 
+    write-host "Exporting Device Endpoint Security Policies..." -ForegroundColor cyan
     foreach ($e in $EPP) {
 
         $Settings = Get-PolicyEndpointSettingsJSON -Policies $e
@@ -72,6 +73,12 @@ function Export-EndpointSecurityPolicies {
 
         $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
         $FinalJSON | Set-Content -LiteralPath "$($Path)\EndpointSecurityPolicies\$($FileName_FinalJSON)"
+
+        [PSCustomObject]@{
+            "Action" = "Export"
+            "Type"   = "Endpoint Security Policy"
+            "Name"   = $e.DisplayName
+        }
             
     }
 }
