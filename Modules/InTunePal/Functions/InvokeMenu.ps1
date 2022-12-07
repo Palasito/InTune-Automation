@@ -36,7 +36,13 @@ function InvokeMenu {
         OptionSeparator = "`r`n"
     }
     
-    $question = "Please select the type of work that is going to be performed and then press Enter`nWorking Location is $Path"
+    if ($null -eq $global:authToken.Authorization) {
+        $question = "Please select the type of work that is going to be performed and then press Enter`nWorking Location is $Path`nAlready Authenticated with user: $($global:authToken.Username)"
+    }
+
+    else {
+        $question = "Please select the type of work that is going to be performed and then press Enter`nWorking Location is $Path`nNo authentication Token found!"
+    }
     
     $answer = Get-InteractiveMenuChooseUserSelection -Question $question -Answers $Items -Options $options
     

@@ -14,7 +14,7 @@ function GetMSALToken {
 
     switch ($OtherTenant) {
         $true {
-            if($global:authToken) {
+            if ($global:authToken) {
                 $authority = "https://login.microsoftonline.com/$Tenant"
                 $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -Authority $authority -ForceRefresh -Silent
                 $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -Authority $authority -ForceRefresh -Silent
@@ -22,6 +22,7 @@ function GetMSALToken {
                     'Content-Type'  = 'application/json'
                     'Authorization' = "Bearer " + $authResult.AccessToken
                     'ExpiresOn'     = $authResult.ExpiresOn
+                    'Username'      = $authResult.Account.Username
                 }
                 return $authHeader
             }
@@ -34,6 +35,7 @@ function GetMSALToken {
                     'Content-Type'  = 'application/json'
                     'Authorization' = "Bearer " + $authResult.AccessToken
                     'ExpiresOn'     = $authResult.ExpiresOn
+                    'Username'      = $authResult.Account.Username
                 }
                 return $authHeader
             }
@@ -46,6 +48,7 @@ function GetMSALToken {
                     'Content-Type'  = 'application/json'
                     'Authorization' = "Bearer " + $authResult.AccessToken
                     'ExpiresOn'     = $authResult.ExpiresOn
+                    'Username'      = $authResult.Account.Username
                 }
                 return $authHeader
             }
@@ -57,6 +60,7 @@ function GetMSALToken {
                     'Content-Type'  = 'application/json'
                     'Authorization' = "Bearer " + $authResult.AccessToken
                     'ExpiresOn'     = $authResult.ExpiresOn
+                    'Username'      = $authResult.Account.Username
                 }
                 return $authHeader
             }
@@ -69,6 +73,7 @@ function GetMSALToken {
                     'Content-Type'  = 'application/json'
                     'Authorization' = "Bearer " + $authResult.AccessToken
                     'ExpiresOn'     = $authResult.ExpiresOn
+                    'Username'      = $authResult.Account.Username
                 }
                 return $authHeader
             }
@@ -80,6 +85,7 @@ function GetMSALToken {
                     'Content-Type'  = 'application/json'
                     'Authorization' = "Bearer " + $authResult.AccessToken
                     'ExpiresOn'     = $authResult.ExpiresOn
+                    'Username'      = $authResult.Account.Username
                 }
                 return $authHeader
             }
