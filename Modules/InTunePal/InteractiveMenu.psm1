@@ -492,7 +492,7 @@ class InteractiveMenuChooseMenu {
         Write-Host -NoNewline " continue, "
         Write-Host -NoNewline "[Esc]" -ForegroundColor $this.HelpColor
         Write-Host " exit"
-        Write-Host -NoNewline "[Lef] [Right]" -ForegroundColor $this.HelpColor
+        Write-Host -NoNewline "[Up] [Down]" -ForegroundColor $this.HelpColor
         Write-Host " navigate, "
 
         Write-Host "`nPress any key to go back" -ForegroundColor $this.QuestionColor
