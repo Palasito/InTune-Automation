@@ -23,6 +23,9 @@ function Start-InTuneModule {
     elseif (($i -contains 10) -or ($e -contains 10) -or ($a -contains 10)) {
         #Do Nothing !
     }
+    elseif ($confirmation -eq 'y') {
+        #Do Nothing !
+    }
     else {
         $confirmation = Read-Host "Is the working path ($Path) correct? [y/n]"
         if ($confirmation -eq 'n') {
