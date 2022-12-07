@@ -52,7 +52,8 @@ function Export-EndpointSecurityPolicies {
 
     $EPP = (Invoke-RestMethod -Method GET -Headers $authToken -Uri $uri).value
 
-    write-host "Exporting Device Endpoint Security Policies..." -ForegroundColor cyan
+    Write-Host
+    Write-Host "Exporting Device Endpoint Security Policies..." -ForegroundColor cyan
     foreach ($e in $EPP) {
 
         $Settings = Get-PolicyEndpointSettingsJSON -Policies $e
