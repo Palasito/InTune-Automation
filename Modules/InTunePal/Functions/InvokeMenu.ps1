@@ -37,11 +37,11 @@ function InvokeMenu {
     }
     
     if ($null -eq $global:authToken.Authorization) {
-        $question = "Please select the type of work that is going to be performed and then press Enter`nWorking Location is $Path`nAlready Authenticated with user: $($global:authToken.Username)"
+        $question = "Working Location is $Path`nNo authentication Token found!"
     }
 
     else {
-        $question = "Please select the type of work that is going to be performed and then press Enter`nWorking Location is $Path`nNo authentication Token found!"
+        $question = "Working Location is $Path`nAlready Authenticated with user: $($global:authToken.Username)"
     }
     
     $answer = Get-InteractiveMenuChooseUserSelection -Question $question -Answers $Items -Options $options

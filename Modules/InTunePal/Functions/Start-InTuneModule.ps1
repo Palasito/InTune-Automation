@@ -20,6 +20,9 @@ function Start-InTuneModule {
     
         $Path = $FileBrowser.SelectedPath
     }
+    elseif (($i -contains 10) -or ($e -contains 10) -or ($a -contains 10)) {
+        #Do Nothing !
+    }
     else {
         $confirmation = Read-Host "Is the working path ($Path) correct? [y/n]"
         if ($confirmation -eq 'n') {
@@ -62,7 +65,7 @@ function Start-InTuneModule {
             }
             
             else {
-                $command = "Import-Intune -Path $Path"
+                $command = "Import-Intune -Path '$($Path)'"
                 if ($i -contains 1) { $Token = " -Token" }
                 else { $Token = "" }
                 if ($i -contains 2) { $Conditional = " -Conditional" }
@@ -95,7 +98,7 @@ function Start-InTuneModule {
             }
             
             else {
-                $command = "Export-Intune -Path $Path"
+                $command = "Export-Intune -Path '$($Path)'"
                 if ($e -contains 1) { $Token = " -Token" }
                 else { $Token = "" }
                 if ($e -contains 2) { $Conditional = " -Conditional" }
@@ -129,7 +132,7 @@ function Start-InTuneModule {
             }
             
             else {
-                $command = "Import-IntuneGroups -Path $Path"
+                $command = "Import-IntuneGroups -Path '$($Path)'"
                 if ($a -contains 1) { $Token = " -Token" }
                 else { $Token = "" }
                 if ($a -contains 2) { $CreateGrp = " -AADGroups" }
