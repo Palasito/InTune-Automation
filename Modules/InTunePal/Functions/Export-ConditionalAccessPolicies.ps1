@@ -22,6 +22,7 @@
     Write-Host "Exporting Conditional Access Policies..." -ForegroundColor cyan
 
     $AllPolicies = Get-ConditionalAccessPolicies
+    $NamedLocations = Get-NamedLocations
     
     foreach ($Policy in $AllPolicies) {
 
