@@ -21,7 +21,8 @@ function Import-IntuneGroups {
 
     #Region Authentication
     if ($Token) {
-        $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
+        # $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
+        $global:tenantconfirmation = "n"
         Write-host "Please wait for the Authentication popup to appear" -ForegroundColor Cyan
             
         if ($global:authToken) {

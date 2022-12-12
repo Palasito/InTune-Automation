@@ -23,6 +23,7 @@
 
     $AllPolicies = Get-ConditionalAccessPolicies
     $NamedLocations = Get-NamedLocations
+    $ExistingGroups = Get-Groups
     
     foreach ($Policy in $AllPolicies) {
 
@@ -54,6 +55,31 @@
         
             $policy.conditions.locations = $locations
         }
+        #EndRegion
+
+        #Region Groups
+        $InclGrps = $policy.Conditions.Users.IncludeGroups
+        $ExclGrps = $Policy.Conditions.Users.ExcludeGroups
+        $ExcludeGrps = @()
+        $IncludeGrps = @()
+
+        if ( $InclGrps.length -gt 0 ) {
+            foreach ($grp in $InclGrps) {
+                $ig = $ExistingGroups | Where-Object ( $_.id -eq $grp)
+                $IncludeGrps += $ig.DisplayName
+            }
+        }
+
+        if ( $ExclGrps.length -gt 0 ) {
+            foreach ($grp in $ExclGrps) {
+                $eg = $ExistingGroups | Where-Object ( $_.id -eq $grp)
+                $ExcludeGrps += $eg.DisplayName
+            }
+        }
+
+        $Policy.Conditions.Users.includeGroups = $IncludeGrps
+        $Policy.Conditions.Users.excludeGroups = $ExcludeGrps
+
         #EndRegion
         
         $PolicyJSON = $Policy | ConvertTo-Json -Depth 20

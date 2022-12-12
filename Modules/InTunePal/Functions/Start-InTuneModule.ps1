@@ -177,6 +177,10 @@ function Start-InTuneModule {
             Start-InTuneModule
         }
         5 {
+            $global:tenantconfirmation = "y"
+            $null = Get-Token
+        }
+        6 {
             Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green
             break;
         }

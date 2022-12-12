@@ -24,6 +24,11 @@ function InvokeMenu {
 
     $Items += Get-InteractiveChooseMenuOption `
         -Value 5 `
+        -Label "Connect to another tenant" `
+        -Info "Connect to another tenant"
+
+    $Items += Get-InteractiveChooseMenuOption `
+        -Value 6 `
         -Label "Exit" `
         -Info "Just Exit the module"
 
