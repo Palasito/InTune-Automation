@@ -14,7 +14,7 @@ function GetMSALToken {
 
     switch ($OtherTenant) {
         $true {
-            if ($global:authToken) {
+            if ($global:authToken.Authorization) {
                 $authority = "https://login.microsoftonline.com/$Tenant"
                 $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -Authority $authority -ForceRefresh -Silent
                 $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -Authority $authority -ForceRefresh -Silent
@@ -41,7 +41,7 @@ function GetMSALToken {
             }
         }
         $false {
-            if ($global:authToken) {
+            if ($global:authToken.Authorization) {
                 $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh -Silent
                 $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh -Silent
                 $authHeader = @{
@@ -66,7 +66,7 @@ function GetMSALToken {
             }
         }
         default {
-            if ($global:authToken) {
+            if ($global:authToken.Authorization) {
                 $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh -Silent
                 $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh -Silent
                 $authHeader = @{

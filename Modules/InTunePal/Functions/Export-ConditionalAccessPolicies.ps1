@@ -34,17 +34,17 @@
         if ($null -ne $OldInclLocations) {
             foreach ($loc in $OldExclLocations) {
                 if (-not[string]::IsNullOrEmpty($OldExclLocations)) {
-                    $Exclloc = $NamedLocations | Where-object { $_.displayName -eq $loc }
-                    $ExcludeLocations += $Exclloc.Id
+                    $Exclloc = $NamedLocations | Where-object { $_.Id -eq $loc }
+                    $ExcludeLocations += $Exclloc.DisplayName
                 }
             }
             foreach ($loc in $OldInclLocations) {
-                if ($OldInclLocations = "All") {
-                    $policy.conditions.locations.IncludeLocations = "All"
+                if ($OldInclLocations -contains "All") {
+                    $IncludeLocations += "All"
                 }
                 elseif (-not[string]::IsNullOrEmpty($OldInclLocations)) {
-                    $Inclloc = $NamedLocations | Where-object { $_.displayName -eq $loc }
-                    $IncludeLocations += $Inclloc.Id
+                    $Inclloc = $NamedLocations | Where-object { $_.Id -eq $loc }
+                    $IncludeLocations += $Inclloc.DisplayName
                 }
             }
             $Locations = @{
