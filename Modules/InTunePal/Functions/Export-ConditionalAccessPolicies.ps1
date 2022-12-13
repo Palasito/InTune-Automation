@@ -65,14 +65,14 @@
 
         if ( $InclGrps.length -gt 0 ) {
             foreach ($grp in $InclGrps) {
-                $ig = $ExistingGroups | Where-Object ( $_.id -eq $grp)
+                $ig = $ExistingGroups | Where-Object { $_.id -eq $grp }
                 $IncludeGrps += $ig.displayName
             }
         }
 
         if ( $ExclGrps.length -gt 0 ) {
             foreach ($grp in $ExclGrps) {
-                $eg = $ExistingGroups | Where-Object ( $_.id -eq $grp)
+                $eg = $ExistingGroups | Where-Object { $_.id -eq $grp }
                 $ExcludeGrps += $eg.displayName
             }
         }
