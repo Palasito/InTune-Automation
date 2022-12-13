@@ -20,7 +20,7 @@ Function Import-AADGroups() {
     Write-Host "Creating specified security groups" -ForegroundColor Cyan
 
     $Groups = Import-Csv -Path $Path\CSVs\AADGroups\*.csv
-    $check = Get-Groups
+    $check = Get-AADGroups
     $uri = "https://graph.microsoft.com/v1.0/groups"
     
     foreach ($Group in $Groups) {

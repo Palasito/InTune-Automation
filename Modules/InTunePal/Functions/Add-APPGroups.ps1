@@ -19,7 +19,7 @@ function Add-APPGroups() {
 
     Write-Host "Adding specified groups to App Protection Policies..." -ForegroundColor Cyan
     Write-Host
-    $gr = Get-Groups
+    $gr = Get-AADGroups
 
     foreach ($Pol in $APPGroups) {
     

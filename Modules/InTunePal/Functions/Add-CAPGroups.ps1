@@ -19,7 +19,7 @@ function Add-CAPGroups() {
 
     Write-host
     Write-Host "Assigning Groups to Conditional Access Policies" -ForegroundColor Cyan
-    $gr = Get-Groups
+    $gr = Get-AADGroups
 
     $AllExisting = Get-ConditionalAccessPolicies
     foreach ($Pol in $CAPGroups) {

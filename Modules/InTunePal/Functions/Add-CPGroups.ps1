@@ -20,7 +20,7 @@ function Add-CPGroups() {
     Write-Host "Adding specified groups to Device Compliance Policies..." -ForegroundColor Cyan
     Write-Host
 
-    $gr = Get-Groups
+    $gr = Get-AADGroups
     
     foreach ($Pol in $CPGroups) {
         $Policy = Get-DeviceCompliancePolicy -Name $pol.DisplayName

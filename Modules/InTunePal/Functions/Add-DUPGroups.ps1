@@ -20,7 +20,7 @@ function Add-DUPGroups() {
     $DUPGroups = Import-Csv -Path $Path\CSVs\UpdatePolicies\*.csv -Delimiter ','
 
     Write-Host "Adding specified groups to Software Update Policies..." -ForegroundColor Cyan
-    $gr = Get-Groups
+    $gr = Get-AADGroups
     
     foreach ($Pol in $DUPGroups) {
         $Policy = Get-SoftwareUpdatePolicyAssignments | Where-Object displayName -eq $pol.DisplayName

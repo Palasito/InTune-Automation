@@ -21,9 +21,9 @@
     Write-Host
     Write-Host "Exporting Conditional Access Policies..." -ForegroundColor cyan
 
+    $ExistingGroups = Get-AADGroups
     $AllPolicies = Get-ConditionalAccessPolicies
     $NamedLocations = Get-NamedLocations
-    $ExistingGroups = Get-Groups
     
     foreach ($Policy in $AllPolicies) {
 
@@ -66,14 +66,14 @@
         if ( $InclGrps.length -gt 0 ) {
             foreach ($grp in $InclGrps) {
                 $ig = $ExistingGroups | Where-Object ( $_.id -eq $grp)
-                $IncludeGrps += $ig.DisplayName
+                $IncludeGrps += $ig.displayName
             }
         }
 
         if ( $ExclGrps.length -gt 0 ) {
             foreach ($grp in $ExclGrps) {
                 $eg = $ExistingGroups | Where-Object ( $_.id -eq $grp)
-                $ExcludeGrps += $eg.DisplayName
+                $ExcludeGrps += $eg.displayName
             }
         }
 

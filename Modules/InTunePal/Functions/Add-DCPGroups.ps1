@@ -18,7 +18,7 @@ function Add-DCPGroups() {
     }
 
     Write-Host "Adding specified Groups to the Device Configuration Profiles..." -ForegroundColor Cyan
-    $gr = Get-Groups
+    $gr = Get-AADGroups
 
     foreach ($Pol in $DCPGroups) {
     
