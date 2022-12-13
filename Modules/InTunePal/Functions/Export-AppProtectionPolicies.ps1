@@ -156,14 +156,8 @@ function Export-AppProtectionPolicies() {
     
                 Export-JSONData -JSON $AppProtectionPolicy -ExportPath "$ExportPath\AppProtectionPolicies"
 
-                Write-Host "Exported App Protection Policy: $($AppProtectionPolicy.displayName)"
-
-                }
-    
+                Write-Host "Exported App Protection Policy: $($AppProtectionPolicy.displayName)"    
             }
-    
         }
-    
     }
-
 }
