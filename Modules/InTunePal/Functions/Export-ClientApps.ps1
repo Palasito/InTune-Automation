@@ -165,11 +165,7 @@ function Export-ClientApps() {
     
                 Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\AndroidApps"
 
-                [PSCustomObject]@{
-                    "Action" = "Export"
-                    "Type"   = "Client App"
-                    "Name"   = $App.displayName
-                }
+                Write-Host "Exported Client App: $($App.displayName)"
             }
         
             elseif ($App.'@odata.type'.Contains("ios")) {
@@ -177,11 +173,8 @@ function Export-ClientApps() {
                 $Type = $Application.'@odata.type'.split(".")[2]
 
                 Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\iOSApps"
-                [PSCustomObject]@{
-                    "Action" = "Export"
-                    "Type"   = "Client App"
-                    "Name"   = $App.displayName
-                }
+
+                Write-Host "Exported Client App: $($App.displayName)"
             }
 
             elseif ($App.'@odata.type'.Contains("windows") -or $App.'@odata.type'.Contains("microsoftStoreForBusinessApp")) {
@@ -189,22 +182,16 @@ function Export-ClientApps() {
                 $Type = $Application.'@odata.type'.split(".")[2]
     
                 Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\WindowsApps"
-                [PSCustomObject]@{
-                    "Action" = "Export"
-                    "Type"   = "Client App"
-                    "Name"   = $App.displayName
-                }
+
+                Write-Host "Exported Client App: $($App.displayName)"
             }
             else {
                 $Application = Get-IntuneApplication -AppId $App.id
                 $Type = $Application.'@odata.type'.split(".")[2]
 
                 Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps"
-                [PSCustomObject]@{
-                    "Action" = "Export"
-                    "Type"   = "Unknown Client App"
-                    "Name"   = $App.displayName
-                }
+
+                Write-Host "Exported Client App: $($App.displayName)"
             }
         
         }

@@ -34,12 +34,6 @@ function Export-Intune {
 
     #Region Exportation
     Write-Host "Exporting Existing Intune Policies and Profiles in "$Path" folder..." -ForegroundColor Cyan
-    
-    [PSCustomObject]@{
-        "Action" = ""
-        "Type"   = ""
-        "Name"   = ""
-    }
 
     if ($Named) { Export-NamedLocations -Path $Path }
 

@@ -90,10 +90,6 @@
 
         $PolicyJSON | Out-File -LiteralPath "$($Path)\ConditionalAccessPolicies\$($FinalJSONdisplayName).json"
 
-        [PSCustomObject]@{
-            "Action" = "Export"
-            "Type"   = "Conditional Access Policy"
-            "Name"   = $Policy.DisplayName
-        }
+        Write-Host "Exported Conditional Access Policy: $($Policy.DisplayName)"
     }
 }

@@ -60,12 +60,7 @@ function Export-DeviceConfigurationPolicies() {
     foreach ($GDC in $GDCs) {
         Get-GeneralDeviceConfigurationPolicyJSON -Policies $GDC -ExportPath "$ExportPath"
 
-        [PSCustomObject]@{
-            "Action" = "Export"
-            "Type"   = "General Device Configuration Policy"  
-            "Name"   = $GDC.DisplayName
-        }
-
+        Write-Host "Exported General Device Configuration Policy: $($GDC.displayName)"
     }
 
     Write-Host
@@ -75,11 +70,7 @@ function Export-DeviceConfigurationPolicies() {
     foreach ($DSC in $DSCs) {
         Get-DeviceSettingsCatalogPolicyJSON -Policies $DSC -ExportPath "$ExportPath"
 
-        [PSCustomObject]@{
-            "Action" = "Export"
-            "Type"   = "Settings Catalog Policy"
-            "Name"   = $DSC.name
-        }
+        Write-Host "Exported Settings Catalog Policy: $($DSC.name)"
     }
 
     Write-Host
@@ -89,11 +80,7 @@ function Export-DeviceConfigurationPolicies() {
     foreach ($DAT in $DATs) {
         Get-DeviceAdministrativeTemplatesJSON -Policies $DAT -ExportPath "$ExportPath"
 
-        [PSCustomObject]@{
-            "Action" = "Export"
-            "Type"   = "Administrative Template"
-            "Name"   = $DAT.DisplayName
-        }
+        Write-Host "Exported Administrative Template: $($DAT.displayName)"
     }
 
     Write-Host

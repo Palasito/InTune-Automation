@@ -156,10 +156,8 @@ function Export-AppProtectionPolicies() {
     
                 Export-JSONData -JSON $AppProtectionPolicy -ExportPath "$ExportPath\AppProtectionPolicies"
 
-                [PSCustomObject]@{
-                    "Action" = "Export"
-                    "Type"   = "App Protection Policy"
-                    "Name"   = $AppProtectionPolicy.displayName
+                Write-Host "Exported App Protection Policy: $($AppProtectionPolicy.displayName)"
+
                 }
     
             }

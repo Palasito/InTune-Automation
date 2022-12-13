@@ -34,12 +34,7 @@ Function Export-NamedLocations() {
 
         $PolicyJSON | Out-File $Path\NamedLocations\$($FinalJSONdisplayName).json
 
-        [PSCustomObject]@{
-            "Action" = "Export"
-            "Type"   = "Named Location Policy"
-            "Name"   = $Loc.DisplayName
-        }
-
+        Write-Host "Exported Named Location Policy: $($Loc.displayName)"
     }
 }
 

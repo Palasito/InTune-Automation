@@ -129,10 +129,6 @@ function Export-CompliancePolicies() {
     foreach ($CP in $CPs) {
         Export-JSONData -JSON $CP -ExportPath "$ExportPath\DeviceCompliancePolicies"
 
-        [PSCustomObject]@{
-            "Action" = "Export"
-            "Type"   = "Compliance Policy"
-            "Name"   = $CP.displayName
-        }
+        Write-Host "Exported Compliance Policy: $($CP.displayName)"
     }
 }

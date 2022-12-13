@@ -75,11 +75,6 @@ function Export-EndpointSecurityPolicies {
         $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
         $FinalJSON | Set-Content -LiteralPath "$($Path)\EndpointSecurityPolicies\$($FileName_FinalJSON)"
 
-        [PSCustomObject]@{
-            "Action" = "Export"
-            "Type"   = "Endpoint Security Policy"
-            "Name"   = $e.DisplayName
-        }
-            
+        Write-Host "Exported Endpoint Security Policy: $($e.displayName)"
     }
 }

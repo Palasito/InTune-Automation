@@ -130,12 +130,7 @@ function Export-UpdatePolicies() {
     
             Export-JSONData -JSON $WSUP -ExportPath "$ExportPath\WindowsUpdatePolicies"
 
-            [PSCustomObject]@{
-                "Action" = "Export"
-                "Type"   = "Windows Update Policy"
-                "Name"   = $WSUP.displayName
-            }
-    
+            Write-Host "Exported Windows Update Policy: $($WSUP.displayName)"
         }
     
     }
@@ -161,12 +156,7 @@ function Export-UpdatePolicies() {
     
             Export-JSONData -JSON $ISUP -ExportPath "$ExportPath\iOSUpdatePolicies"
             
-            [PSCustomObject]@{
-                "Action" = "Export"
-                "Type"   = "iOS Update Policy"
-                "Name"   = $ISUP.displayName
-            }
-    
+            Write-Host "Exported iOS Update Policy: $($ISUP.displayName)"    
         }
     
     }
