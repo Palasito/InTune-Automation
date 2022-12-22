@@ -96,8 +96,6 @@ function Export-AppProtectionPolicies() {
     
     }
     
-    Write-Host
-    
     ####################################################
     
     if (-not (Test-Path "$ExportPath\AppProtectionPolicies")) {
