@@ -7,8 +7,7 @@ function MenuAssign {
         -Label "Authenticate to the target Tenant" `
         -Order 1 `
         -Info "This option retrieves an authentication Token to be used with all the exporting operations" `
-        -Readonly `
-        -Selected
+        
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 2 `
