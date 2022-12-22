@@ -1,27 +1,27 @@
 # Function Remove-SecurityDefaults(){
 
-    try {
-        $uri = "https://graph.microsoft.com/beta/policies/identitySecurityDefaultsEnforcementPolicy"
+try {
+    $uri = "https://graph.microsoft.com/beta/policies/identitySecurityDefaultsEnforcementPolicy"
 
-        # $Settings = (Invoke-RestMethod -Method GET -Uri $uri -Headers $authToken).value
+    # $Settings = (Invoke-RestMethod -Method GET -Uri $uri -Headers $authToken).value
 
-        $Settings = Invoke-WebRequest -Headers $authToken -Uri "https://graph.microsoft.com/beta/policies/identitySecurityDefaultsEnforcementPolicy"
+    $Settings = Invoke-WebRequest -Headers $authToken -Uri "https://graph.microsoft.com/beta/policies/identitySecurityDefaultsEnforcementPolicy"
 
-        $Settings | ConvertFrom-Json
+    $Settings = $Settings | ConvertFrom-Json
 
-        if ($Settings.isEnabled = "true"){
-            $body = (@{"isEnabled"="false"} | ConvertTo-Json)
+    if ($Settings.isEnabled -eq "true") {
+        $body = (@{"isEnabled" = "false" } | ConvertTo-Json)
             
-            $null = Invoke-RestMethod -Method Patch -Headers $authToken -Uri $uri -Body $body
-        }
-        else{
-            Write-Host "Security defaults are already disabled, will not make any changes..." -ForegroundColor Cyan
-        }
+        $null = Invoke-RestMethod -Method Patch -Headers $authToken -Uri $uri -Body $body
     }
-    catch {
-        write-host $_.Exception.Message -f Red
-        write-host $_.Exception.ItemName -f Red
-        write-host
-        break
+    else {
+        Write-Host "Security defaults are already disabled, will not make any changes..." -ForegroundColor Cyan
     }
+}
+catch {
+    write-host $_.Exception.Message -f Red
+    write-host $_.Exception.ItemName -f Red
+    write-host
+    break
+}
 # }
