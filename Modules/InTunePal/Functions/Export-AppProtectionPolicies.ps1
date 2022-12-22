@@ -1,10 +1,8 @@
 Function Export-JSONData() {
     
     param (
-    
         $JSON,
         $ExportPath
-    
     )
 
     try {
@@ -28,26 +26,14 @@ Function Export-JSONData() {
         }
     
         else {
-
             $JSON1 = ConvertTo-Json $JSON -Depth 100
-    
-            $JSON_Convert = $JSON1 | ConvertFrom-Json
-    
+            $JSON_Convert = $JSON1 | ConvertFrom-Json    
             $displayName = $JSON_Convert.displayName
-    
-            # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
-            $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
-    
-            # $Properties = ($JSON_Convert | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" }).Name
-    
+
+            $DisplayName = $DisplayName.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
             $FileName_JSON = "$DisplayName" + ".json"
-    
-            # write-host "Export Path:" "$ExportPath"
-    
             $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
-                
         }
-    
     }
     
     catch {
@@ -119,43 +105,21 @@ function Export-AppProtectionPolicies() {
     }
 
     write-host "Exporting App Protection Policies" -f Cyan
-    
     $ManagedAppPolicies = Get-ManagedAppPolicy | Where-Object { ($_.'@odata.type').contains("ManagedAppProtection") }
     
     if ($ManagedAppPolicies) {
-    
         foreach ($ManagedAppPolicy in $ManagedAppPolicies) {
-    
-            # write-host "Managed App Policy:"$ManagedAppPolicy.displayName -f Cyan
-    
             if ($ManagedAppPolicy.'@odata.type' -eq "#microsoft.graph.androidManagedAppProtection") {
-    
                 $AppProtectionPolicy = Get-ManagedAppProtection -id $ManagedAppPolicy.id -OS "Android"
-    
                 $AppProtectionPolicy | Add-Member -MemberType NoteProperty -Name '@odata.type' -Value "#microsoft.graph.androidManagedAppProtection"
-    
-                # $AppProtectionPolicy
-    
                 Export-JSONData -JSON $AppProtectionPolicy -ExportPath "$ExportPath\AppProtectionPolicies"
-
-                [PSCustomObject]@{
-                    "Action" = "Export"
-                    "Type"   = "App Protection Policy"
-                    "Name"   = $AppProtectionPolicy.displayName
-                }
-    
+                Write-Host "Exported App Protection Policy: $($AppProtectionPolicy.displayName)"      
             }
     
             elseif ($ManagedAppPolicy.'@odata.type' -eq "#microsoft.graph.iosManagedAppProtection") {
-    
                 $AppProtectionPolicy = Get-ManagedAppProtection -id $ManagedAppPolicy.id -OS "iOS"
-    
                 $AppProtectionPolicy | Add-Member -MemberType NoteProperty -Name '@odata.type' -Value "#microsoft.graph.iosManagedAppProtection"
-    
-                # $AppProtectionPolicy
-    
                 Export-JSONData -JSON $AppProtectionPolicy -ExportPath "$ExportPath\AppProtectionPolicies"
-
                 Write-Host "Exported App Protection Policy: $($AppProtectionPolicy.displayName)"    
             }
         }

@@ -57,7 +57,6 @@ function Export-EndpointSecurityPolicies {
     foreach ($e in $EPP) {
 
         $Settings = Get-PolicyEndpointSettingsJSON -Policies $e
-
         $PolicyJSON = [pscustomobject]@{
             DisplayName   = $e.displayName
             Description   = $e.description
@@ -67,14 +66,10 @@ function Export-EndpointSecurityPolicies {
         }
 
         $FinalJSONdisplayName = $e.displayName
-
-        $FinalJSONDisplayName = $FinalJSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
-
+        $FinalJSONDisplayName = $FinalJSONDisplayName.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
         $FileName_FinalJSON = "$FinalJSONDisplayName" + ".json"
-
         $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
         $FinalJSON | Set-Content -LiteralPath "$($Path)\EndpointSecurityPolicies\$($FileName_FinalJSON)"
-
         Write-Host "Exported Endpoint Security Policy: $($e.displayName)"
     }
 }

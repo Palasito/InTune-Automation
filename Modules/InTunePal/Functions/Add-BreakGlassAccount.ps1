@@ -94,7 +94,6 @@ Function Add-BreakGlassAccount() {
             "Action" = "Creation"
             "Type"   = "Account"
             "Name"   = $UserPrincipalName
-            "Path"   = ""
         }
     
         $null = New-AzureADUser @Parameters

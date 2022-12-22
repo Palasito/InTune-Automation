@@ -29,18 +29,11 @@ Function Get-GeneralDeviceConfigurationPolicyJSON() {
             $PolicyJSON = $Policies
             $PolicyJSON.omaSettings = @()
             $PolicyJSON.omaSettings = $omaSettings
-
             $FinalJSONdisplayName = $Policies.DisplayName
-
-            $FinalJSONDisplayName = $FinalJSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
-
+            $FinalJSONDisplayName = $FinalJSONDisplayName.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
             $FileName_FinalJSON = "GDC" + "_" + "$FinalJSONDisplayName" + ".json"
-
             $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 100
-
             $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_FinalJSON"
-
-            
         }
 
         else {

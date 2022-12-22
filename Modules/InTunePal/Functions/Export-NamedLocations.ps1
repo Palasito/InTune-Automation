@@ -27,13 +27,9 @@ Function Export-NamedLocations() {
     foreach ($Loc in $NamedLocations) {
 
         $PolicyJSON = $Loc | ConvertTo-Json -Depth 6
-
         $JSONdisplayName = $Loc.DisplayName
-
-        $FinalJSONDisplayName = $JSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
-
+        $FinalJSONDisplayName = $JSONDisplayName.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
         $PolicyJSON | Out-File $Path\NamedLocations\$($FinalJSONdisplayName).json
-
         Write-Host "Exported Named Location Policy: $($Loc.displayName)"
     }
 }

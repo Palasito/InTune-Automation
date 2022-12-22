@@ -76,20 +76,16 @@
                 $ExcludeGrps += $eg.displayName
             }
         }
-
+        
         $Policy.Conditions.Users.includeGroups = $IncludeGrps
         $Policy.Conditions.Users.excludeGroups = $ExcludeGrps
 
         #EndRegion
         
         $PolicyJSON = $Policy | ConvertTo-Json -Depth 20
-
         $JSONdisplayName = $Policy.DisplayName
-
-        $FinalJSONDisplayName = $JSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
-
+        $FinalJSONDisplayName = $JSONDisplayName.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
         $PolicyJSON | Out-File -LiteralPath "$($Path)\ConditionalAccessPolicies\$($FinalJSONdisplayName).json"
-
         Write-Host "Exported Conditional Access Policy: $($Policy.DisplayName)"
     }
 }

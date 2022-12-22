@@ -3,12 +3,11 @@ Function Get-DeviceSettingsCatalogPolicy() {
 
     [cmdletbinding()]
 
-    $graphApiVersion = "Beta"
     $DSC_Resource = "deviceManagement/configurationPolicies"
     
     try {
     
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)"
+        $uri = "https://graph.microsoft.com/Beta/$($DSC_Resource)"
     (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
 
     }

@@ -3,12 +3,11 @@ Function Get-DeviceAdministrativeTemplates() {
     
     [cmdletbinding()]
     
-    $graphApiVersion = "Beta"
     $DAT_Resource = "deviceManagement/groupPolicyConfigurations"
         
     try {
         
-        $uri = "https://graph.microsoft.com/$graphApiVersion/$($DAT_Resource)"
+        $uri = "https://graph.microsoft.com/Beta/$($DAT_Resource)"
         (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
         
     }
@@ -29,3 +28,4 @@ Function Get-DeviceAdministrativeTemplates() {
     }
     
 }
+

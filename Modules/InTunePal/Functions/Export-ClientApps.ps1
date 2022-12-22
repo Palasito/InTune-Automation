@@ -28,18 +28,12 @@
         }
 
         else {
-
             $JSON1 = ConvertTo-Json $JSON
-
             $JSON_Convert = $JSON1 | ConvertFrom-Json
-
             $displayName = $JSON_Convert.displayName
-
-            # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
-            $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
-
+            $DisplayName = $DisplayName.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
             $Properties = ($JSON_Convert | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" }).Name
-
+            
             if ($Type) {
 
                 $FileName_JSON = "$DisplayName" + ".json"
@@ -53,7 +47,7 @@
             }
 
             $Object = New-Object System.Object
-
+            
             foreach ($Property in $Properties) {
 
                 $Object | Add-Member -MemberType NoteProperty -Name $Property -Value $JSON_Convert.$Property
@@ -61,12 +55,9 @@
             }
 
             write-host "Export Path:" "$ExportPath"
-
             $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
             write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
-            
         }
-
     }
 
     catch {
@@ -89,7 +80,6 @@ function Export-ClientApps() {
     )
 
     write-host
-
     #Region Authentication 
     if ($global:authToken) {
         #Do nothing

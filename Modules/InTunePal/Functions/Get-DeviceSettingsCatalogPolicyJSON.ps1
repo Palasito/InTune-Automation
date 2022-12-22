@@ -5,14 +5,12 @@ Function Get-DeviceSettingsCatalogPolicyJSON() {
         $ExportPath
     )
 
-    $graphApiVersion = "Beta"
     $DSC_Resource = "deviceManagement/configurationPolicies"
 
     try {
 
         $Policyid = $Policies.id
-        #$PolicyJSON = $Policy | ConvertTo-Json -depth 5
-        $uri_settings = "https://graph.microsoft.com/$graphApiVersion/$($DSC_Resource)/$($Policyid)/settings"
+        $uri_settings = "https://graph.microsoft.com/Beta/$($DSC_Resource)/$($Policyid)/settings"
         $Settings = (Invoke-RestMethod -Uri $uri_settings -Headers $authToken -Method Get).Value
 
         $PolicyJSON = [pscustomobject]@{
@@ -24,13 +22,9 @@ Function Get-DeviceSettingsCatalogPolicyJSON() {
         }
 
         $FinalJSONdisplayName = $Policies.name
-
-        $FinalJSONDisplayName = $FinalJSONDisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
-
+        $FinalJSONDisplayName = $FinalJSONDisplayName.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
         $FileName_FinalJSON = "SC" + "_" + "$FinalJSONDisplayName" + ".json"
-
         $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
-
         $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_FinalJSON"
             
     }

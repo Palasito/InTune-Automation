@@ -1,6 +1,5 @@
 Function Add-DeviceSettingsCatalogConfigurationPolicy() {
 
-
     [cmdletbinding()]
 
     param
@@ -8,7 +7,6 @@ Function Add-DeviceSettingsCatalogConfigurationPolicy() {
         $JSON
     )
 
-    $graphApiVersion = "Beta"
     $DSC_resource = "deviceManagement/configurationPolicies"
     Write-Verbose "Resource: $DSC_resource"
 
@@ -24,7 +22,7 @@ Function Add-DeviceSettingsCatalogConfigurationPolicy() {
 
             Test-JSON -JSON $JSON
 
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($DSC_resource)"
+            $uri = "https://graph.microsoft.com/Beta/$($DSC_resource)"
             Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
 
         }
