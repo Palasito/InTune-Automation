@@ -48,10 +48,16 @@ Function Get-DeviceAdministrativeTemplatesJSON() {
             $DefinitionValues += $DefValue
         }
 
+        $FinalPolicyJSON = @{
+            "displayName" = $Policies.displayName
+            "description" = $Policies.description
+            "definitionValues" = $DefinitionValues
+        }
+
         $DisplayName = $Policies.DisplayName
         $DisplayName = $DisplayName.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
-        $FileName_JSON = "AT" + "_" + "$DisplayName" + ".json"
-        $FinalJSON = $DefinitionValues | ConvertTo-Json -Depth 20
+        $FileName_JSON = "AT" + "_" + "$($DisplayName)" + ".json"
+        $FinalJSON = $FinalPolicyJSON | ConvertTo-Json -Depth 20
         $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_JSON"
 
     }
