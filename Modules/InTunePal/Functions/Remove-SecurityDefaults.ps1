@@ -14,8 +14,7 @@ Function Remove-SecurityDefaults() {
         }
     }
     catch {
-        write-host $_.Exception.Message -f Red
-        write-host $_.Exception.ItemName -f Red
+        write-host "$_`n"
         write-host
         break
     }
