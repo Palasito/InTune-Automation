@@ -38,7 +38,6 @@ function Import-DeviceConfigurationPolicies() {
     Write-Host "Importing Device Configuration Profiles..." -ForegroundColor cyan
 
     $AvailableJsonsGDC = Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include GDC_*.json
-    # $uri = "https://graph.microsoft.com/Beta/deviceManagement/deviceConfigurations"
     $AllExistingGDC = Get-GeneralDeviceConfigurationPolicy
     foreach ($json in $AvailableJsonsGDC) {
 
@@ -69,7 +68,6 @@ function Import-DeviceConfigurationPolicies() {
     Write-Host "Importing Settings Catalog Profiles..." -ForegroundColor cyan
 
     $AvailableJsonsSCP = Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include SC_*.json
-    # $uri = "https://graph.microsoft.com/Beta/deviceManagement/configurationPolicies"
     $AllexistingSCP = Get-DeviceSettingsCatalogPolicy
     foreach ($json in $AvailableJsonsSCP) {
 
@@ -100,7 +98,6 @@ function Import-DeviceConfigurationPolicies() {
     Write-Host "Importing Administrative Templates..." -ForegroundColor cyan
 
     $AvailableJsonsAT = Get-ChildItem "$ImportPath\DeviceConfigurationPolicies" -Recurse -Include AT_*.json
-    # $uri = "https://graph.microsoft.com/Beta/deviceManagement/groupPolicyConfigurations"
     $AllExistingAT = Get-DeviceAdministrativeTemplates
     foreach ($json in $AvailableJsonsAT) {
 
@@ -114,7 +111,7 @@ function Import-DeviceConfigurationPolicies() {
         if ($null -eq $check) {
             $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
-            $null = Add-DeviceAdministrativeTeamplatePolicy -JSON $JSON_Output
+            $null = Add-DeviceAdministrativeTemplatePolicy -JSON $JSON_Output
             
             [PSCustomObject]@{
                 "Action" = "Import"
