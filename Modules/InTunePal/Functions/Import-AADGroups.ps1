@@ -30,23 +30,17 @@ Function Import-AADGroups() {
         if ($null -eq $checkresult) {
 
             $NickName = $Group.DisplayName.Replace(" ", "")
-
             $body = @{}
             $body.description = $Group.Description
             $body.displayName = $Group.DisplayName
             $body.MailEnabled = $false
             $body.MailNickName = $NickName
             $body.securityEnabled = $True
-
             $bodyfinal = $body | ConvertTo-Json -Depth 5
 
             $null = Invoke-RestMethod -Uri $uri -Method Post -Headers $authToken -ContentType "application/json" -Body $bodyfinal
 
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Groups"
-                "Name"   = $Group.DisplayName
-            }
+            Write-Host "Imported Group: $($Group.DisplayName)"
         }
 
         else {

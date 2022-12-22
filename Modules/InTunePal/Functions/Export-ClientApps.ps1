@@ -54,9 +54,7 @@
 
             }
 
-            write-host "Export Path:" "$ExportPath"
             $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
-            write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
         }
     }
 
@@ -80,6 +78,7 @@ function Export-ClientApps() {
     )
 
     write-host
+
     #Region Authentication 
     if ($global:authToken) {
         #Do nothing
@@ -155,7 +154,7 @@ function Export-ClientApps() {
     
                 Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\AndroidApps"
 
-                Write-Host "Exported Client App: $($App.displayName)"
+                Write-Host "Exported Android Client App: $($App.displayName)"
             }
         
             elseif ($App.'@odata.type'.Contains("ios")) {
@@ -164,7 +163,7 @@ function Export-ClientApps() {
 
                 Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\iOSApps"
 
-                Write-Host "Exported Client App: $($App.displayName)"
+                Write-Host "Exported iOS Client App: $($App.displayName)"
             }
 
             elseif ($App.'@odata.type'.Contains("windows") -or $App.'@odata.type'.Contains("microsoftStoreForBusinessApp")) {
@@ -173,7 +172,7 @@ function Export-ClientApps() {
     
                 Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps\WindowsApps"
 
-                Write-Host "Exported Client App: $($App.displayName)"
+                Write-Host "Exported Windows Client App: $($App.displayName)"
             }
             else {
                 $Application = Get-IntuneApplication -AppId $App.id
@@ -181,7 +180,7 @@ function Export-ClientApps() {
 
                 Export-JSONData -JSON $Application -Type $Type -ExportPath "$ExportPath\ClientApps"
 
-                Write-Host "Exported Client App: $($App.displayName)"
+                Write-Host "Exported Unknown Client App: $($App.displayName)"
             }
         
         }
