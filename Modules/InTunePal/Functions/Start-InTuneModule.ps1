@@ -76,7 +76,7 @@ function Start-InTuneModule {
 
                     try {
                         $body = (@{"isEnabled" = "false" } | ConvertTo-Json)
-                        $null = Invoke-RestMethod -Method Patch -Headers $authToken -Uri $uri -Body $body
+                        $null = Invoke-RestMethod -Method Patch -Headers $authToken -Uri "https://graph.microsoft.com/beta/policies/identitySecurityDefaultsEnforcementPolicy" -Body $body
                     }
 
                     catch {
