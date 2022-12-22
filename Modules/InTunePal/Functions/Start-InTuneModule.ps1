@@ -82,6 +82,7 @@ function Start-InTuneModule {
                     catch {
                         Write-Host "Security Defaults are enabled on the tenant and could not disable them!"
                         Write-Host "$_`n"
+                        break
                     }
 
                     $command = "Import-Intune -Path '$($Path)'"
