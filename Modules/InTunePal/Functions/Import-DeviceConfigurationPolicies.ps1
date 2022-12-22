@@ -103,7 +103,7 @@ function Import-DeviceConfigurationPolicies() {
 
         $JSON_Data = Get-Content $json.FullName
 
-        $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id, createdDateTime, lastModifiedDateTime, version, supportsScopeTags
+        $JSON_Convert = $JSON_Data | ConvertFrom-Json
 
         $DisplayName = $JSON_Convert.displayName
 

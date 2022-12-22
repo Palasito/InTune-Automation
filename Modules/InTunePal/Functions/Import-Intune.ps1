@@ -42,12 +42,6 @@ function Import-Intune {
         #Region Importation
         Write-Host "Creating Intune Policies and Profiles as specified in "$Path" folder..." -ForegroundColor Cyan
 
-        [PSCustomObject]@{
-            "Action" = ""
-            "Type"   = ""
-            "Name"   = ""
-        }
-
         if ($Named) {
             Import-NamedLocations -Path $Path
             Write-Host "When all Named Locations are created press enter" -ForegroundColor Cyan

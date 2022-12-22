@@ -41,7 +41,7 @@ Function Get-DeviceAdministrativeTemplatesJSON() {
                                 }
                             }
                         )
-                        "presentation@odata.bind" = "https://graph.microsoft.com/beta/deviceManagement/groupPolicyDefinitions('$($definition.id)')/presentations('$($val.presentation.id)')"
+                        "presentation@odata.bind" = "https://graph.microsoft.com/beta/deviceManagement/groupPolicyDefinitions('$($definition.id)')/presentations('$($PresentationValues.presentation.id)')"
                     }
                 )
             }
