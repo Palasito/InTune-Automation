@@ -68,7 +68,29 @@ function Start-InTuneModule {
             }
             
             else {
-
+                $command = "Import-Intune -Path '$($Path)'"
+                if ($i -contains 1) { $Token = " -Token" }
+                else { $Token = "" }
+                if ($i -contains 2) { $Conditional = " -Conditional" }
+                else { $Conditional = "" }
+                if ($i -contains 3) { $Named = " -Named" }
+                else { $Named = "" }
+                if ($i -contains 4) { $Compliance = " -Compliance" }
+                else { $Compliance = "" }
+                if ($i -contains 5) { $Configuration = " -Configuration" }
+                else { $Configuration = "" }
+                if ($i -contains 6) { $Update = " -Update" }
+                else { $Update = "" }
+                if ($i -contains 7) { $Capps = " -Capps" }
+                else { $Capps = "" }
+                if ($i -contains 8) { $ApplicationProt = " -ApplicationProt" }
+                else { $ApplicationProt = "" }
+                if ($i -contains 9) { $EndpointSec = " -EndpointSec" }
+                else { $EndpointSec = "" }
+    
+                $commandf = -join ($command, $Token, $Named, $Conditional, $Compliance, $Configuration, $Update, $Capps, $ApplicationProt, $EndpointSec)
+                Invoke-Expression -Command $commandf
+                
                 $SecDef = Invoke-RestMethod -Method Get -Headers $authToken -Uri "https://graph.microsoft.com/beta/policies/identitySecurityDefaultsEnforcementPolicy"
                 $SecDef = $SecDef | ConvertFrom-Json
 
@@ -84,54 +106,6 @@ function Start-InTuneModule {
                         Write-Host "$_`n"
                         break
                     }
-
-                    $command = "Import-Intune -Path '$($Path)'"
-                    if ($i -contains 1) { $Token = " -Token" }
-                    else { $Token = "" }
-                    if ($i -contains 2) { $Conditional = " -Conditional" }
-                    else { $Conditional = "" }
-                    if ($i -contains 3) { $Named = " -Named" }
-                    else { $Named = "" }
-                    if ($i -contains 4) { $Compliance = " -Compliance" }
-                    else { $Compliance = "" }
-                    if ($i -contains 5) { $Configuration = " -Configuration" }
-                    else { $Configuration = "" }
-                    if ($i -contains 6) { $Update = " -Update" }
-                    else { $Update = "" }
-                    if ($i -contains 7) { $Capps = " -Capps" }
-                    else { $Capps = "" }
-                    if ($i -contains 8) { $ApplicationProt = " -ApplicationProt" }
-                    else { $ApplicationProt = "" }
-                    if ($i -contains 9) { $EndpointSec = " -EndpointSec" }
-                    else { $EndpointSec = "" }
-    
-                    $commandf = -join ($command, $Token, $Named, $Conditional, $Compliance, $Configuration, $Update, $Capps, $ApplicationProt, $EndpointSec)
-                    Invoke-Expression -Command $commandf
-                }
-
-                else {
-                    $command = "Import-Intune -Path '$($Path)'"
-                    if ($i -contains 1) { $Token = " -Token" }
-                    else { $Token = "" }
-                    if ($i -contains 2) { $Conditional = " -Conditional" }
-                    else { $Conditional = "" }
-                    if ($i -contains 3) { $Named = " -Named" }
-                    else { $Named = "" }
-                    if ($i -contains 4) { $Compliance = " -Compliance" }
-                    else { $Compliance = "" }
-                    if ($i -contains 5) { $Configuration = " -Configuration" }
-                    else { $Configuration = "" }
-                    if ($i -contains 6) { $Update = " -Update" }
-                    else { $Update = "" }
-                    if ($i -contains 7) { $Capps = " -Capps" }
-                    else { $Capps = "" }
-                    if ($i -contains 8) { $ApplicationProt = " -ApplicationProt" }
-                    else { $ApplicationProt = "" }
-                    if ($i -contains 9) { $EndpointSec = " -EndpointSec" }
-                    else { $EndpointSec = "" }
-    
-                    $commandf = -join ($command, $Token, $Named, $Conditional, $Compliance, $Configuration, $Update, $Capps, $ApplicationProt, $EndpointSec)
-                    Invoke-Expression -Command $commandf
                 }
             }
         }
