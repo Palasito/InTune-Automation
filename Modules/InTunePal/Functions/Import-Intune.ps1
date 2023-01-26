@@ -44,8 +44,6 @@ function Import-Intune {
 
         if ($Named) {
             Import-NamedLocations -Path $Path
-            Write-Host "When all Named Locations are created press enter" -ForegroundColor Cyan
-            Pause
         }
 
         if ($Conditional) { Import-ConditionalAccessPolicies -Path $Path }
@@ -67,7 +65,7 @@ function Import-Intune {
         $confirmation = Read-Host "Do you want to perform another job? [y/n]"
         if ($confirmation -eq 'n') {
             Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green
-            break;
+            break
         }
         if ($confirmation -eq 'y') {
             Start-InTuneModule
