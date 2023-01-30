@@ -46,7 +46,12 @@ function Import-Intune {
             Import-NamedLocations -Path $Path
         }
 
-        if ($Conditional) { Import-ConditionalAccessPolicies -Path $Path }
+        if ($Conditional) {
+
+            Set-SecDef
+
+            Import-ConditionalAccessPolicies -Path $Path 
+        }
     
         if ($Compliance) { Import-CompliancePolicies -Path $Path }
     

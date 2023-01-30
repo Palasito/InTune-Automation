@@ -90,23 +90,6 @@ function Start-InTuneModule {
     
                 $commandf = -join ($command, $Token, $Named, $Conditional, $Compliance, $Configuration, $Update, $Capps, $ApplicationProt, $EndpointSec)
                 Invoke-Expression -Command $commandf
-                
-                $SecDef = Invoke-RestMethod -Method Get -Headers $authToken -Uri "https://graph.microsoft.com/beta/policies/identitySecurityDefaultsEnforcementPolicy"
-                $SecDef = $SecDef | ConvertFrom-Json
-
-                if ($SecDef.isEnabled -eq "true") {
-
-                    try {
-                        $body = (@{"isEnabled" = "false" } | ConvertTo-Json)
-                        $null = Invoke-RestMethod -Method Patch -Headers $authToken -Uri "https://graph.microsoft.com/beta/policies/identitySecurityDefaultsEnforcementPolicy" -Body $body
-                    }
-
-                    catch {
-                        Write-Host "Security Defaults are enabled on the tenant and could not disable them!"
-                        Write-Host "$_`n"
-                        break
-                    }
-                }
             }
         }
         2 {
