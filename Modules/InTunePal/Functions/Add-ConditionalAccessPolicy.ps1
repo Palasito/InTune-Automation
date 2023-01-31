@@ -8,7 +8,7 @@ Function Add-ConditionalAccessPolicy() {
     )
 
     $graphApiVersion = "v1.0"
-    $Resource = "identity/conditionalAccess/policies"
+    $Resource = "policies/conditionalAccessPolicies"
     
     try {
 

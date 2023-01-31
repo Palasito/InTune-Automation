@@ -9,7 +9,7 @@ function GetMSALToken {
     $clientId = "d1ddf0e4-d672-4dae-b554-9d5bdfd93547"
     $redirectUri = "urn:ietf:wg:oauth:2.0:oob"
     $scope = "https://graph.microsoft.com/.default"
-    $ConditionalAccessScope = @("https://graph.microsoft.com/Policy.ReadWrite.ConditionalAccess", "https://graph.microsoft.com/Policy.Read.All", "Application.Read.All")
+    $ConditionalAccessScope = @("https://graph.microsoft.com/Policy.ReadWrite.ConditionalAccess", "https://graph.microsoft.com/Policy.Read.All", "https://graph.microsoft.com/Application.Read.All")
     #EndRegion
 
     switch ($OtherTenant) {
