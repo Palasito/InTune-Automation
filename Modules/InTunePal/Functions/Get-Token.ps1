@@ -13,82 +13,44 @@ function GetMSALToken {
     #EndRegion
 
     switch ($OtherTenant) {
+
         $true {
-            if ($global:authToken.Authorization) {
-                $authority = "https://login.microsoftonline.com/$Tenant"
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -Authority $authority -ForceRefresh -Silent
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -Authority $authority -ForceRefresh -Silent
-                $authHeader = @{
-                    'Content-Type'  = 'application/json'
-                    'Authorization' = "Bearer " + $authResult.AccessToken
-                    'ExpiresOn'     = $authResult.ExpiresOn
-                    'Username'      = $authResult.Account.Username
-                }
-                return $authHeader
+            $authority = "https://login.microsoftonline.com/$Tenant"
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -Authority $authority -ForceRefresh
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -Authority $authority -ForceRefresh
+            $authHeader = @{
+                'Content-Type'  = 'application/json'
+                'Authorization' = "Bearer " + $authResult.AccessToken
+                'ExpiresOn'     = $authResult.ExpiresOn
+                'Username'      = $authResult.Account.Username
             }
-
-            else {
-                $authority = "https://login.microsoftonline.com/$Tenant"
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -Authority $authority -ForceRefresh
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -Authority $authority -ForceRefresh
-                $authHeader = @{
-                    'Content-Type'  = 'application/json'
-                    'Authorization' = "Bearer " + $authResult.AccessToken
-                    'ExpiresOn'     = $authResult.ExpiresOn
-                    'Username'      = $authResult.Account.Username
-                }
-                return $authHeader
-            }
+            return $authHeader
         }
+
         $false {
-            if ($global:authToken.Authorization) {
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh -Silent
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh -Silent
-                $authHeader = @{
-                    'Content-Type'  = 'application/json'
-                    'Authorization' = "Bearer " + $authResult.AccessToken
-                    'ExpiresOn'     = $authResult.ExpiresOn
-                    'Username'      = $authResult.Account.Username
-                }
-                return $authHeader
-            }
 
-            else {
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh
-                $authHeader = @{
-                    'Content-Type'  = 'application/json'
-                    'Authorization' = "Bearer " + $authResult.AccessToken
-                    'ExpiresOn'     = $authResult.ExpiresOn
-                    'Username'      = $authResult.Account.Username
-                }
-                return $authHeader
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh
+            $authHeader = @{
+                'Content-Type'  = 'application/json'
+                'Authorization' = "Bearer " + $authResult.AccessToken
+                'ExpiresOn'     = $authResult.ExpiresOn
+                'Username'      = $authResult.Account.Username
             }
+            return $authHeader
         }
-        default {
-            if ($global:authToken.Authorization) {
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh -Silent
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh -Silent
-                $authHeader = @{
-                    'Content-Type'  = 'application/json'
-                    'Authorization' = "Bearer " + $authResult.AccessToken
-                    'ExpiresOn'     = $authResult.ExpiresOn
-                    'Username'      = $authResult.Account.Username
-                }
-                return $authHeader
-            }
 
-            else {
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh
-                $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh
-                $authHeader = @{
-                    'Content-Type'  = 'application/json'
-                    'Authorization' = "Bearer " + $authResult.AccessToken
-                    'ExpiresOn'     = $authResult.ExpiresOn
-                    'Username'      = $authResult.Account.Username
-                }
-                return $authHeader
+        default {
+
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $scope -RedirectUri $redirectUri -ForceRefresh
+            $authResult = Get-MsalToken -ClientId $clientId -Scopes $ConditionalAccessScope -RedirectUri $redirectUri -ForceRefresh
+            $authHeader = @{
+                'Content-Type'  = 'application/json'
+                'Authorization' = "Bearer " + $authResult.AccessToken
+                'ExpiresOn'     = $authResult.ExpiresOn
+                'Username'      = $authResult.Account.Username
             }
+            return $authHeader
         }
     }
 }
