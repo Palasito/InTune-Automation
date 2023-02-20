@@ -95,7 +95,9 @@ function GetMSALToken {
 
 function Get-Token {
 
-    switch ($authHeader) {
+    $CurrentTime = (Get-Date).ToUniversalTime()
+
+    switch ($global:authToken) {
         $null {
             if ($global:tenantconfirmation -eq 'n') {
                 $global:authToken = GetMSALToken
@@ -103,13 +105,14 @@ function Get-Token {
             }
                         
             elseif ($global:tenantconfirmation -eq 'y') {
+
                 $Tenantconfirm = Read-Host "Please provide the tenant Id or Tenant Suffix to be used!"
         
                 $global:authToken = GetMSALToken -OtherTenant -Tenant $Tenantconfirm
                 return $global:authToken
             }
         }
-        { $authResult.ExpiresOn.LocalDateTime -lt $CurrentTime } {
+        { $global:authToken.ExpiresOn.UtcDateTime -lt $CurrentTime } {
             $global:authToken = GetMSALToken
             return $global:authToken
         }
