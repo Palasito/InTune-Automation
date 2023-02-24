@@ -70,6 +70,9 @@ function Import-ConditionalAccessPolicies() {
             }
             #EndRegion
 
+            #Region Disable policy
+            $policy.state = "disabled"
+            #EndRegion
             $jsontoImport = $policy | ConvertTo-Json -Depth 10
 
             [PSCustomObject]@{
