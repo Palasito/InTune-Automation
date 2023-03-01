@@ -87,7 +87,7 @@ function Start-InTuneModule {
                 else { $ApplicationProt = "" }
                 if ($i -contains 9) { $EndpointSec = " -EndpointSec" }
                 else { $EndpointSec = "" }
-
+    
                 $commandf = -join ($command, $Token, $Named, $Conditional, $Compliance, $Configuration, $Update, $Capps, $ApplicationProt, $EndpointSec)
                 Invoke-Expression -Command $commandf
             }
@@ -181,6 +181,18 @@ function Start-InTuneModule {
             $null = Get-Token
         }
         6 {
+            $null = Get-Token
+            Remove-EnterpriseApp
+            $confirmation = Read-Host "Do you want to perform another job? [y/n]"
+            if ($confirmation -eq 'n') {
+                Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green
+                break;
+            }
+            if ($confirmation -eq 'y') {
+                Start-InTuneModule
+            }
+        }
+        7 {
             Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green
             break;
         }

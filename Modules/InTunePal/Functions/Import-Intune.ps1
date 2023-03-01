@@ -26,16 +26,7 @@ function Import-Intune {
 
         #Region Authentication
         if ($Token) {
-            # $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
-            $global:tenantconfirmation = "n"
-            Write-host "Please wait for the Authentication popup to appear" -ForegroundColor Cyan
-        
-            if ($global:authToken) {
-                #Do nothing
-            }
-            else {
-                $null = Get-Token
-            }
+            $null = Get-Token
         }
         #EndRegion
         
@@ -44,11 +35,14 @@ function Import-Intune {
 
         if ($Named) {
             Import-NamedLocations -Path $Path
-            Write-Host "When all Named Locations are created press enter" -ForegroundColor Cyan
-            Pause
         }
 
-        if ($Conditional) { Import-ConditionalAccessPolicies -Path $Path }
+        if ($Conditional) {
+
+            Set-SecDef
+
+            Import-ConditionalAccessPolicies -Path $Path 
+        }
     
         if ($Compliance) { Import-CompliancePolicies -Path $Path }
     
@@ -67,7 +61,7 @@ function Import-Intune {
         $confirmation = Read-Host "Do you want to perform another job? [y/n]"
         if ($confirmation -eq 'n') {
             Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green
-            break;
+            break
         }
         if ($confirmation -eq 'y') {
             Start-InTuneModule

@@ -19,17 +19,7 @@ function Export-Intune {
     Write-Host "Starting InTune Configuration export....." -ForegroundColor Cyan
 
     #Region Authentication
-    if ($Token) {
-        # $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
-        $global:tenantconfirmation = "n"
-        Write-host "Please wait for the Authentication popup to appear" -ForegroundColor Cyan
-        if ($global:authToken) {
-            #Do nothing
-        }
-        else {
-            $null = Get-Token
-        }
-    }
+    if ($Token) { $null = Get-Token }
     #EndRegion
 
     #Region Exportation

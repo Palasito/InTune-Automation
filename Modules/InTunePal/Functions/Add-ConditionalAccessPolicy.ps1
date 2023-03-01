@@ -8,7 +8,7 @@ Function Add-ConditionalAccessPolicy() {
     )
 
     $graphApiVersion = "v1.0"
-    $Resource = "identity/conditionalAccess/policies"
+    $Resource = "policies/conditionalAccessPolicies"
     
     try {
 
@@ -34,7 +34,6 @@ Function Add-ConditionalAccessPolicy() {
         $ex = $_.Exception
         Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
         write-host
-        break
 
     }
 

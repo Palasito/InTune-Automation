@@ -29,6 +29,11 @@ function InvokeMenu {
 
     $Items += Get-InteractiveChooseMenuOption `
         -Value 6 `
+        -Label "Remove Enterprise App" `
+        -Info "Remove the Microsoft Intune Powershell Enterprise Application"
+
+    $Items += Get-InteractiveChooseMenuOption `
+        -Value 7 `
         -Label "Exit" `
         -Info "Just Exit the module"
 
@@ -46,7 +51,7 @@ function InvokeMenu {
     }
 
     else {
-        $question = "Working Location is $Path`nAlready Authenticated with user: $($global:authToken.Username)"
+        $question = "Working Location is $Path`nAlready Authenticated with user: $($global:authToken.Username)`nToken Expires on: $($global:authToken.ExpiresOn)"
     }
     
     $answer = Get-InteractiveMenuChooseUserSelection -Question $question -Answers $Items -Options $options
