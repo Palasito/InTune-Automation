@@ -182,7 +182,7 @@ function Start-InTuneModule {
         }
         6 {
             $null = Get-Token
-            RemoveEnterpriseApp
+            Remove-EnterpriseApp
             $confirmation = Read-Host "Do you want to perform another job? [y/n]"
             if ($confirmation -eq 'n') {
                 Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green

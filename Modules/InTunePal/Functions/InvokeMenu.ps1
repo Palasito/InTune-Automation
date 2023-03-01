@@ -51,7 +51,7 @@ function InvokeMenu {
     }
 
     else {
-        $question = "Working Location is $Path`nAlready Authenticated with user: $($global:authToken.Username)"
+        $question = "Working Location is $Path`nAlready Authenticated with user: $($global:authToken.Username)`nToken Expires on: $($global:authToken.ExpiresOn)"
     }
     
     $answer = Get-InteractiveMenuChooseUserSelection -Question $question -Answers $Items -Options $options

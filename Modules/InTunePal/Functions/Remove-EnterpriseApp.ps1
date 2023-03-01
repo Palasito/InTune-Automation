@@ -1,4 +1,4 @@
-function RemoveEnterpriseApp {
+function Remove-EnterpriseApp {
 
     [cmdletbinding()]
     param (
