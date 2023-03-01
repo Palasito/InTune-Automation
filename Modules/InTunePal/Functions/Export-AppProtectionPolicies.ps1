@@ -57,16 +57,9 @@ function Export-AppProtectionPolicies() {
     
     write-host
     
-    #Region Authentication 
-    if ($global:authToken) {
-        #Do nothing
-    }
-    else {
-        $null = Get-Token
-    }
-    #endregion
-    
-    ####################################################
+    #Region Authentication (unused as of version 2.9)
+    # $null = Get-Token
+    #EndRegion
     
     $ExportPath = $Path
     

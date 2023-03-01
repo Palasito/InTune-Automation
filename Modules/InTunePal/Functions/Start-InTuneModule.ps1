@@ -135,7 +135,7 @@ function Start-InTuneModule {
             }
             
             else {
-                $command = "Import-IntuneGroups -Path '$($Path)'"
+                $command = "Import-IntuneAssigns -Path '$($Path)'"
                 if ($a -contains 1) { $Token = " -Token" }
                 else { $Token = "" }
                 if ($a -contains 2) { $CreateGrp = " -AADGroups" }

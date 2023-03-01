@@ -6,13 +6,8 @@ function Import-ConditionalAccessPolicies() {
         $AzureADToken
     )
 
-    #Region Authentication
-    if ($global:authToken) {
-        #Do nothing
-    }
-    else {
-        $null = Get-Token
-    }
+    #Region Authentication (unused as of version 2.9)
+    # $null = Get-Token
     #EndRegion
 
     $BackupJsons = Get-ChildItem "$Path\ConditionalAccessPolicies" -Recurse -Include *.json
