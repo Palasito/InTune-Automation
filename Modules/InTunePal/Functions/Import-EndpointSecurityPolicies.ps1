@@ -131,9 +131,9 @@
 
         $DisplayName = $JSON_Convert.DisplayName
 
-        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
+        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 10
 
-        Write-Host "Adding Endpoint Security Policy '$DisplayName'" -ForegroundColor Yellow
+        Write-Host "Adding Endpoint Security Policy $($DisplayName)"
         Add-EndpointSecurityPolicy -TemplateId $TemplateId -JSON $JSON_Output
 
     }
