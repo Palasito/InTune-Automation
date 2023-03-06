@@ -56,11 +56,7 @@ Function Import-CompliancePolicies() {
 
             $null = Add-DeviceCompliancePolicy -JSON $JSON_Output
 
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Device Compliance Policy"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported Compliance Policy $($DisplayName)"
         }    
         else {
             Write-Host "Policy '$DisplayName' already exists and will not be imported!" -ForegroundColor Red

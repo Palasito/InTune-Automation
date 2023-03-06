@@ -133,8 +133,8 @@
 
         $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 10
 
-        Write-Host "Adding Endpoint Security Policy $($DisplayName)"
         Add-EndpointSecurityPolicy -TemplateId $TemplateId -JSON $JSON_Output
+        Write-Host "Imported Endpoint Security Policy $($DisplayName)"
 
     }
 }

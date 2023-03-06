@@ -70,11 +70,7 @@ function Import-ConditionalAccessPolicies() {
             #EndRegion
             $jsontoImport = $policy | ConvertTo-Json -Depth 10
 
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Conditional Access Policy"
-                "Name"   = $Policy.displayName
-            }
+            Write-Host "Imported Conditional Access Policy $($DisplayName)"
 
             $null = Add-ConditionalAccessPolicy -JSON $jsontoImport
 

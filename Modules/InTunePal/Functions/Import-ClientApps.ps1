@@ -52,11 +52,7 @@
 
             $null = Add-MDMApplication -JSON $JSON_Output
     
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "ClientApp"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported Client App $($DisplayName)"
         }
         else {
             Write-Host "Client App $($DisplayName) already exists and will not be imported" -ForegroundColor Red

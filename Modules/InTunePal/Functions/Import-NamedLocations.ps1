@@ -33,12 +33,8 @@ Function Import-NamedLocations() {
             $jsontoimport = $policy | ConvertTo-Json -Depth 10
 
             $null = Add-NamedLocations -JSON $jsontoimport
-    
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Named Location"
-                "Name"   = $policy.DisplayName
-            }
+
+            Write-Host "Imported Named Location $($policy.DisplayName)"
         }
         else {
             Write-Host "Named Location $($policy.DisplayName) already exists and will not be imported" -ForegroundColor Red
@@ -83,11 +79,7 @@ Function Import-NamedLocations() {
             
             $null = Add-NamedLocations -JSON $jsontoimport
         
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Trusted IP Range Policy"
-                "Name"   = "Trusted Networks"
-            }
+            Write-Host "Imported Trusted IP Range Policy 'Trusted Networks'"
         }
     }
     else {

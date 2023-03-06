@@ -47,11 +47,7 @@ function Import-UpdatePolicies() {
 
             $null = Add-DeviceConfigurationUpdatePolicy -JSON $JSON_Output
     
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Software Update Policy"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported Software Update Policy $($DisplayName)"
         }
         else {
             Write-Host "iOS update policy $($DisplayName) already exists and will not be imported" -ForegroundColor Red
@@ -76,11 +72,7 @@ function Import-UpdatePolicies() {
 
             $null = Add-DeviceConfigurationUpdatePolicy -JSON $JSON_Output
 
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Software Update Policy"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported Software Update Policy $($DisplayName)"
         }
         else {
             Write-Host "Windows Update Policy $($DisplayName) already exists and will not be imported" -ForegroundColor Red
