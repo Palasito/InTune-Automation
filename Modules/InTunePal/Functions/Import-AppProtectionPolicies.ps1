@@ -53,11 +53,7 @@ function Import-AppProtectionPolicies() {
      
             $null = Add-ManagedAppPolicy -JSON $JSON_Output
     
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Intune App Protection"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported App Protection Policy $($DisplayName)"
         }
         else {
             Write-Host "App Managed Policy $($DisplayName) already exists and will not be imported!" -ForegroundColor Red
