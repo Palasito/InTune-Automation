@@ -51,7 +51,7 @@ function Add-CAPGroups() {
                 }
             }
             else {
-                $JSON.conditions.users.includeUsers = @("All")
+                $JSON.conditions.users.includeUsers = @("All Users")
             }
         }
 
