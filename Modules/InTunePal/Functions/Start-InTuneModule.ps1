@@ -179,6 +179,7 @@ function Start-InTuneModule {
         5 {
             $global:tenantconfirmation = "y"
             $null = Get-Token
+            $global:tenantconfirmation = "n"
         }
         6 {
             $null = Get-Token
