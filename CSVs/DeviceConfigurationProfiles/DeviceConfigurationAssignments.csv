@@ -1,0 +1,8 @@
+DisplayName,IncludeGroups,ExcludeGroups
+Azure AD join - local admins,Modern Workplace Windows Devices,
+Disable Public Windows Store (Only Private is allowed),Modern Workplace Windows Devices,
+Screen Lock Timer in 10min,Modern Workplace Windows Devices,
+Windows 10 - Update Delivery Optimization,Modern Workplace Windows Devices,
+Disable News and Interests Taskbar Widget,Modern Workplace Windows Devices,
+Security Baseline - Azure AD Join Devices,Modern Workplace Windows Devices,
+Enable Bitlocker,Modern Workplace Windows Devices,

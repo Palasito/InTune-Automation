@@ -7,14 +7,9 @@
         $Path
     )
 
-    # Authentication region
-    if ($global:authToken) {
-        #Do nothing
-    }
-    else {
-        $null = Get-Token
-    }
-    #endregion
+    #Region Authentication (unused as of version 2.9)
+    # $null = Get-Token
+    #EndRegion
 
     ####################################################
 
@@ -57,11 +52,7 @@
 
             $null = Add-MDMApplication -JSON $JSON_Output
     
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "ClientApp"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported Client App $($DisplayName)"
         }
         else {
             Write-Host "Client App $($DisplayName) already exists and will not be imported" -ForegroundColor Red

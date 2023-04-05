@@ -7,16 +7,9 @@ function Import-AppProtectionPolicies() {
         $Path
     )
 
-    #region AuthenticationW
-    if ($global:authToken) {
-        #Do nothing
-    }
-    else {
-        $null = Get-Token
-    }
-    #endregion
-    
-    ####################################################
+    #Region Authentication (unused as of version 2.9)
+    # $null = Get-Token
+    #EndRegion
     
     $ImportPath = $Path
     
@@ -60,11 +53,7 @@ function Import-AppProtectionPolicies() {
      
             $null = Add-ManagedAppPolicy -JSON $JSON_Output
     
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Intune App Protection"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported App Protection Policy $($DisplayName)"
         }
         else {
             Write-Host "App Managed Policy $($DisplayName) already exists and will not be imported!" -ForegroundColor Red

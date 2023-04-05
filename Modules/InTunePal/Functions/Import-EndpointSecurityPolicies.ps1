@@ -3,13 +3,8 @@
         $Path
     )
 
-    #Region Authentication
-    if ($global:authToken) {
-        #Do nothing
-    }
-    else {
-        $null = Get-Token
-    }
+    #Region Authentication (unused as of version 2.9)
+    # $null = Get-Token
     #EndRegion
     
     $ImportPath = $Path
@@ -136,10 +131,10 @@
 
         $DisplayName = $JSON_Convert.DisplayName
 
-        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
+        $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 10
 
-        Write-Host "Adding Endpoint Security Policy '$DisplayName'" -ForegroundColor Yellow
         Add-EndpointSecurityPolicy -TemplateId $TemplateId -JSON $JSON_Output
+        Write-Host "Imported Endpoint Security Policy $($DisplayName)"
 
     }
 }

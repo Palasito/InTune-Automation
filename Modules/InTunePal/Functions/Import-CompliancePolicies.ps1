@@ -7,16 +7,9 @@ Function Import-CompliancePolicies() {
         $Path
     )
 
-    # Authentication region
-    if ($global:authToken) {
-        #Do nothing
-    }
-    else {
-        $null = Get-Token
-    }
-    #endregion
-
-    ####################################################
+    #Region Authentication (unused as of version 2.9)
+    # $null = Get-Token
+    #EndRegion
 
     $ImportPath = $Path
 
@@ -63,11 +56,7 @@ Function Import-CompliancePolicies() {
 
             $null = Add-DeviceCompliancePolicy -JSON $JSON_Output
 
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Device Compliance Policy"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported Compliance Policy $($DisplayName)"
         }    
         else {
             Write-Host "Policy '$DisplayName' already exists and will not be imported!" -ForegroundColor Red

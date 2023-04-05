@@ -7,17 +7,10 @@ function Import-DeviceConfigurationPolicies() {
         $Path
     )
 
-    # Authentication region
-    if ($global:authToken) {
-        #Do nothing
-    }
-    else {
-        $null = Get-Token
-    }
-    #endregion
-
-    ####################################################
-
+    #Region Authentication (unused as of version 2.9)
+    # $null = Get-Token
+    #EndRegion
+    
     $ImportPath = $Path
 
     # Replacing quotes for Test-Path
@@ -53,11 +46,7 @@ function Import-DeviceConfigurationPolicies() {
 
             $null = Add-DeviceGeneralConfigurationPolicy -JSON $JSON_Output
     
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Device Configuration Profile"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported Device General Configuration Policy $($DisplayName)"
         }
         else {
             Write-Host "Device Configuration Policy $($DisplayName) already exists and will not be imported" -ForegroundColor Red
@@ -83,11 +72,7 @@ function Import-DeviceConfigurationPolicies() {
 
             $null = Add-DeviceSettingsCatalogConfigurationPolicy -JSON $JSON_Output
     
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Settings Catalog Profile"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported Device Settings Catalog Policy $($DisplayName)"
         }
         else {
             Write-Host "Device Configuration Policy $($DisplayName) already exists and will not be imported" -ForegroundColor Red
@@ -113,11 +98,7 @@ function Import-DeviceConfigurationPolicies() {
 
             $null = Add-DeviceAdministrativeTemplatePolicy -JSON $JSON_Output
             
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Administrative Template"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported Device Administrative Template Policy $($DisplayName)"
         }
         else {
             Write-Host "Device Configuration Policy $($DisplayName) already exists and will not be imported" -ForegroundColor Red

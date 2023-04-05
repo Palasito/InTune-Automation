@@ -7,16 +7,9 @@ function Import-UpdatePolicies() {
         $Path
     )
 
-    # Authentication region
-    if ($global:authToken) {
-        #Do nothing
-    }
-    else {
-        $null = Get-Token
-    }
-    #endregion
-
-    ####################################################
+    #Region Authentication (unused as of version 2.9)
+    # $null = Get-Token
+    #EndRegion
 
     $ImportPath = $Path
 
@@ -54,11 +47,7 @@ function Import-UpdatePolicies() {
 
             $null = Add-DeviceConfigurationUpdatePolicy -JSON $JSON_Output
     
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Software Update Policy"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported Software Update Policy $($DisplayName)"
         }
         else {
             Write-Host "iOS update policy $($DisplayName) already exists and will not be imported" -ForegroundColor Red
@@ -83,11 +72,7 @@ function Import-UpdatePolicies() {
 
             $null = Add-DeviceConfigurationUpdatePolicy -JSON $JSON_Output
 
-            [PSCustomObject]@{
-                "Action" = "Import"
-                "Type"   = "Software Update Policy"
-                "Name"   = $DisplayName
-            }
+            Write-Host "Imported Software Update Policy $($DisplayName)"
         }
         else {
             Write-Host "Windows Update Policy $($DisplayName) already exists and will not be imported" -ForegroundColor Red

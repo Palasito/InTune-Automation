@@ -80,5 +80,8 @@ function Get-Token {
             $global:authToken = GetMSALToken
             return $global:authToken
         }
+        default {
+            
+        }
     }
 }

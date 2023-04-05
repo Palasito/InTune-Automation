@@ -1,4 +1,4 @@
-function Import-IntuneGroups {
+function Import-IntuneAssigns {
 
     [cmdletbinding()]
 
@@ -20,28 +20,11 @@ function Import-IntuneGroups {
     Write-Host "Getting Ready to assign AzureAD Groups to the imported configuration..." -ForegroundColor Cyan
 
     #Region Authentication
-    if ($Token) {
-        # $global:tenantconfirmation = Read-Host "Do you want to connect to another tenant? [y/n]"
-        $global:tenantconfirmation = "n"
-        Write-host "Please wait for the Authentication popup to appear" -ForegroundColor Cyan
-            
-        if ($global:authToken) {
-            #Do nothing
-        }
-        else {
-            $null = Get-Token
-        }
-    }
+    $null = Get-Token
     #EndRegion
 
     #Region Assignments
     Write-Host "Creating Assignments as specified in "$Path\CSVs" folder..." -ForegroundColor Cyan
-
-    [PSCustomObject]@{
-        "Action"          = ""
-        "Type"            = ""
-        "Name"            = ""
-    }
 
     if ($AADGroups) { Import-AADGroups -Path $Path }
 

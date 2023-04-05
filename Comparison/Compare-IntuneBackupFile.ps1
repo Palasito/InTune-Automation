@@ -1,4 +1,4 @@
-function Compare-IntuneBackupFile() {
+# function Compare-IntuneBackupFile() {
     <#
     .SYNOPSIS
     Compare two Intune Backup Files for changes.
@@ -130,4 +130,4 @@ function Compare-IntuneBackupFile() {
     }
 
     return $backupComparison
-}
+# }

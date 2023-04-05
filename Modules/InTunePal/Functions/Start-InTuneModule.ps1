@@ -4,24 +4,26 @@ function Start-InTuneModule {
     Add-Type -AssemblyName System.Windows.Forms
     #EndRegion
 
+    $i = 0
+    $e = 0
+    $a = 0
+
     #Region Path
     if ([string]::IsNullOrEmpty($Path)) {
 
-        Push-Location
-        $FileBrowser = New-Object System.Windows.Forms.FolderBrowserDialog -Property @{
-            ShowNewFolderButton = $true
-            Description         = 'Select root folder where the folder structure is located...'
-            RootFolder          = 'Desktop'
-        }
-        if ($FileBrowser.ShowDialog() -ne "OK") {
-            exit
-        }
-        Pop-Location
-    
-        $Path = $FileBrowser.SelectedPath
-    }
-    elseif (($i -contains 10) -or ($e -contains 10) -or ($a -contains 10)) {
-        #Do Nothing !
+        # Push-Location
+        # $FileBrowser = New-Object System.Windows.Forms.FolderBrowserDialog -Property @{
+        #     ShowNewFolderButton = $true
+        #     Description         = 'Select root folder where the folder structure is located...'
+        #     RootFolder          = 'Desktop'
+        # }
+        # if ($FileBrowser.ShowDialog() -ne "OK") {
+        #     exit
+        # }
+        # Pop-Location
+
+        $Path = Get-FolderName
+
     }
     elseif ($confirmation -eq 'y') {
         #Do Nothing !
@@ -135,7 +137,7 @@ function Start-InTuneModule {
             }
             
             else {
-                $command = "Import-IntuneGroups -Path '$($Path)'"
+                $command = "Import-IntuneAssigns -Path '$($Path)'"
                 if ($a -contains 1) { $Token = " -Token" }
                 else { $Token = "" }
                 if ($a -contains 2) { $CreateGrp = " -AADGroups" }
@@ -179,6 +181,7 @@ function Start-InTuneModule {
         5 {
             $global:tenantconfirmation = "y"
             $null = Get-Token
+            $global:tenantconfirmation = "n"
         }
         6 {
             $null = Get-Token

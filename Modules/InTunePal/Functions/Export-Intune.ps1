@@ -19,7 +19,7 @@ function Export-Intune {
     Write-Host "Starting InTune Configuration export....." -ForegroundColor Cyan
 
     #Region Authentication
-    if ($Token) { $null = Get-Token }
+    $null = Get-Token
     #EndRegion
 
     #Region Exportation

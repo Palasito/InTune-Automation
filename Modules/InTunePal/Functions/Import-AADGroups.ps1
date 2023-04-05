@@ -5,16 +5,9 @@ Function Import-AADGroups() {
         [String]$Path
     )
 
-    # Authentication Region
-    if ($global:authToken) {
-        #Do nothing
-    }
-    else {
-        $null = Get-Token
-    }
-    # endregion
-    
-    ############################################
+    #Region Authentication (unused as of version 2.9)
+    # $null = Get-Token
+    #EndRegion
 
     Write-Host
     Write-Host "Creating specified security groups" -ForegroundColor Cyan

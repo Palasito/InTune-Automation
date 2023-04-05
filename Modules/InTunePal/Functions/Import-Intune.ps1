@@ -25,9 +25,7 @@ function Import-Intune {
     else {
 
         #Region Authentication
-        if ($Token) {
-            $null = Get-Token
-        }
+        $null = Get-Token
         #EndRegion
         
         #Region Importation
