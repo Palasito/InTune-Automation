@@ -17,78 +17,99 @@ function Add-CAPGroups() {
         $CAPGroups = $CAPGroupsCheck | ForEach-Object { Import-Csv $Path\CSVs\ConditionalAccess\$_ -Delimiter "," }
     }
 
-    Write-host
     Write-Host "Assigning Groups to Conditional Access Policies" -ForegroundColor Cyan
     $gr = Get-AADGroups
 
     $AllExisting = Get-ConditionalAccessPolicies
     foreach ($Pol in $CAPGroups) {
         $Policy = $AllExisting | Where-Object displayName -eq $pol.DisplayName
-        $JSON = @{
-            conditions = @{
-                users = @{}
-            }
+
+        if ([string]::IsNullOrEmpty($Policy)) {
+            Write-Warning "Policy $($pol.displayName) could not be found in the tenant"
         }
-        $InclGrps = $pol.IncludeGroups -split ";"
-        $ExclGrps = $pol.ExcludeGroups -split ";"
 
-        $InGrp = @()
-        $ExGrp = @()
+        else {
 
+            $JSON = @{
+                conditions = @{
+                    users = @{}
+                }
+            }
 
-        foreach ($grp in $InclGrps) {
-            if (-not([string]::IsNullOrEmpty($grp))) {
-                $g = $gr | Where-Object { $_.displayName -eq $grp }
+            $InclGrps = $pol.IncludeGroups -split ";"
+            $ExclGrps = $pol.ExcludeGroups -split ";"
+    
+            $InGrp = @()
+            $ExGrp = @()
+    
+            if ([string]::IsNullOrEmpty($InclGrps)) {
                 $JSON.conditions.users.includeUsers = @("none")
-                if ($null -ne $g) {
-                    $InGrp += $g.Id
+            }
+    
+            else {
+                foreach ($grp in $InclGrps) {
+                    $g = $gr | Where-Object { $_.DisplayName -eq $grp }
+                    switch ($g) {
+                        [string]::IsNullOrEmpty {
+                            break
+                        }
+                        "GuestsOrExternalUsers" {
+                            $JSON.conditions.users.includeUsers = @("GuestsOrExternalUsers")
+                            break
+                        }
+                        "All Users" {
+                            $JSON.conditions.users.includeUsers = @("All Users")
+                            break
+                        }
+                        default {
+                            $JSON.conditions.users.includeUsers = @("none")
+                            $InGrp += $g.id
+                        }
+                    }
                 }
-                elseif ($grp -eq "GuestsOrExternalUsers") {
-                    $JSON.conditions.users.includeUsers = @("GuestsOrExternalUsers")
+            }
+
+            foreach ($grp in $ExclGrps) {
+                if (-not([string]::IsNullOrEmpty($grp))) {
+                    $g = $gr | Where-Object { $_.displayName -eq $grp }
+                    if ($null -ne $g) {
+                        $ExGrp += $g.Id
+                    }
+                    elseif ($grp -eq "GuestsOrExternalUsers") {
+                        $JSON.conditions.users.excludeUsers = @("GuestsOrExternalUsers")
+                    }
+                    else {
+                        
+                    }
                 }
                 else {
-                    
+    
                 }
             }
-            else {
-                $JSON.conditions.users.includeUsers = @("All Users")
-            }
-        }
 
-        foreach ($grp in $ExclGrps) {
-            if (-not([string]::IsNullOrEmpty($grp))) {
-                $g = $gr | Where-Object { $_.displayName -eq $grp }
-                if ($null -ne $g) {
-                    $ExGrp += $g.Id
-                }
-                elseif ($grp -eq "GuestsOrExternalUsers") {
-                    $JSON.conditions.users.excludeUsers = @("GuestsOrExternalUsers")
-                }
-                else {
-                    
-                }
+            $JSON.conditions.Users.includeGroups = $InGrp
+            $JSON.conditions.users.excludeGroups = $ExGrp
+
+            $j = $JSON | ConvertTo-Json -Depth 100
+
+            if ([string]::IsNullOrEmpty($JSON.conditions.Users.includeUsers)) {
+                Write-Host "No groups have been found that can be assigned to policy $($pol.displayName)"
             }
+
             else {
 
+                try {
+                    $uri = "https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies/$($Policy.id)"
+                    $null = Invoke-RestMethod -Uri $uri -Headers $authToken -Method Patch -Body $j -ContentType "application/json"
+    
+                    Write-Host "Assignments completed successfully on policy $($pol.displayName)"
+                }
+    
+                catch {
+                    Write-Host "Issue when assigning groups and users on policy $($pol.displayName)"
+                    $_.ErrorDetails.Message
+                }
             }
-        }
-
-        $JSON.conditions.Users.includeGroups = $InGrp
-        $JSON.conditions.users.excludeGroups = $ExGrp
-
-        $j = $JSON | ConvertTo-Json -Depth 5
-        
-        $uri = "https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies/$($Policy.id)"
-        $null = Invoke-RestMethod -Uri $uri -Headers $authToken -Method Patch -Body $j -ContentType "application/json" 
-        Start-Sleep 3
-
-        [PSCustomObject]@{
-            "Action"          = "Assign"
-            "Type"            = "Conditional Access Policy"
-            "Name"            = $Policy.displayName
-            "Included Groups" = $InclGrps
-            "Excluded Groups" = $ExclGrps
-        }
+        }    
     }
-
 }
