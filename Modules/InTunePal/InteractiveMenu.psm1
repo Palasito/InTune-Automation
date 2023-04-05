@@ -239,6 +239,12 @@ class InteractiveMultiMenu {
                 return $false
             }
             $([ConsoleKey]::Escape) {
+                $this.Items | ForEach-Object {
+                    if ($_.Label -eq "Back") {
+                        $_.Selected = $true
+                    }
+                }
+                $this.StoreState()
                 return $false
             }
             Default {
