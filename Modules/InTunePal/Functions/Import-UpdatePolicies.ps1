@@ -70,7 +70,7 @@ function Import-UpdatePolicies() {
         if ($null -eq $check) {
             $JSON_Output = $JSON_Convert | ConvertTo-Json
 
-            $null = Add-DeviceConfigurationUpdatePolicy -JSON $JSON_Output
+            Add-DeviceConfigurationUpdatePolicy -JSON $JSON_Output
 
             Write-Host "Imported Software Update Policy $($DisplayName)"
         }

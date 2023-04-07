@@ -44,7 +44,7 @@ function Import-DeviceConfigurationPolicies() {
         if ($null -eq $check) {
             $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
-            $null = Add-DeviceGeneralConfigurationPolicy -JSON $JSON_Output
+            Add-DeviceGeneralConfigurationPolicy -JSON $JSON_Output
     
             Write-Host "Imported Device General Configuration Policy $($DisplayName)"
         }
@@ -70,7 +70,7 @@ function Import-DeviceConfigurationPolicies() {
         if ($null -eq $check) {
             $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
-            $null = Add-DeviceSettingsCatalogConfigurationPolicy -JSON $JSON_Output
+            Add-DeviceSettingsCatalogConfigurationPolicy -JSON $JSON_Output
     
             Write-Host "Imported Device Settings Catalog Policy $($DisplayName)"
         }
@@ -96,7 +96,7 @@ function Import-DeviceConfigurationPolicies() {
         if ($null -eq $check) {
             $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
 
-            $null = Add-DeviceAdministrativeTemplatePolicy -JSON $JSON_Output
+            Add-DeviceAdministrativeTemplatePolicy -JSON $JSON_Output
             
             Write-Host "Imported Device Administrative Template Policy $($DisplayName)"
         }

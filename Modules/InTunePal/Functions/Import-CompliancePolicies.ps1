@@ -54,7 +54,7 @@ Function Import-CompliancePolicies() {
         $check = $AllExistingComp | Where-Object { ($_.'displayname').equals($DisplayName) }
         if ($null -eq $check) {
 
-            $null = Add-DeviceCompliancePolicy -JSON $JSON_Output
+            Add-DeviceCompliancePolicy -JSON $JSON_Output
 
             Write-Host "Imported Compliance Policy $($DisplayName)"
         }    

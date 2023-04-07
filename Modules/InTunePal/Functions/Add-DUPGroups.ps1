@@ -74,7 +74,7 @@ function Add-DUPGroups() {
             
         $Body = $Body | ConvertTo-Json -Depth 100
         
-        Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+        $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
         
         [PSCustomObject]@{
             "Action"          = "Assign"

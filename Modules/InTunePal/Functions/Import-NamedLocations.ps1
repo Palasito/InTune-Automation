@@ -77,7 +77,7 @@ Function Import-NamedLocations() {
     
             $jsontoimport = $jsontoimporttemp | ConvertTo-Json -Depth 10
             
-            $null = Add-NamedLocations -JSON $jsontoimport
+            Add-NamedLocations -JSON $jsontoimport
         
             Write-Host "Imported Trusted IP Range Policy 'Trusted Networks'"
         }

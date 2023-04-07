@@ -31,9 +31,16 @@ Function Import-AADGroups() {
             $body.securityEnabled = $True
             $bodyfinal = $body | ConvertTo-Json -Depth 5
 
-            $null = Invoke-RestMethod -Uri $uri -Method Post -Headers $authToken -ContentType "application/json" -Body $bodyfinal
+            try {
+                $null = Invoke-RestMethod -Uri $uri -Method Post -Headers $authToken -ContentType "application/json" -Body $bodyfinal
 
-            Write-Host "Imported Group: $($Group.DisplayName)"
+                Write-Host "Imported Group: $($Group.DisplayName)"
+            }
+
+            catch {
+                $ex = $_.Exception
+                Write-Warning "Request for $($Group.DisplayName) to uri $($uri) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)"
+            }
         }
 
         else {

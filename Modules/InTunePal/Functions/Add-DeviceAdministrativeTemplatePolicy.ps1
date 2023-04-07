@@ -24,16 +24,15 @@ Function Add-DeviceAdministrativeTemplatePolicy() {
 
             $def = $def | ConvertTo-Json -Depth 20
             $uri = "https://graph.microsoft.com/Beta/deviceManagement/groupPolicyConfigurations/$($Polid.id)/definitionValues"
-            Invoke-RestMethod -Method Post -Headers $authToken -Uri $uri -Body $def
+            $null = Invoke-RestMethod -Method Post -Headers $authToken -Uri $uri -Body $def
 
         }
     }
         
     catch {
     
-        Write-Error "$_`n"
-        Write-Host
-        break
+        $ex = $_.Exception
+        Write-Warning "Request for $(($JSON | ConvertFrom-Json).displayName) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)"
     
     }
 }
