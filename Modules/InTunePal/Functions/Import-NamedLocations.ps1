@@ -32,7 +32,7 @@ Function Import-NamedLocations() {
     
             $jsontoimport = $policy | ConvertTo-Json -Depth 10
 
-            $null = Add-NamedLocations -JSON $jsontoimport
+            Add-NamedLocations -JSON $jsontoimport
 
             Write-Host "Imported Named Location $($policy.DisplayName)"
         }

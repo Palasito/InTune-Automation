@@ -106,8 +106,11 @@ function Add-CAPGroups() {
                 }
     
                 catch {
+
+                    $ex = $_.Exception
                     Write-Host "Issue when assigning groups and users on policy $($pol.displayName)"
-                    Write-Host "Error for policy $($pol.displayName) is: $($_.Exception.Response.StatusCode.value__) $($_.Exception.Response.StatusCode) $($_.Exception.Response.StatusDescription)" -ForegroundColor Red
+                    Write-Error "Error for policy $($pol.displayName) is: $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)"
+                    
                 }
             }
         }    
