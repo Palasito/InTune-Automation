@@ -32,7 +32,7 @@ Function Add-DeviceAdministrativeTemplatePolicy() {
     catch {
     
         $ex = $_.Exception
-        Write-Warning "Request for $(($JSON | ConvertFrom-Json).displayName) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)"
+        Write-Host "Request for $(($JSON | ConvertFrom-Json).displayName) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)" -ForegroundColor Red
     
     }
 }

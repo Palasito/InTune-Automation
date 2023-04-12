@@ -43,7 +43,8 @@ function MenuImport {
         -Item 7 `
         -Label "Import Client Applications" `
         -Order 7 `
-        -Info "This option imports ALL Client Applications from jsons" 
+        -Info "This option imports ALL Client Applications from jsons" `
+        -Readonly
 
     $multiMenuItems += Get-InteractiveMultiMenuOption `
         -Item 8 `

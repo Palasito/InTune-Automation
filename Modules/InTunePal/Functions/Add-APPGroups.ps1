@@ -284,9 +284,8 @@ function Add-APPGroups() {
 
         catch {
             $ex = $_.Exception
-            Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-            write-host
-            break
+            Write-Host "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)" -ForegroundColor Red
+
         }
     }
 }

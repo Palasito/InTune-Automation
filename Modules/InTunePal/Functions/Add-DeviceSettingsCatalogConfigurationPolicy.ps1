@@ -32,8 +32,9 @@ Function Add-DeviceSettingsCatalogConfigurationPolicy() {
     catch {
 
         $ex = $_.Exception
-        Write-Error "Request for policy $(($JSON | ConvertFrom-Json).displayName) to $($uri) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)"
-        write-host
+        Write-Host "Request for policy $(($JSON | ConvertFrom-Json).displayName) to $($uri) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)" -ForegroundColor Red 
+        
+        #endregion
 
     }
 }

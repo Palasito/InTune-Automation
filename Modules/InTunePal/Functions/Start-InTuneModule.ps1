@@ -11,17 +11,6 @@ function Start-InTuneModule {
     #Region Path
     if ([string]::IsNullOrEmpty($Path)) {
 
-        # Push-Location
-        # $FileBrowser = New-Object System.Windows.Forms.FolderBrowserDialog -Property @{
-        #     ShowNewFolderButton = $true
-        #     Description         = 'Select root folder where the folder structure is located...'
-        #     RootFolder          = 'Desktop'
-        # }
-        # if ($FileBrowser.ShowDialog() -ne "OK") {
-        #     exit
-        # }
-        # Pop-Location
-
         $Path = Get-FolderName
 
     }
