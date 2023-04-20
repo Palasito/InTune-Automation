@@ -10,7 +10,6 @@ Function Add-EndpointSecurityPolicy() {
 
     $graphApiVersion = "Beta"
     $ESP_resource = "deviceManagement/templates/$TemplateId/createInstance"
-    Write-Verbose "Resource: $ESP_resource"
 
     try {
 
