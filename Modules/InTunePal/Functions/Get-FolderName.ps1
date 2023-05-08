@@ -15,6 +15,8 @@ function Get-FolderName {
         exit
     }
 
+    $FileBrowser.Dispose()
+
     return $FileBrowser.SelectedPath
 
 }
