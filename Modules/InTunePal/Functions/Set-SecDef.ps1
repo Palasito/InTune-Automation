@@ -16,6 +16,7 @@ function Set-SecDef {
         }
 
         catch {
+            $ex = $_.Exception
             Write-Host "Security Defaults are enabled on the tenant and could not disable them!"
             Write-Error "Request to $($uri) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)"
             break

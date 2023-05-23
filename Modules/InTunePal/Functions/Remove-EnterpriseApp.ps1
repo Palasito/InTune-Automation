@@ -11,8 +11,9 @@ function Remove-EnterpriseApp {
     }
 
     catch {
+        $ex = $_.Exception
         Write-Host "Enterprise Application could not be removed!"
-        Write-Host "$_`n"
+        Write-Error "Request to $($uri) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)"
         break
     }
 }

@@ -4,9 +4,11 @@ function Start-InTuneModule {
     Add-Type -AssemblyName System.Windows.Forms
     #EndRegion
 
+    #Region Helper Variables
     $i = 0
     $e = 0
     $a = 0
+    #EndRegion
 
     #Region Path
     if ([string]::IsNullOrEmpty($Path)) {
