@@ -52,7 +52,7 @@
         }
         #EndRegion
 
-        #Region Groups
+        #Region Users and Groups
         $InclGrps = $policy.Conditions.Users.IncludeGroups
         $ExclGrps = $Policy.Conditions.Users.ExcludeGroups
         $ExcludeGrps = @()
