@@ -12,7 +12,7 @@ Function Add-DeviceSettingsCatalogConfigurationPolicy() {
 
     try {
 
-        if ($JSON -eq "" -or $null -eq $JSON) {
+        if (($JSON -eq "") -or ($null -eq $JSON)) {
 
             write-host "No JSON specified, please specify valid JSON for the Device Configuration Policy..." -f Red
 

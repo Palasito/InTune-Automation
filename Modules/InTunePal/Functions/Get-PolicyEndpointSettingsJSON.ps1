@@ -5,7 +5,7 @@ Function Get-PolicyEndpointSettingsJSON() {
     )
 
     $graphApiVersion = "Beta"
-    $DSC_Resource = "deviceManagement/intents"
+    $DSC_Resource = "deviceManagement/configurationPolicies"
 
     try {
 

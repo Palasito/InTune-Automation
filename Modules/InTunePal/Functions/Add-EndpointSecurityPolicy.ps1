@@ -4,12 +4,10 @@ Function Add-EndpointSecurityPolicy() {
 
     param
     (
-        $TemplateId,
         $JSON
     )
 
-    $graphApiVersion = "Beta"
-    $ESP_resource = "deviceManagement/templates/$TemplateId/createInstance"
+    $ESP_resource = "deviceManagement/configurationPolicies"
 
     try {
 
@@ -23,7 +21,7 @@ Function Add-EndpointSecurityPolicy() {
 
             Test-JSON -JSON $JSON
 
-            $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
+            $uri = "https://graph.microsoft.com/Beta/$($ESP_resource)"
             $null = Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
 
         }
@@ -33,7 +31,7 @@ Function Add-EndpointSecurityPolicy() {
     catch {
 
         $ex = $_.Exception
-        Write-Host "Request for policy $(($JSON | ConvertFrom-Json).displayName) to $($uri) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)" -ForegroundColor Red
+        Write-Host "Request for policy $(($JSON | ConvertFrom-Json).name) to $($uri) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)" -ForegroundColor Red
     }
 
 }

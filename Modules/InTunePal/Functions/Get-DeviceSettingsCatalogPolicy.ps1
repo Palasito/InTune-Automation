@@ -8,7 +8,7 @@ Function Get-DeviceSettingsCatalogPolicy() {
     try {
     
         $uri = "https://graph.microsoft.com/Beta/$($DSC_Resource)"
-    (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
+    (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { $_.templateReference.templateFamily -notlike "endpointSecurity*" }
 
     }
     

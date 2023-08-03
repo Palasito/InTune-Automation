@@ -8,7 +8,7 @@ Function Get-GeneralDeviceConfigurationPolicy() {
     try {
     
         $uri = "https://graph.microsoft.com/$graphApiVersion/$($GDC_resource)"
-    (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
+    (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value 
     
     }
     
