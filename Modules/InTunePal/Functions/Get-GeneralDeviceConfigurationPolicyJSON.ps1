@@ -25,7 +25,6 @@ Function Get-GeneralDeviceConfigurationPolicyJSON() {
 
                 $omaSettings += $newSetting
             }
-
             $PolicyJSON = $Policies
             $PolicyJSON.omaSettings = @()
             $PolicyJSON.omaSettings = $omaSettings
@@ -37,18 +36,12 @@ Function Get-GeneralDeviceConfigurationPolicyJSON() {
         }
 
         else {
-
             $DisplayName = $Policies.DisplayName
-
             # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
             $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
-
             $FileName_JSON = "GDC" + "_" + "$DisplayName" + ".json"
-
             $FinalJSON = $Policies | ConvertTo-Json -Depth 100
-
             $FinalJSON | Set-Content -LiteralPath "$ExportPath\DeviceConfigurationPolicies\$FileName_JSON"
-            
         }
 
 
