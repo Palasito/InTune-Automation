@@ -19,7 +19,7 @@ Function Add-EndpointSecurityPolicy() {
 
         else {
 
-            Test-JSON -JSON $JSON
+            $null = Test-JSON -JSON $JSON
 
             $uri = "https://graph.microsoft.com/Beta/$($ESP_resource)"
             $null = Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
