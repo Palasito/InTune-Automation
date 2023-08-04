@@ -29,7 +29,7 @@
     ####################################################
 
     # Get all Endpoint Security Templates
-    $Templates = Get-EndpointSecurityTemplate
+    # $Templates = Get-EndpointSecurityTemplatε
 
     ####################################################
 
@@ -41,10 +41,8 @@
 
         # Excluding certain properties from JSON that aren't required for import
         $JSON_Convert = $JSON_Convert | Select-Object -Property *
-        $DisplayName = $JSON_Convert.DisplayName
         $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
         $null = Add-EndpointSecurityPolicy -JSON $JSON_Output
-        Write-Host "Imported Endpoint Security Policy $($DisplayName)"
-
+        Write-Host "Imported Endpoint Security Policy $($JSON_Convert.name)"
     }
 }
