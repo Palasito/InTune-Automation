@@ -50,7 +50,7 @@
 
             $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 10
 
-            $null = Add-MDMApplication -JSON $JSON_Output
+            Add-MDMApplication -JSON $JSON_Output
     
             Write-Host "Imported Client App $($DisplayName)"
         }

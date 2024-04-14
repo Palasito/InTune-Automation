@@ -27,7 +27,7 @@ Function Export-JSONData() {
     
         else {
             $JSON1 = ConvertTo-Json $JSON -Depth 100
-            $JSON_Convert = $JSON1 | ConvertFrom-Json    
+            $JSON_Convert = $JSON1 | ConvertFrom-Json
             $displayName = $JSON_Convert.displayName
 
             $DisplayName = $DisplayName.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'

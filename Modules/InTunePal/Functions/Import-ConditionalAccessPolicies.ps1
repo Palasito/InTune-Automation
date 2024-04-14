@@ -72,7 +72,7 @@ function Import-ConditionalAccessPolicies() {
 
             Write-Host "Imported Conditional Access Policy $($DisplayName)"
 
-            $null = Add-ConditionalAccessPolicy -JSON $jsontoImport
+            Add-ConditionalAccessPolicy -JSON $jsontoImport
 
             Start-Sleep 3
         }

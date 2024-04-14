@@ -41,9 +41,15 @@ function Export-EndpointSecurityPolicies {
 
     ########################################################################################
 
-    $uri = 'https://graph.microsoft.com/beta/deviceManagement/intents'
+    # $uri = 'https://graph.microsoft.com/beta/deviceManagement/intents'
 
-    $EPP = (Invoke-RestMethod -Method GET -Headers $authToken -Uri $uri).value
+    # $EPP = (Invoke-RestMethod -Method GET -Headers $authToken -Uri $uri).value
+
+    #Region Get Policies
+    $uri = "https://graph.microsoft.com/beta/deviceManagement/configurationPolicies"
+    $EPP = (Invoke-RestMethod -Method Get -Uri $uri -Headers $authToken).value
+    $EPP = $EPP | Where-Object { $_.templateReference.templateFamily -like "endpointSecurity*" }
+    #EndRegion
 
     Write-Host
     Write-Host "Exporting Device Endpoint Security Policies..." -ForegroundColor cyan
@@ -51,18 +57,20 @@ function Export-EndpointSecurityPolicies {
 
         $Settings = Get-PolicyEndpointSettingsJSON -Policies $e
         $PolicyJSON = [pscustomobject]@{
-            DisplayName   = $e.displayName
-            Description   = $e.description
-            Platforms     = $e.platforms
-            settingsDelta = $Settings
-            templateId    = $e.TemplateId
+            name              = $e.name
+            description       = $e.description
+            platforms         = $e.platforms
+            settings          = [Array]$Settings
+            technologies      = $e.technologies
+            # templateId    = $e.TemplateId
+            templateReference = $e.templateReference
         }
 
-        $FinalJSONdisplayName = $e.displayName
+        $FinalJSONdisplayName = $e.name
         $FinalJSONDisplayName = $FinalJSONDisplayName.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
         $FileName_FinalJSON = "$FinalJSONDisplayName" + ".json"
         $FinalJSON = $PolicyJSON | ConvertTo-Json -Depth 20
         $FinalJSON | Set-Content -LiteralPath "$($Path)\EndpointSecurityPolicies\$($FileName_FinalJSON)"
-        Write-Host "Exported Endpoint Security Policy: $($e.displayName)"
+        Write-Host "Exported Endpoint Security Policy: $($e.name)"
     }
 }

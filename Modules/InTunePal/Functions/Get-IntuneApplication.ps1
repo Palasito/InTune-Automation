@@ -37,7 +37,7 @@ Function Get-IntuneApplication() {
     catch {
 
         $ex = $_.Exception
-        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)"
         write-host
         break
 

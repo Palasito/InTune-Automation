@@ -23,7 +23,7 @@ Function Add-DeviceConfigurationUpdatePolicy() {
             Test-JSON -JSON $JSON
 
             $uri = "https://graph.microsoft.com/$graphApiVersion/$($DCP_resource)"
-            Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
+            $null = Invoke-RestMethod -Uri $uri -Headers $authToken -Method Post -Body $JSON -ContentType "application/json"
 
         }
 
@@ -32,9 +32,7 @@ Function Add-DeviceConfigurationUpdatePolicy() {
     catch {
 
         $ex = $_.Exception
-        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-        write-host
-        break
+        Write-Host "Request for policy $(($JSON | ConvertFrom-Json).displayName) to $($uri) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)" -ForegroundColor Red
 
     }
 

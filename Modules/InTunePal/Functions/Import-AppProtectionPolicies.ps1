@@ -51,7 +51,7 @@ function Import-AppProtectionPolicies() {
 
             $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 100
      
-            $null = Add-ManagedAppPolicy -JSON $JSON_Output
+            Add-ManagedAppPolicy -JSON $JSON_Output
     
             Write-Host "Imported App Protection Policy $($DisplayName)"
         }

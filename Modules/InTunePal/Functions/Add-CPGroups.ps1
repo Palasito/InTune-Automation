@@ -74,7 +74,18 @@ function Add-CPGroups() {
         
         $Body = $Body | ConvertTo-Json -Depth 100
     
-        $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/deviceCompliancePolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+        try {
+
+            $null = Invoke-RestMethod -Uri "https://graph.microsoft.com/beta/deviceManagement/deviceCompliancePolicies/$($Policy.id)/assign" -Headers $authToken -Method Post -Body $Body -ContentType "application/json"
+
+        }
+
+        catch {
+            $ex = $_.Exception
+            Write-Host "Issue when assigning groups and users on policy $($pol.displayName)"
+            Write-Host "Error for policy $($pol.displayName) is: $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)" -ForegroundColor Red
+        }
+        
     
         [PSCustomObject]@{
             "Action"          = "Assign"

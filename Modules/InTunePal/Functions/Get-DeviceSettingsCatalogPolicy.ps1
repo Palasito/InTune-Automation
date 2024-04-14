@@ -8,7 +8,7 @@ Function Get-DeviceSettingsCatalogPolicy() {
     try {
     
         $uri = "https://graph.microsoft.com/Beta/$($DSC_Resource)"
-    (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
+    (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { $_.templateReference.templateFamily -notlike "endpointSecurity*" }
 
     }
     
@@ -17,7 +17,7 @@ Function Get-DeviceSettingsCatalogPolicy() {
     catch {
 
         $ex = $_.Exception
-        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)"
         write-host
         break
 
