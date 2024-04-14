@@ -10,10 +10,10 @@ Function Get-GeneralDeviceConfigurationPolicyJSON() {
         if (($Policies.'@odata.type' -eq '#microsoft.graph.windows10CustomConfiguration') -and ($Policies.omaSettings | Where-Object { $_.isEncrypted -contains $true } )) {
             
             $Policyid = $Policies.id
-            $uri_value = "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations/$($Policyid)/getOmaSettingPlainTextValue(secretReferenceValueId='$($Policies.omaSettings.secretReferenceValueId)')"
-            $value = (Invoke-RestMethod -Uri $uri_value -Headers $authToken -Method Get).Value
             $omaSettings = @()
             foreach ($oma in $Policies.omaSettings) {
+                $uri_value = "https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations/$($Policyid)/getOmaSettingPlainTextValue(secretReferenceValueId='$($oma.secretReferenceValueId)')"
+                $value = (Invoke-RestMethod -Uri $uri_value -Headers $authToken -Method Get).Value
                 $newSetting = @{}
                 $newSetting.'@odata.type' = $oma.'@odata.type'
                 $newSetting.displayName = $oma.displayName
@@ -50,7 +50,7 @@ Function Get-GeneralDeviceConfigurationPolicyJSON() {
     catch {
 
         $ex = $_.Exception
-        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)"
+        Write-Error "Request to $($uri_value) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)"
         write-host
         break
     }
