@@ -91,7 +91,7 @@ function Get-Token {
                 }
                 return $global:authToken
             }
-                        
+
             elseif ($global:tenantconfirmation -eq 'y') {
 
                 $Tenantconfirm = Read-Host "Please provide the tenant Id or Tenant Suffix to be used!"
