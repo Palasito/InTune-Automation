@@ -187,6 +187,7 @@ function Start-InTuneModule {
             }
         }
         7 {
+            $null = Get-Token
             $tenantFeatures = Get-ObjectMatching
             
             if ($tenantFeatures.features.blockSoftMatchEnabled -eq $false) {

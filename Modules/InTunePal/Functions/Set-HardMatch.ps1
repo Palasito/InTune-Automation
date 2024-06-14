@@ -28,5 +28,4 @@ Function Set-HardMatch() {
         Write-Host "Request for policy $(($body | ConvertFrom-Json)) to $($uri) failed with HTTP Status $($ex.Response.StatusCode.value__) $($ex.Response.StatusCode)" -ForegroundColor Red
         write-host
     }
-
 }
