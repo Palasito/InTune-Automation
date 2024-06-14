@@ -34,6 +34,11 @@ function InvokeMenu {
 
     $Items += Get-InteractiveChooseMenuOption `
         -Value 7 `
+        -Label "Disable Object Takeover" `
+        -Info "Disable object takeover in Azure"
+
+    $Items += Get-InteractiveChooseMenuOption `
+        -Value 8 `
         -Label "Exit" `
         -Info "Just Exit the module"
 

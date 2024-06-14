@@ -187,6 +187,67 @@ function Start-InTuneModule {
             }
         }
         7 {
+            $tenantFeatures = Get-ObjectMatching
+            
+            if ($tenantFeatures.features.blockSoftMatchEnabled -eq $false) {
+                $confirmation = Read-Host "Soft Matching on UPN is enabled, do you want to disable it? [y/n]"
+                if ($confirmation -eq 'n') {
+                    break;
+                }
+                if ($confirmation -eq 'y') {
+                    Set-SoftMatch -id "$($tenantFeatures.Id)" -disable
+                    Write-Host "DONE !!"
+                    Start-Sleep 2
+                    Start-InTuneModule
+                }
+                if ($tenantFeatures.features.blockSoftMatchEnabled -eq $true) {
+                    $confirmation = Read-Host "Soft Matching on UPN is disabled, do you want to enable it? [y/n]"
+                    if ($confirmation -eq 'n') {
+                        break;
+                    }
+                    if ($confirmation -eq 'y') {
+                        Set-SoftMatch -enable
+                        Write-Host "DONE !!"
+                        Start-Sleep 2
+                        Start-InTuneModule
+                    }
+                }
+                if ($tenantFeatures.features.blockCloudObjectTakeoverThroughHardMatchEnabled -eq $false) {
+                    $confirmation = Read-Host "Hard Matching on UPN is enabled, do you want to disable it? [y/n]"
+                    if ($confirmation -eq 'n') {
+                        break;
+                    }
+                    if ($confirmation -eq 'y') {
+                        Set-SoftMatch -id "$($tenantFeatures.Id)" -disable
+                        Write-Host "DONE !!"
+                        Start-Sleep 2
+                        Start-InTuneModule
+                    }
+                }
+                if ($tenantFeatures.features.blockCloudObjectTakeoverThroughHardMatchEnabled -eq $true) {
+                    $confirmation = Read-Host "Hard Matching on UPN is disabled, do you want to enable it? [y/n]"
+                    if ($confirmation -eq 'n') {
+                        break;
+                    }
+                    if ($confirmation -eq 'y') {
+                        Set-SoftMatch -id "$($tenantFeatures.Id)" -enable
+                        Write-Host "DONE !!"
+                        Start-Sleep 2
+                        Start-InTuneModule
+                    }
+                }
+            }
+
+            $confirmation = Read-Host "Do you want to perform another job? [y/n]"
+            if ($confirmation -eq 'n') {
+                Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green
+                break;
+            }
+            if ($confirmation -eq 'y') {
+                Start-InTuneModule
+            }
+        }
+        8 {
             Write-Host "Thanks for using InTunePal! Have a nice one!" -ForegroundColor Green
             break;
         }

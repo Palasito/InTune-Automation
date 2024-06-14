@@ -7,7 +7,7 @@ function GetMSALToken {
 
     #Region Paramaeters
     $clientId = Read-Host -Prompt "Input clientId here"
-    $redirectUri = "https://login.microsoftonline.com/common/oauth2/nativeclient"
+    $redirectUri = "msal9ca79874-499e-42ad-aa68-4dd014aa0a24://auth"
     $scope = @("https://graph.microsoft.com/DeviceManagementApps.ReadWrite.All", "https://graph.microsoft.com/DeviceManagementConfiguration.ReadWrite.All", "https://graph.microsoft.com/DeviceManagementManagedDevices.PrivilegedOperations.All", "https://graph.microsoft.com/DeviceManagementManagedDevices.ReadWrite.All", "https://graph.microsoft.com/DeviceManagementRBAC.ReadWrite.All", "https://graph.microsoft.com/DeviceManagementServiceConfig.ReadWrite.All", "https://graph.microsoft.com/Directory.Read.All", "https://graph.microsoft.com/Group.Read.All", "https://graph.microsoft.com/Group.ReadWrite.All", "https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Policy.ReadWrite.ConditionalAccess", "https://graph.microsoft.com/Policy.Read.All", "https://graph.microsoft.com/Application.ReadWrite.All")
     # $scope = "https://graph.microsoft.com/.default"
     # $ConditionalAccessScope = @("https://graph.microsoft.com/Policy.ReadWrite.ConditionalAccess", "https://graph.microsoft.com/Policy.Read.All", "https://graph.microsoft.com/Application.Read.All")
@@ -60,16 +60,18 @@ function Get-Token {
 
     $CurrentTime = (Get-Date).ToUniversalTime()
 
-    if ([string]::IsNullOrEmpty($clientId)) {
-        $clientId = Read-Host "Input Client Id Here"
-    }
-
-    if ([string]::IsNullOrEmpty($secret)) {
-        $secret = Read-Host "Input Secret"
-    }
+    if ([string]::IsNullOrEmpty($global:authToken)) {
+        if ([string]::IsNullOrEmpty($clientId)) {
+            $clientId = Read-Host "Input Client Id Here"
+        }
     
-    if ([string]::IsNullOrEmpty($tenantId)) {
-        $tenantId = Read-Host "Input tenant Id"
+        if ([string]::IsNullOrEmpty($secret)) {
+            $secret = Read-Host "Input Secret"
+        }
+        
+        if ([string]::IsNullOrEmpty($tenantId)) {
+            $tenantId = Read-Host "Input tenant Id"
+        }
     }
 
     $body = @{
